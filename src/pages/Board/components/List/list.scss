@@ -1,55 +1,72 @@
-.list-style{
+.list-style {
+  height: 100%;
   width: 100%;
   display: flex;
   flex-direction: row;
   align-items: flex-start;
   overflow-x: auto;
 }
-.list-style::-webkit-scrollbar{
+
+.list-style::-webkit-scrollbar {
+  position: relative;
   height: 20px;
-  background-color: rgba(168, 159, 159, 0);
+  border-radius: 10px;
+  background-color: rgba(229, 218, 218, 0.58);
 }
 
-.list-style::-webkit-scrollbar-thumb{
-  position: absolute;
-  bottom: 100px;
+.list-style::-webkit-scrollbar-thumb {
   background-color: rgba(143, 137, 137, 0.78);
   border-radius: 10px;
 }
-.list-style h2{
+.list-container{
+  width: 200px;
   max-height: 400px;
-min-height: 300px;
+  min-height: 300px;
   padding: 5px;
+  font-size: 25px;
   background-color: #fdfdfd;
   margin: 15px;
   box-shadow: 5px 5px 10px black;
   border-radius: 4px;
 }
-.create-button{
-  width: 100px;
-  height: 100px;
-  border-radius: 100%;
-  background-color: #559bde;
-  border-color: #2b4074;
+.list-container h2{
+  font-size: 25px;
+  margin: 0;
+  text-align: start;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.create-button {
+  min-width: 200px;
+  height: 50px;
+  border: 0;
+  padding: 5px;
+  background-color: #fdfdfd;
+  margin: 15px 15px 15px 50px;
+  box-shadow: 5px 5px 10px black;
+  border-radius: 4px;
   cursor: pointer;
-  margin-left: 50px;
   font-size: 17px;
 }
-.cards{
-  max-height: 340px;
+
+.cards {
+  width: 200px;
+  height: 100%;
   overflow: auto;
   font-size: 20px;
   text-align: start;
   color: black;
 }
-.cards div{
+
+.cards div {
   overflow-y: auto;
 }
-.cards::-webkit-scrollbar{
+
+.cards::-webkit-scrollbar {
   width: 10px;
 }
 
-.cards::-webkit-scrollbar-thumb{
+.cards::-webkit-scrollbar-thumb {
   background-color: rgba(180, 173, 173, 0.75);
   border-radius: 5px;
 }

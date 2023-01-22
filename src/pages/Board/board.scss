@@ -1,0 +1,59 @@
+.App-header{
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  white-space: nowrap;
+}
+.App-header div{
+}
+.list-creating-modal-window{
+  min-width: 190px;
+  border: 0;
+  padding: 5px;
+  background-color: #fdfdfd;
+  margin: 15px 15px 15px 50px;
+  box-shadow: 5px 5px 10px black;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 17px;
+  display: flex;
+  flex-direction: column;
+}
+.board-name-container{
+  display: flex;
+}
+.board-name-container h1 {
+  font-family: Arial, serif;
+  margin: 20px 0 0 15px;
+  width: 190px;
+  height: 45px;
+  font-size: 40px;
+  text-align: start;
+  font-weight: 700;
+}
+.board-input-boardName{
+  max-width: 300px;;
+  border: 0;
+  padding: 0;
+  height: 45px;
+  margin: 20px 0 0 15px;
+  font-size: 40px;
+  font-weight: 700;
+  justify-content: flex-start;
+}
+.new-list-input{
+  margin: 0 auto;
+  width: 95%;
+  height: 30px;
+  font-size: 25px;
+  outline: 0;
+}
+.submit-list-button{
+  margin: 5px;
+  width: 80px;
+  height: 25px;
+  background-color: #6f80bd;
+  border: 0;
+  border-radius: 2px;
+  cursor: pointer;
+}
