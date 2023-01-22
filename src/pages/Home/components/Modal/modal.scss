@@ -1,0 +1,79 @@
+.modal-bg {
+  position: fixed;
+  background-color: rgba(0, 0, 0, 0.5);
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+}
+
+.modal-window {
+  border-radius: 2px;
+  width: 500px;
+  padding: 5px;
+  position: absolute;
+  top: 10%;
+  left: 50%;
+  translate: -50%;
+  background-color: white;
+}
+
+.modal-window h1 {
+  font-size: 25px;
+}
+
+.modal-window form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.modal-window form input {
+  width: 300px;
+  height: 25px;
+  margin-bottom: 10px;
+}
+
+.submit-button {
+  padding: 2px 4px 2px 4px;
+  background-color: yellow;
+  font-size: 18px;
+  font-weight: 600;
+  width: 100px;
+  height: 50px;
+  border-radius: 3px;
+  cursor: pointer;
+}
+.submit-button:hover{
+  color: #61dafb;
+  border-color: #61dafb;
+}
+
+.input-modal {
+  border: 1px solid #9B9B9B;
+  padding: 4px 2px 4px 2px;
+  margin-bottom: 2px;
+}
+.cancel-x::selection {
+  background: transparent;
+}
+.cancel-x::-moz-selection {
+  background: transparent;
+}
+.cancel-x {
+  padding: 1px 1px 1px 2px;
+  cursor: pointer;
+  color: black;
+  font-weight: 700;
+  font-size: 18px;
+  position: fixed;
+  right: 5px;
+  top: 5px;
+  width: 15px;
+  height: 15px;
+  line-height: 15px;
+  text-align: center;
+}
+.cancel-x:hover{
+  background-color: red;
+}

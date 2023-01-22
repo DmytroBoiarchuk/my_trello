@@ -1,0 +1,24 @@
+.home-style{
+  display: flex;
+  width: 100%;
+  flex-wrap: wrap;
+  justify-content: center;
+  flex-direction: row;
+}
+.add-board-button{
+  background-color: white;
+  width: 150px;
+  height: 100px;
+  margin: 20px;
+  font-size: 18px;
+  overflow: hidden;
+  white-space: normal;
+  font-weight: 700;
+  border-radius: 5px;
+  box-shadow: 5px 5px 10px black;
+  border: 1px solid darkblue;
+  cursor: pointer;
+}
+.add-board-button:hover {
+  background-color: rgb(225, 222, 222);
+}
