@@ -34,6 +34,7 @@ const Modal = ({ openCloseModal }: ModalIsOpen) => {
           </div>
           <form onSubmit={submitHandler}>
             <input
+              autoFocus
               type="text"
               className="input-modal"
               placeholder="Enter name of new board..."

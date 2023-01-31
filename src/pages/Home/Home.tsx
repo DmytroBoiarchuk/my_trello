@@ -8,6 +8,7 @@ import store from '../../store/store';
 import Modal from './components/Modal/Modal';
 import { propsType } from '../../common/types/types';
 import { stateType } from '../../common/types/types';
+import NavBar from './components/NavBar/NavBar';
 
 function Home(props: propsType) {
   const [modalIsOpen, setModalIsOpen] = useState(false);
@@ -17,6 +18,7 @@ function Home(props: propsType) {
 
   return (
     <>
+      <NavBar />
       <h1>My Boards</h1>
       <div className="home-style">
         {props.boards.map((board: IBoard) => {

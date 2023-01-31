@@ -10,12 +10,18 @@ import { addList } from '../../store/modules/board/actions';
 import { BoardProps } from '../../common/interfaces/IBoard';
 import { validate } from '../../common/functions/validate';
 import ErrorWarning from './components/ErrorWarning/ErrorWarning';
+import ModalCreating from './components/ModalCreating/ModalCreating';
+import NavBar from '../Home/components/NavBar/NavBar';
+import { RootState } from '../../store/store';
+import LoadingP from './components/Loading/LoadingP';
+
 export default function Board() {
   const { board } = useSelector(
     (state: BoardProps): BoardProps => ({
       board: state.board,
     })
   );
+  let loadingState = useSelector((state: RootState) => state.loading);
   const [boardTitle, setTitle] = useState('');
   const [showInput, setShowInput] = useState(false);
   const [isWarning, setWarning] = useState(false);
@@ -34,7 +40,7 @@ export default function Board() {
   let listArr = null;
   if (board.lists) {
     listArr = board.lists.map((key: IList) => {
-      return <List key={key.id} title={key.title} cards={key.cards} />;
+      return <List key={key.id} board_id={board_id || ''} list_id={key.id} title={key.title} cards={key.cards} />;
     });
   }
   const renameBoardByEnter = (e: React.KeyboardEvent, value: string) => {
@@ -64,15 +70,14 @@ export default function Board() {
   };
   const onBlurFunctionList = (value: string) => {
     setCashMemoryListInput(value);
-    if (!validate(value)) {
-      setTimeout(() => setListCreatingInput(false), 100);
-    }
+    setTimeout(() => setListCreatingInput(false), 100);
   };
   const createListByEnter = (e: React.KeyboardEvent, value: string) => {
     if (e.key === 'Enter') {
       if (!validate(value)) {
         addList(dispatch, board_id || '', { title: value, position: 0 });
         setCashMemoryListInput('');
+        setListTitle('');
         setListCreatingInput(false);
       } else {
         e.preventDefault();
@@ -85,6 +90,7 @@ export default function Board() {
     if (!validate(value)) {
       addList(dispatch, board_id || '', { title: value, position: 0 });
       setCashMemoryListInput('');
+      setListTitle('');
       setListCreatingInput(false);
     } else {
       e.preventDefault();
@@ -94,6 +100,7 @@ export default function Board() {
   };
   return (
     <>
+      <NavBar />
       {isWarning && <ErrorWarning />}
       <div className="board-name-container">
         {showInput && (
@@ -118,26 +125,18 @@ export default function Board() {
           </button>
         )}
         {listCreatingInput && (
-          <form className="list-creating-modal-window">
-            <input
-              type="text"
-              maxLength={15}
-              autoFocus
-              defaultValue={cashMemoryListInput}
-              onChange={(e) => {
-                setListTitle(e.target.value);
-              }}
-              className="new-list-input"
-              placeholder="Enter name of list..."
-              onKeyDown={(e) => createListByEnter(e, e.currentTarget.value)}
-              onBlur={(e) => onBlurFunctionList(e.target.value)}
-            ></input>
-            <button onClick={(e) => createList(e, listTitle)} className="submit-list-button">
-              Add list
-            </button>
-          </form>
+          <ModalCreating
+            listTitle={listTitle}
+            buttonOnClick={createList}
+            defaultValue={cashMemoryListInput}
+            modalTitle="Add List"
+            onChange={setListTitle}
+            onKeyDown={createListByEnter}
+            onBlur={onBlurFunctionList}
+          />
         )}
       </div>
+      {loadingState.loading && <LoadingP />}
     </>
   );
 }

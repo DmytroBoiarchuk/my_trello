@@ -1,8 +1,8 @@
 .home-board-style{
   display: flex;
   flex-direction: column;
-  background-color: #4a4abd;
-  width: 150px;
+  background-color: #5353ef;
+  width: 200px;
   height: 100px;
   margin: 20px;
   font-size: 30px;
@@ -16,7 +16,10 @@
   text-decoration: none;
   color: rgba(63, 57, 57, 0.79);
 }
+.home-board-style:hover {
+  background-color: #cb6d6d;
 
+}
 .home-board-style p{
   text-align: left;
   overflow: hidden;

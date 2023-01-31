@@ -3,11 +3,14 @@
   top: 10px;
   width: 300px;
   height: 70px;
-  background-color: #ffffff;
-  border: 2px solid red;
+  background-color: #f1dede;
   left: 50%;
+  border-radius: 5px;
   transform: translateX(-50%);
+  box-shadow: 1px 1px 3px 1px black;
 }
 .error-window p{
+  text-align: center;
+  color: red;
   font-size: 15px;
 }
