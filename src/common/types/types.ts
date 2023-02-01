@@ -1,5 +1,3 @@
-import { ICard } from '../interfaces/ICard';
-
 export type propsType = {
   boards: { id: number; title: string }[];
   getBoards: () => Promise<void>;

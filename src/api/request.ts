@@ -1,9 +1,7 @@
 import axios from 'axios';
 import { api } from '../common/constants';
-import store from '../store/store';
-import { useDispatch } from 'react-redux';
 import { setLoading } from '../store/modules/loading/actiong';
-
+//123
 const instance = axios.create({
   baseURL: api.baseURL,
   headers: {

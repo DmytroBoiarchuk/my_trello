@@ -2,8 +2,6 @@ import api from '../../../common/constants/api';
 import { Dispatch } from 'redux';
 import instance from '../../../api/request';
 import { BoardResp } from '../../../common/types/types';
-import { clearStore } from '../boards/actions';
-import store from '../../store';
 interface ResponseBoard {
   title: string;
   lists: [{ id: number }];

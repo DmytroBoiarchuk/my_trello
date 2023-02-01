@@ -1,13 +1,12 @@
 import { ICard } from '../../../../common/interfaces/ICard';
-import React, { DOMElement, useRef, useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { BsThreeDots } from 'react-icons/bs';
 import Card from '../Card/Card';
 import { renameList, deleteListFetch, addNewCard } from '../../../../store/modules/board/actions';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { validate } from '../../../../common/functions/validate';
 import ErrorWarning from '../ErrorWarning/ErrorWarning';
 import useOutsideAlerter from '../../../../common/Hooks/useOutsideAlerter';
-import { CardsProps, BoardProps } from '../../../../common/interfaces/IBoard';
 
 export default function List(props: { board_id: string; list_id: number; title: string; cards: ICard[] }) {
   const CardList = props.cards.map((key) => {
