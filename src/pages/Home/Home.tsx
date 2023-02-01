@@ -2,15 +2,17 @@ import React, { useEffect, useRef, useState } from 'react';
 import BoardAtHome from './components/BoardAtHome/BoardAtHome';
 import './home.scss';
 import { IBoard } from '../../common/interfaces/IBoard';
-import { connect } from 'react-redux';
+import { connect, useSelector } from 'react-redux';
 import { getBoards } from '../../store/modules/boards/actions';
-import store from '../../store/store';
+import store, { RootState } from '../../store/store';
 import Modal from './components/Modal/Modal';
 import { propsType } from '../../common/types/types';
 import { stateType } from '../../common/types/types';
 import NavBar from './components/NavBar/NavBar';
+import LoadingP from '../Board/components/Loading/LoadingP';
 
 function Home(props: propsType) {
+  let loadingState = useSelector((state: RootState) => state.loading);
   const [modalIsOpen, setModalIsOpen] = useState(false);
   useEffect(() => {
     store.dispatch(getBoards());
@@ -29,6 +31,7 @@ function Home(props: propsType) {
         </button>
         {modalIsOpen && <Modal openCloseModal={() => setModalIsOpen(false)} />}
       </div>
+      {loadingState.loading && <LoadingP />}
     </>
   );
 }

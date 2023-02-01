@@ -45,6 +45,10 @@ export default function Board() {
   }
   const renameBoardByEnter = (e: React.KeyboardEvent, value: string) => {
     if (e.key === 'Enter') {
+      if (value === boardTitle) {
+        setShowInput(false);
+        return;
+      }
       if (!validate(value)) {
         setTitle(value);
         setShowInput(false);
@@ -57,6 +61,10 @@ export default function Board() {
     }
   };
   const renameBoard = (value: string) => {
+    if (value === boardTitle) {
+      setShowInput(false);
+      return;
+    }
     if (!validate(value)) {
       setTitle(value);
       setShowInput(false);

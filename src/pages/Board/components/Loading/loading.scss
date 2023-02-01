@@ -1,6 +1,41 @@
+.modal-body{
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.09);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
 .loading{
-  background-color: #9B9B9B;
+  top: 50%;
+  left: 42%;
+  background-color: #409888;
   border: 2px solid black;
-  width: 50px;
-  height: 30px;
+  border-radius: 3px;
+  width: 150px;
+  height: 50px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+
+}
+.loading p{
+  font-weight: 700;
+  margin: 0;
+  font-size: 15px;
+}
+.loading-logo{
+  height: 35px;
+  animation: 2.5s linear 0s normal none infinite running loading-logo;
+  width: 100px;
+}
+@keyframes loading-logo {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
