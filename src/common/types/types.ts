@@ -9,7 +9,7 @@ export type stateType = {
 };
 export type boardType = {
   id: number;
-  // title: string;
+  title: string;
   // lists: { id: number; title: string; cards: ICard[] }[];
 };
 export type boardStateType = {
