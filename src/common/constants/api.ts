@@ -1,3 +1,3 @@
 export default {
-  baseURL: 'https://my-trello-dmytroboiarchuk.vercel.app/',
+  baseURL: 'https://trello-back.shpp.me/dboiarchuk/api/v1',
 };
