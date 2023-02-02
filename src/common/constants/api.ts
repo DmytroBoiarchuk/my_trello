@@ -1,3 +1,3 @@
 export default {
-  baseURL: process.env.REACT_APP_API_URL || '',
+  baseURL: 'https://trello-back.shpp.me/dboiarchuk/api/v1',
 };

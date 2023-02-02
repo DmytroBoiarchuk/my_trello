@@ -1,6 +1,9 @@
-const initialState = {
-  board: { title: '', lists: [], id: undefined },
-  loading: false,
+import { IBoard } from '../../../common/interfaces/IBoard';
+
+const initialState: IBoard = {
+  id: 0,
+  title: '',
+  lists: [],
 };
 
 export default function reducer(state = initialState, action: { type: string; payload?: any }) {

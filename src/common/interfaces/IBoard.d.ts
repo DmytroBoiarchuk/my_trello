@@ -1,9 +1,9 @@
-import { ICard } from './ICard';
 import { IList } from './IList';
 
 export interface IBoard {
   id: number;
   title: string;
+  lists?: IList[];
 }
 
 export interface BoardProps {
