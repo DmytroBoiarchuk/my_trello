@@ -1,6 +1,8 @@
 import axios from 'axios';
 import { api } from '../common/constants';
 import { setLoading } from '../store/modules/loading/actiong';
+import Swal from 'sweetalert2';
+
 //123
 const instance = axios.create({
   baseURL: api.baseURL,
@@ -17,5 +19,13 @@ instance.interceptors.response.use(function (res) {
   setLoading(false);
   return res.data;
 });
-
+instance.interceptors.response.use(undefined, (error) => {
+  Swal.fire({
+    icon: 'info',
+    iconColor: '#da4c4c',
+    showConfirmButton: false,
+    showCloseButton: true,
+    text: 'Error: ' + error.response.data.error + '!',
+  });
+});
 export default instance;
