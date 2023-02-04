@@ -2,11 +2,15 @@ import api from '../../../common/constants/api';
 import { Dispatch } from 'redux';
 import instance from '../../../api/request';
 import { BoardResp } from '../../../common/types/types';
+import store from '../../store';
 interface ResponseBoard {
   title: string;
   lists: [{ id: number }];
 }
 
+export const clearStore = () => {
+  store.dispatch({ type: 'DELETE_STORE_BOARD', payload: '' });
+};
 export const deleteCard = async (dispatch: Dispatch, board_id: string, card_id: number) => {
   try {
     await instance.delete(`/board/${board_id}/card/${card_id}`);

@@ -75,11 +75,12 @@
 }
 
 .cards {
+  position: relative;
   box-sizing: border-box;
   display: block;
   flex-direction: column;
   width: 290px;
-  max-height: 700px;
+  max-height: 600px;
   font-size: 20px;
   text-align: start;
   color: black;

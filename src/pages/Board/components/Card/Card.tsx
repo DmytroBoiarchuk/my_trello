@@ -4,8 +4,8 @@ import { deleteCard, renameCard } from '../../../../store/modules/board/actions'
 import './card.scss';
 import { useDispatch } from 'react-redux';
 import { validate } from '../../../../common/functions/validate';
-import ErrorWarning from '../ErrorWarning/ErrorWarning';
 import useOutsideAlerter from '../../../../common/Hooks/useOutsideAlerter';
+import Swal from 'sweetalert2';
 
 const Card = (props: { position: number; board_id: string; list_id: number; id: number; title: string }) => {
   const { ref, isShow, setIsShow } = useOutsideAlerter(false);
@@ -33,9 +33,18 @@ const Card = (props: { position: number; board_id: string; list_id: number; id: 
     deleteCard(dispatch, props.board_id, props.id);
     setIsShow(false);
   };
+  if (isWarning) {
+    Swal.fire({
+      icon: 'error',
+      iconColor: '#da4c4c',
+      showConfirmButton: false,
+      showCloseButton: true,
+      text: 'Error: Prohibited symbols!',
+    });
+    setWarning(false);
+  }
   return (
     <>
-      {isWarning && <ErrorWarning />}
       {!isShow ? (
         <p className="card-style">
           {CardValue}

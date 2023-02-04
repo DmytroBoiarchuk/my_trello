@@ -9,11 +9,11 @@ import { useParams } from 'react-router-dom';
 import { addList } from '../../store/modules/board/actions';
 import { BoardProps } from '../../common/interfaces/IBoard';
 import { validate } from '../../common/functions/validate';
-import ErrorWarning from './components/ErrorWarning/ErrorWarning';
 import ModalCreating from './components/ModalCreating/ModalCreating';
 import NavBar from '../Home/components/NavBar/NavBar';
 import { RootState } from '../../store/store';
 import LoadingP from './components/Loading/LoadingP';
+import Swal from 'sweetalert2';
 
 export default function Board() {
   const { board } = useSelector(
@@ -98,10 +98,19 @@ export default function Board() {
       setTimeout(() => setWarning(false), 1500);
     }
   };
+  if (isWarning) {
+    Swal.fire({
+      icon: 'error',
+      iconColor: '#da4c4c',
+      showConfirmButton: false,
+      showCloseButton: true,
+      text: 'Error: Prohibited symbols!',
+    });
+    setWarning(false);
+  }
   return (
     <>
       <NavBar />
-      {isWarning && <ErrorWarning />}
       <div className="board-name-container">
         {showInput && (
           <input

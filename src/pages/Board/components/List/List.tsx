@@ -5,8 +5,8 @@ import Card from '../Card/Card';
 import { renameList, deleteListFetch, addNewCard } from '../../../../store/modules/board/actions';
 import { useDispatch } from 'react-redux';
 import { validate } from '../../../../common/functions/validate';
-import ErrorWarning from '../ErrorWarning/ErrorWarning';
 import useOutsideAlerter from '../../../../common/Hooks/useOutsideAlerter';
+import Swal from 'sweetalert2';
 
 export default function List(props: { board_id: string; list_id: number; title: string; cards: ICard[] }) {
   const CardList = props.cards.map((key) => {
@@ -81,31 +81,12 @@ export default function List(props: { board_id: string; list_id: number; title: 
       setCardInputValue('');
     }
   };
-  // const onBlurCardInput = () => {
-  //   if (!validate(cardInputValue)) {
-  //     addNewCard(dispatch, cardPosition, props.board_id, cardInputValue, props.list_id);
-  //     setCardPosition(cardPosition + 1);
-  //     setTimeout(() => setIsShow(false), 100);
-  //     setCardInputValue('');
-  //   } else {
-  //     if (cardInputValue.trim().length === 0) {
-  //       setCardInputValue('');
-  //       setTimeout(() => setIsShow(false), 100);
-  //       return;
-  //     }
-  //     setWarning(true);
-  //     setTimeout(() => setWarning(false), 1500);
-  //     setTimeout(() => setIsShow(false), 100);
-  //     setCardInputValue('');
-  //   }
-  // };
   const enterPressedCard = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter') {
       e.preventDefault();
       if (!validate(cardInputValue)) {
         addNewCard(dispatch, cardPosition, props.board_id, cardInputValue, props.list_id);
         setCardPosition(cardPosition + 1);
-
         setIsShow(false);
         setCardInputValue('');
       } else {
@@ -123,10 +104,18 @@ export default function List(props: { board_id: string; list_id: number; title: 
       }, 1);
     }
   };
-
+  if (isWarning) {
+    Swal.fire({
+      icon: 'error',
+      iconColor: '#da4c4c',
+      showConfirmButton: false,
+      showCloseButton: true,
+      text: 'Error: Prohibited symbols!',
+    });
+    setWarning(false);
+  }
   return (
     <>
-      {isWarning && <ErrorWarning />}
       <div className="list-container">
         {showInputListName ? (
           <input

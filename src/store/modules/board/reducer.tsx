@@ -1,5 +1,7 @@
 const initialState = {
-  board: { title: '', lists: [], id: undefined },
+  title: '',
+  lists: [],
+  id: undefined,
   loading: false,
 };
 
@@ -10,6 +12,11 @@ export default function reducer(state = initialState, action: { type: string; pa
         ...state,
         title: action.payload.title,
         lists: action.payload.lists,
+      };
+    case 'DELETE_STORE_BOARD':
+      return {
+        title: '',
+        lists: [],
       };
     default: {
       return { ...state, ...action.payload };

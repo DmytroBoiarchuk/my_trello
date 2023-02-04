@@ -3,14 +3,13 @@ import { Dispatch } from 'redux';
 import { IBoard } from '../../../common/interfaces/IBoard';
 import instance from '../../../api/request';
 import store from '../../store';
-
+import { clearStore } from '../board/actions';
 interface Response {
   boards: IBoard[];
 }
-export const clearStore = () => (dispatch: Dispatch) => {
-  dispatch({ type: 'DELETE_STORE', payload: '' });
-};
+
 export const getBoards = () => async (dispatch: Dispatch) => {
+  clearStore();
   try {
     const { boards }: Response = await instance.get(api.baseURL + '/board');
     dispatch({ type: 'UPDATE_BOARDS', payload: boards });

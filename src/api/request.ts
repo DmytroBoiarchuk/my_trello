@@ -21,7 +21,7 @@ instance.interceptors.response.use(function (res) {
 });
 instance.interceptors.response.use(undefined, (error) => {
   Swal.fire({
-    icon: 'info',
+    icon: 'error',
     iconColor: '#da4c4c',
     showConfirmButton: false,
     showCloseButton: true,
