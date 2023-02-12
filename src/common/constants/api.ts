@@ -1,3 +1,3 @@
 export default {
-  baseURL: 'https://trello-back.shpp.me/dboiarchuk/api/v1',
+  baseURL: 'https://trello-back.shpp.me/dboiarchuk1/api/v1',
 };
