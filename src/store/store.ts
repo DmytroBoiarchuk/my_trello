@@ -30,6 +30,7 @@ export type RootState = {
   loading: {
     loading: boolean;
   };
+  slotHeight: number;
   user: {};
 };
 export default store;

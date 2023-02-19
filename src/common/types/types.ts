@@ -18,3 +18,11 @@ export type boardStateType = {
 export type BoardResp = {
   title: string;
 };
+export interface slotsProps {
+  slotsData: {
+    slotHeight: number;
+    prevId: number;
+    currentCard: number;
+    last: number;
+  };
+}

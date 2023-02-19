@@ -11,19 +11,22 @@ import Swal from 'sweetalert2';
 export default function List(props: { board_id: string; list_id: number; title: string; cards: ICard[] }) {
   const CardList = props.cards.map((key) => {
     return (
-      <Card
-        position={key.position}
-        board_id={props.board_id}
-        list_id={props.list_id}
-        key={key.id}
-        id={key.id}
-        title={key.title}
-      />
+      <div key={key.id} className="card-box" id={`card_box_${key.id}`}>
+        <Card
+          position={key.position}
+          board_id={props.board_id}
+          list_id={props.list_id}
+          key={key.id}
+          id={key.id}
+          title={key.title}
+        />
+        <div id={`slot_${key.id}`} className="slot-style"></div>
+      </div>
     );
   });
   const initialStatePos = () => {
     if (CardList.length !== 0) {
-      return CardList[CardList.length - 1].props.position;
+      return CardList[CardList.length - 1].props.children[0].props.position;
     } else {
       return 0;
     }
@@ -129,7 +132,9 @@ export default function List(props: { board_id: string; list_id: number; title: 
         ) : (
           <h2 onClick={() => setShowInputListName(true)}>{listName}</h2>
         )}
-        <div className="cards">{CardList}</div>
+        <div className="cards" id={props.list_id.toString()}>
+          {CardList}
+        </div>
         <BsThreeDots onClick={() => setListMenu(!listMenu)} className="menu-dots" />
         {listMenu && (
           <div className="list-menu">

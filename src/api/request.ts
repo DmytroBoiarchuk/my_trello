@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { api } from '../common/constants';
-import { setLoading } from '../store/modules/loading/actiong';
+import { setLoading } from '../store/modules/loading/actions';
 import Swal from 'sweetalert2';
 
 //123

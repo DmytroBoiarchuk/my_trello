@@ -1,11 +1,20 @@
-import React, { useState } from 'react';
+import React, { ReactHTML, SyntheticEvent, useEffect, useRef, useState } from 'react';
 import { FaPencilAlt } from 'react-icons/fa';
 import { deleteCard, renameCard } from '../../../../store/modules/board/actions';
 import './card.scss';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { validate } from '../../../../common/functions/validate';
 import useOutsideAlerter from '../../../../common/Hooks/useOutsideAlerter';
 import Swal from 'sweetalert2';
+import { dragEnd, dragStarted, dragEnter, dragOver, dragLeave } from '../../../../common/functions/dnd';
+import {
+  deletePrevId,
+  putHeight,
+  setCurrentCard,
+  setPrevId,
+  setLastSlot,
+} from '../../../../store/modules/slotHeihgt/actions';
+import { slotsProps } from '../../../../common/types/types';
 
 const Card = (props: { position: number; board_id: string; list_id: number; id: number; title: string }) => {
   const { ref, isShow, setIsShow } = useOutsideAlerter(false);
@@ -13,6 +22,11 @@ const Card = (props: { position: number; board_id: string; list_id: number; id: 
   const [CardValue, setCardValue] = useState(editCardValue);
   const [isWarning, setWarning] = useState(false);
   const dispatch = useDispatch();
+  const { slotsData } = useSelector(
+    (state: slotsProps): slotsProps => ({
+      slotsData: state.slotsData,
+    })
+  );
   const openEditCardWindow = () => {
     setIsShow(true);
   };
@@ -43,10 +57,36 @@ const Card = (props: { position: number; board_id: string; list_id: number; id: 
     });
     setWarning(false);
   }
+  const dragStartHandler = (e: React.DragEvent) => {
+    putHeight(e.currentTarget.scrollHeight);
+    dragStarted(e, props.id, CardValue, e.clientX, e.clientY);
+  };
+  const dragEndHandler = (e: React.DragEvent) => {
+    dragEnd(e, e.currentTarget.id, slotsData);
+  };
+  const dragEnterHandler = (e: React.DragEvent) => {
+    dragEnter(e, slotsData);
+  };
+  const dragOverHandler = (e: React.DragEvent) => {
+    dragOver(e, e.currentTarget.id);
+  };
+  const dragLeaveHandler = (e: React.DragEvent) => {
+    setPrevId(+e.currentTarget.id);
+    dragLeave(e, slotsData);
+  };
   return (
     <>
       {!isShow ? (
-        <p className="card-style">
+        <p
+          id={props.id.toString()}
+          onDragEnd={(e) => dragEndHandler(e)}
+          onDragStart={(e) => dragStartHandler(e)}
+          draggable
+          onDragOver={(e) => dragOverHandler(e)}
+          onDragLeave={(e) => dragLeaveHandler(e)}
+          onDragEnter={(e) => dragEnterHandler(e)}
+          className="card-style"
+        >
           {CardValue}
           <FaPencilAlt
             onClick={() => {

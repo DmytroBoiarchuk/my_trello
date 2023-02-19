@@ -1,4 +1,10 @@
+.card-box{
+  display: flex;
+  flex-direction: column;
+  margin: 0 0 5px 0
+}
 .card-style{
+  min-width: 275px;
   box-sizing: border-box;
   min-height: 25px;
   font-weight: 400;
@@ -10,17 +16,33 @@
   border-radius: 4px;
   max-width: 275px;
   align-items:  center;
-  margin:  5px 0 5px 0;
+  margin: 0;
   white-space: normal;
   padding: 7px 5px 9px 10px;
   overflow: hidden;
   cursor: pointer;
 }
+.draggable-img{
+  opacity: 0.9999999;
+  background-color: #cbcfd2;
+  font-size: 20px;
+  border-radius: 4px;
+  min-width: 257px;
+  padding: 7px 5px 9px 10px;
+}
+
+.slot-style{
+  box-shadow:  inset  1px 2px 3px black;
+  max-width: 275px;
+  background-color: #dfe5e5;
+  border-radius: 8px;
+}
+
 .card-style:hover{
   .edit-card{
     visibility: visible;
   }
-  background-color: #e1e5e7;
+  background-color: #a7b2b7;
 }
 .card-style::-webkit-scrollbar {
   width: 10px;
@@ -40,7 +62,7 @@
   top: 3px;
   cursor: pointer;
   border-radius: 3px;
-  background-color: #e1e5e7;
+  background-color: #a7b2b7;
   visibility: hidden;
   margin-top: 5px;
 }
