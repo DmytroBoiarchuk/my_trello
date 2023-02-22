@@ -20,13 +20,13 @@ export default function List(props: { board_id: string; list_id: number; title: 
           id={key.id}
           title={key.title}
         />
-        <div id={`slot_${key.id}`} className="slot-style"></div>
       </div>
+      // <div id={`slot_${key.id}`} className="slot-style"></div>
     );
   });
   const initialStatePos = () => {
     if (CardList.length !== 0) {
-      return CardList[CardList.length - 1].props.children[0].props.position;
+      return CardList[CardList.length - 1].props.children.props.position;
     } else {
       return 0;
     }
@@ -119,7 +119,7 @@ export default function List(props: { board_id: string; list_id: number; title: 
   }
   return (
     <>
-      <div className="list-container">
+      <div draggable={false} className="list-container">
         {showInputListName ? (
           <input
             maxLength={15}

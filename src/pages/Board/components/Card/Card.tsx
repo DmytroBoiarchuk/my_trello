@@ -1,4 +1,4 @@
-import React, { ReactHTML, SyntheticEvent, useEffect, useRef, useState } from 'react';
+import React, { useState } from 'react';
 import { FaPencilAlt } from 'react-icons/fa';
 import { deleteCard, renameCard } from '../../../../store/modules/board/actions';
 import './card.scss';
@@ -65,10 +65,10 @@ const Card = (props: { position: number; board_id: string; list_id: number; id: 
     dragEnd(e, e.currentTarget.id, slotsData);
   };
   const dragEnterHandler = (e: React.DragEvent) => {
-    dragEnter(e, slotsData);
+    dragEnter(e, slotsData, props.position);
   };
   const dragOverHandler = (e: React.DragEvent) => {
-    dragOver(e, e.currentTarget.id);
+    dragOver(e, slotsData, props.list_id, e.currentTarget.id);
   };
   const dragLeaveHandler = (e: React.DragEvent) => {
     setPrevId(+e.currentTarget.id);

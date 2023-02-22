@@ -1,5 +1,4 @@
 .card-box{
-  display: flex;
   flex-direction: column;
   margin: 0 0 5px 0
 }
@@ -22,6 +21,7 @@
   overflow: hidden;
   cursor: pointer;
 }
+
 .draggable-img{
   opacity: 0.9999999;
   background-color: #cbcfd2;
