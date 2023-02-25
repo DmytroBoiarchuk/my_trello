@@ -1,7 +1,14 @@
 import React from 'react';
 import { insertAfter } from './simple.function';
-export const dragStarted = (e: React.DragEvent, id: number, title: string, touchX: number, touchY: number) => {
-  e.dataTransfer.effectAllowed = 'all';
+import { setSlotPos } from '../../store/modules/slotHeihgt/actions';
+export const dragStarted = (
+  e: React.DragEvent<HTMLDivElement>,
+  id: number,
+  title: string,
+  touchX: number,
+  touchY: number,
+  slotsData: { slotHeight: number; prevId: number; currentCard: number; last: number }
+) => {
   let touchCord = findTouchPoint(touchX, touchY, e);
   const draggableImage = document.createElement('div');
   draggableImage.classList.add('draggable-img');
@@ -21,24 +28,37 @@ const findTouchPoint = (touchX: number, touchY: number, e: React.DragEvent) => {
 };
 
 export const dragEnd = (
-  e: React.DragEvent,
+  e: React.DragEvent<HTMLDivElement>,
   id: string,
   slotsData: { slotHeight: number; prevId: number; currentCard: number; last: number }
 ) => {
   const card = document.getElementById(id.toString());
   const box = document.getElementById(`card_box_${id}`);
   if (card?.lastChild !== null) card?.removeChild(card.lastChild);
-  box!.style.display = 'flex';
+  box!.style.display = 'block';
+  const lastSlot = document.getElementById(`slot_${slotsData.prevId}`) as Node;
+  if (lastSlot !== null) lastSlot.parentNode?.removeChild(lastSlot);
   // if (slotsData.prevId !== 0) {
   //   const prevSlot = document.getElementById(`slot_${slotsData.prevId}`);
   //   prevSlot!.style.height = '0';
   // }
 };
 export const dragEnter = (
-  e: React.DragEvent,
-  slotsData: { slotHeight: number; prevId: number; currentCard: number; last: number },
-  position: number
+  e: React.DragEvent<HTMLDivElement>,
+  slotsData: { slotHeight: number; prevId: number; currentCard: number; last: number; slotPos: number },
+  position: number,
+  list_id: number
 ) => {
+  if (
+    slotsData.prevId !== 0 &&
+    slotsData.prevId.toString() !== e.currentTarget.id &&
+    position !== slotsData.slotPos &&
+    position - slotsData.slotPos !== 1
+  ) {
+    document
+      .getElementById(`slot_${slotsData.prevId}`)
+      ?.parentNode?.removeChild(document.getElementById(`slot_${slotsData.prevId}`) as Node);
+  }
   const slot = document.createElement('div');
   slot.classList.add('card-box');
   slot.classList.add('slot-style');
@@ -50,22 +70,22 @@ export const dragEnter = (
   // slot!.style.height = slotsData.slotHeight + 'px';
 };
 export const dragOver = (
-  e: React.DragEvent,
-  slotsData: { slotHeight: number; prevId: number; currentCard: number; last: number },
+  e: React.DragEvent<HTMLDivElement>,
+  slotsData: { slotHeight: number; prevId: number; currentCard: number; last: number; slotPos: number },
   list_id: number,
-  id: string
+  id: string,
+  position: number
 ) => {
   let midlOfCard = e.currentTarget.scrollHeight / 2 + e.currentTarget.getBoundingClientRect().y;
   const slot = document.createElement('div');
-  //console.log(e.currentTarget.parentNode!.parentNode!.children[0]);
-  //const nextCard;
   slot.classList.add('card-box');
   slot.classList.add('slot-style');
   slot!.id = `slot_${e.currentTarget.id}`;
   slot!.style.height = slotsData.slotHeight + 'px';
   const list = document.getElementById(list_id.toString());
-  if (e.clientY < midlOfCard) {
+  if (e.clientY < midlOfCard && position - slotsData.slotPos !== 1) {
     //top
+    setSlotPos(position - 1);
     if (
       document.getElementById(`slot_${e.currentTarget.id}`) &&
       document.getElementById(`slot_${e.currentTarget.id}`) === e.currentTarget.parentNode?.nextSibling
@@ -79,11 +99,16 @@ export const dragOver = (
   }
   if (e.clientY > midlOfCard) {
     //bot
+    setSlotPos(position);
     if (
       document.getElementById(`slot_${e.currentTarget.id}`) &&
       document.getElementById(`slot_${e.currentTarget.id}`) !== e.currentTarget.parentNode?.nextSibling
     ) {
       const removableNode = document.getElementById(`slot_${e.currentTarget.id}`);
+      list?.removeChild(removableNode as Node);
+    }
+    if (document.getElementById(`slot_${slotsData.prevId}`)) {
+      const removableNode = document.getElementById(`slot_${slotsData.prevId}`);
       list?.removeChild(removableNode as Node);
     }
     if (!document.getElementById(`slot_${e.currentTarget.id}`)) {
@@ -101,6 +126,6 @@ export const dragOver = (
   // }
 };
 export const dragLeave = (
-  e: React.DragEvent,
+  e: React.DragEvent<HTMLDivElement>,
   slotData: { slotHeight: number; prevId: number; currentCard: number; last: number }
 ) => {};

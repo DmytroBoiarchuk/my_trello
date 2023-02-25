@@ -24,5 +24,6 @@ export interface slotsProps {
     prevId: number;
     currentCard: number;
     last: number;
+    slotPos: number;
   };
 }

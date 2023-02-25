@@ -11,7 +11,7 @@ import Swal from 'sweetalert2';
 export default function List(props: { board_id: string; list_id: number; title: string; cards: ICard[] }) {
   const CardList = props.cards.map((key) => {
     return (
-      <div key={key.id} className="card-box" id={`card_box_${key.id}`}>
+      <div key={key.id} className="card-box slot-style" id={`card_box_${key.id}`}>
         <Card
           position={key.position}
           board_id={props.board_id}
@@ -21,20 +21,12 @@ export default function List(props: { board_id: string; list_id: number; title: 
           title={key.title}
         />
       </div>
-      // <div id={`slot_${key.id}`} className="slot-style"></div>
     );
   });
-  const initialStatePos = () => {
-    if (CardList.length !== 0) {
-      return CardList[CardList.length - 1].props.children.props.position;
-    } else {
-      return 0;
-    }
-  };
+
   const referenceForCartInput = useRef<HTMLTextAreaElement>(null);
   const { ref, isShow, setIsShow } = useOutsideAlerter(false);
   const [showInputListName, setShowInputListName] = useState(false);
-  const [cardPosition, setCardPosition] = useState(initialStatePos);
   const [listName, setListName] = useState(props.title);
   const [isWarning, setWarning] = useState(false);
   const [listMenu, setListMenu] = useState(false);
@@ -74,8 +66,7 @@ export default function List(props: { board_id: string; list_id: number; title: 
   const submitFunction = (e: React.FormEvent) => {
     e.preventDefault();
     if (!validate(cardInputValue)) {
-      addNewCard(dispatch, cardPosition, props.board_id, cardInputValue, props.list_id);
-      setCardPosition(cardPosition + 1);
+      addNewCard(dispatch, CardList.length, props.board_id, cardInputValue, props.list_id);
       setCardInputValue('');
       setIsShow(false);
     } else {
@@ -88,8 +79,7 @@ export default function List(props: { board_id: string; list_id: number; title: 
     if (e.key === 'Enter') {
       e.preventDefault();
       if (!validate(cardInputValue)) {
-        addNewCard(dispatch, cardPosition, props.board_id, cardInputValue, props.list_id);
-        setCardPosition(cardPosition + 1);
+        addNewCard(dispatch, CardList.length, props.board_id, cardInputValue, props.list_id);
         setIsShow(false);
         setCardInputValue('');
       } else {

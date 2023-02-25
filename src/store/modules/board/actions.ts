@@ -3,16 +3,58 @@ import { Dispatch } from 'redux';
 import instance from '../../../api/request';
 import { BoardResp } from '../../../common/types/types';
 import store from '../../store';
+import { IList } from '../../../common/interfaces/IList';
 interface ResponseBoard {
   title: string;
   lists: [{ id: number }];
 }
+const changePosAfterDeleting = async (
+  dispatch: Dispatch,
+  iList: IList,
+  card_id: number,
+  board_id: string,
+  list_id: number
+) => {
+  try {
+    let listData: { id: number; position: number; list_id: number }[] = [];
+    let deletedCardPos: number;
+    iList.cards.map((card) => {
+      if (card.id === card_id) {
+        deletedCardPos = card.position;
+        console.log(deletedCardPos);
+      }
+    });
+    iList.cards.map((card) => {
+      if (card.position < deletedCardPos) {
+        listData.push({ id: card.id, position: card.position, list_id: list_id });
+      }
+      if (card.position > deletedCardPos) {
+        listData.push({ id: card.id, position: card.position - 1, list_id: list_id });
+      }
+    });
+    console.log(listData);
+    await instance.put(`/board/${board_id}/card`, listData);
+  } catch (e) {
+    console.log(e);
+  }
+};
 
 export const clearStore = () => {
   store.dispatch({ type: 'DELETE_STORE_BOARD', payload: '' });
 };
-export const deleteCard = async (dispatch: Dispatch, board_id: string, card_id: number) => {
+export const deleteCard = async (
+  dispatch: Dispatch,
+  board_id: string,
+  card_id: number,
+  lists: IList[],
+  list_id: number
+) => {
   try {
+    for (let i = 0; i < lists.length; i++) {
+      if (lists[i].id === list_id) {
+        changePosAfterDeleting(dispatch, lists[i], card_id, board_id, list_id);
+      }
+    }
     await instance.delete(`/board/${board_id}/card/${card_id}`);
     await getBoard(dispatch, board_id);
   } catch (e) {

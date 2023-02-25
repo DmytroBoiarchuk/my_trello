@@ -14,7 +14,8 @@ import {
   setPrevId,
   setLastSlot,
 } from '../../../../store/modules/slotHeihgt/actions';
-import { slotsProps } from '../../../../common/types/types';
+import { boardType, slotsProps } from '../../../../common/types/types';
+import { BoardProps } from '../../../../common/interfaces/IBoard';
 
 const Card = (props: { position: number; board_id: string; list_id: number; id: number; title: string }) => {
   const { ref, isShow, setIsShow } = useOutsideAlerter(false);
@@ -25,6 +26,11 @@ const Card = (props: { position: number; board_id: string; list_id: number; id: 
   const { slotsData } = useSelector(
     (state: slotsProps): slotsProps => ({
       slotsData: state.slotsData,
+    })
+  );
+  const { board } = useSelector(
+    (state: BoardProps): BoardProps => ({
+      board: state.board,
     })
   );
   const openEditCardWindow = () => {
@@ -44,7 +50,7 @@ const Card = (props: { position: number; board_id: string; list_id: number; id: 
   };
   const editCardButtonDeleteClicked = (e: React.FormEvent) => {
     e.preventDefault();
-    deleteCard(dispatch, props.board_id, props.id);
+    deleteCard(dispatch, props.board_id, props.id, board.lists, props.list_id);
     setIsShow(false);
   };
   if (isWarning) {
@@ -57,20 +63,20 @@ const Card = (props: { position: number; board_id: string; list_id: number; id: 
     });
     setWarning(false);
   }
-  const dragStartHandler = (e: React.DragEvent) => {
+  const dragStartHandler = (e: React.DragEvent<HTMLDivElement>) => {
     putHeight(e.currentTarget.scrollHeight);
-    dragStarted(e, props.id, CardValue, e.clientX, e.clientY);
+    dragStarted(e, props.id, CardValue, e.clientX, e.clientY, slotsData);
   };
-  const dragEndHandler = (e: React.DragEvent) => {
+  const dragEndHandler = (e: React.DragEvent<HTMLDivElement>) => {
     dragEnd(e, e.currentTarget.id, slotsData);
   };
-  const dragEnterHandler = (e: React.DragEvent) => {
-    dragEnter(e, slotsData, props.position);
+  const dragEnterHandler = (e: React.DragEvent<HTMLDivElement>) => {
+    dragEnter(e, slotsData, props.position, props.list_id);
   };
-  const dragOverHandler = (e: React.DragEvent) => {
-    dragOver(e, slotsData, props.list_id, e.currentTarget.id);
+  const dragOverHandler = (e: React.DragEvent<HTMLDivElement>) => {
+    dragOver(e, slotsData, props.list_id, e.currentTarget.id, props.position);
   };
-  const dragLeaveHandler = (e: React.DragEvent) => {
+  const dragLeaveHandler = (e: React.DragEvent<HTMLDivElement>) => {
     setPrevId(+e.currentTarget.id);
     dragLeave(e, slotsData);
   };

@@ -15,3 +15,6 @@ export const setCurrentCard = (id: number) => {
 export const setLastSlot = (id: number) => {
   store.dispatch({ type: 'SET_LAST_SLOT', payload: id });
 };
+export const setSlotPos = (pos: number) => {
+  store.dispatch({ type: 'SET_SLOT_POS', payload: pos });
+};
