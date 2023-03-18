@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { FaPencilAlt } from 'react-icons/fa';
 import { deleteCard, renameCard } from '../../../../store/modules/board/actions';
 import './card.scss';
