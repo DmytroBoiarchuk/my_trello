@@ -16,7 +16,7 @@ import {
 } from '../../../../store/modules/slotData/actions';
 import { slotsProps } from '../../../../common/types/types';
 import { BoardProps } from '../../../../common/interfaces/IBoard';
-
+//
 const Card = (props: { position: number; board_id: string; list_id: number; id: number; title: string }) => {
   const { ref, isShow, setIsShow } = useOutsideAlerter(false);
   const [editCardValue, setEditCardValue] = useState(props.title);
