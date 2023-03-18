@@ -5,6 +5,7 @@ import { IList } from '../interfaces/IList';
 import { IBoard } from '../interfaces/IBoard';
 import { replaceCard } from '../../store/modules/board/actions';
 import { AnyAction, Dispatch } from 'redux';
+import { ICard } from '../interfaces/ICard';
 export const dragStarted = (
   e: React.DragEvent<HTMLDivElement>,
   id: number,
@@ -106,23 +107,33 @@ export const dropHandler = (
       currentList = currentListArr[i];
     }
   }
-  const neededPosArr = currentList?.cards.map((card) => {
-    if (e.target.nextSibling === null) {
-      return currentList?.cards.length;
-    }
-    if (card.id === +e.target.nextSibling.id.slice(9)) {
-      return card.position;
-    }
-  });
-  console.log(neededPosArr);
   let neededPos;
-  if (neededPosArr !== undefined) {
-    if (neededPosArr.length === 0) {
-      neededPos = 0;
+
+  if (e.target.id.slice(0, 4) === 'slot') {
+    const neededPosArr = currentList?.cards.map((card) => {
+      if (e.target.nextSibling === null) {
+        return currentList?.cards.length;
+      }
+      if (card.id === +e.target.nextSibling.id.slice(9)) {
+        return card.position;
+      }
+    });
+
+    if (neededPosArr !== undefined) {
+      if (neededPosArr.length === 0) {
+        neededPos = 0;
+      }
+      for (let i = 0; i < neededPosArr.length; i++) {
+        if (neededPosArr[i] !== undefined) {
+          neededPos = neededPosArr[i];
+        }
+      }
     }
-    for (let i = 0; i < neededPosArr.length; i++) {
-      if (neededPosArr[i] !== undefined) {
-        neededPos = neededPosArr[i];
+  } else {
+    let arr = e.target.parentNode.parentNode.children;
+    for (let i = 0; i < arr.length; i++) {
+      if (arr[i].id.slice(0, 4) === 'slot') {
+        neededPos = i;
       }
     }
   }
