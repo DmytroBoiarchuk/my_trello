@@ -2,12 +2,24 @@ const initialState = {
   slotHeight: 0,
   prevId: 0,
   currentCard: 0,
-  last: 0,
-  slotPos: 0,
+  draggedCardList: 0,
+  slotPos: -2,
+  lastEmptyList: 0,
+  draggedCardPos: null,
 };
 
 export default function reducer(state = initialState, action: { type: string; payload?: any }) {
   switch (action.type) {
+    case 'SET_DRAGGED_CARD_POS':
+      return {
+        ...state,
+        draggedCardPos: action.payload,
+      };
+    case 'SET_LAST_EMPTY_LIST':
+      return {
+        ...state,
+        lastEmptyList: action.payload,
+      };
     case 'SET_SLOT_POS':
       return {
         ...state,
@@ -33,10 +45,10 @@ export default function reducer(state = initialState, action: { type: string; pa
         ...state,
         prevId: 0,
       };
-    case 'SET_LAST_SLOT':
+    case 'SET_DRAGGED_CARD_LIST':
       return {
         ...state,
-        last: action.payload,
+        draggedCardList: action.payload,
       };
     default: {
       return { ...state };

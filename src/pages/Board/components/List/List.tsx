@@ -1,17 +1,21 @@
 import { ICard } from '../../../../common/interfaces/ICard';
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { BsThreeDots } from 'react-icons/bs';
 import Card from '../Card/Card';
 import { renameList, deleteListFetch, addNewCard } from '../../../../store/modules/board/actions';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { validate } from '../../../../common/functions/validate';
 import useOutsideAlerter from '../../../../common/Hooks/useOutsideAlerter';
 import Swal from 'sweetalert2';
+import { slotsProps } from '../../../../common/types/types';
+import { setLastEmptyList } from '../../../../store/modules/slotData/actions';
+import { dropHandler } from '../../../../common/functions/dnd';
+import { BoardProps } from '../../../../common/interfaces/IBoard';
 
 export default function List(props: { board_id: string; list_id: number; title: string; cards: ICard[] }) {
   const CardList = props.cards.map((key) => {
     return (
-      <div key={key.id} className="card-box slot-style" id={`card_box_${key.id}`}>
+      <div key={key.id} className="card-box" id={`card_box_${key.id}`}>
         <Card
           position={key.position}
           board_id={props.board_id}
@@ -24,6 +28,16 @@ export default function List(props: { board_id: string; list_id: number; title: 
     );
   });
 
+  const { slotsData } = useSelector(
+    (state: slotsProps): slotsProps => ({
+      slotsData: state.slotsData,
+    })
+  );
+  const { board } = useSelector(
+    (state: BoardProps): BoardProps => ({
+      board: state.board,
+    })
+  );
   const referenceForCartInput = useRef<HTMLTextAreaElement>(null);
   const { ref, isShow, setIsShow } = useOutsideAlerter(false);
   const [showInputListName, setShowInputListName] = useState(false);
@@ -107,9 +121,88 @@ export default function List(props: { board_id: string; list_id: number; title: 
     });
     setWarning(false);
   }
+  let slot = document.createElement('div');
+
+  const overEmptyList = () => {
+    setLastEmptyList(props.list_id);
+    const slots = document.querySelectorAll('.slot-style');
+    slots.forEach((slot) => {
+      if (slot.id !== `slot_in_empty_list_${props.list_id}`) slot.parentNode!.removeChild(slot);
+    });
+    if (!document.getElementById(`slot_in_empty_list_${props.list_id}`)) {
+      if (
+        document.getElementById(`slot_in_empty_list_${slotsData.lastEmptyList}`) &&
+        slotsData.lastEmptyList !== props.list_id
+      ) {
+        document
+          .getElementById(`slot_in_empty_list_${slotsData.lastEmptyList}`)!
+          .parentNode!.removeChild(document.getElementById(`slot_in_empty_list_${slotsData.lastEmptyList}`) as Node);
+      }
+      document.getElementById(`list_container_${props.list_id}`)!.children[1].appendChild(slot);
+    }
+  };
+  useEffect(() => {
+    slot.classList.add('slot-style');
+    slot.style.height = slotsData.slotHeight + 'px';
+    slot.id = `slot_in_empty_list_${props.list_id}`;
+    slot.addEventListener('dragover', (e) => {
+      e.preventDefault();
+    });
+    slot.addEventListener('drop', (e) =>
+      dropHandler(
+        e,
+        props.list_id,
+        slotsData.currentCard,
+        board,
+        props.board_id,
+        dispatch,
+        slotsData.draggedCardList,
+        slotsData.draggedCardPos
+      )
+    );
+    if (CardList.length === 0 && slotsData.slotHeight !== 0) {
+      document.getElementById(`list_container_${props.list_id}`)?.addEventListener('dragover', overEmptyList);
+    }
+    if (CardList.length > 0) {
+      document.getElementById(`list_container_${props.list_id}`)?.removeEventListener('dragover', overEmptyList);
+      slot.removeEventListener('dragover', (e) => {
+        e.preventDefault();
+      });
+      slot.removeEventListener('drop', (e) =>
+        dropHandler(
+          e,
+          props.list_id,
+          slotsData.currentCard,
+          board,
+          props.board_id,
+          dispatch,
+          slotsData.draggedCardList,
+          slotsData.draggedCardPos
+        )
+      );
+    }
+    return () => {
+      document.getElementById(`list_container_${props.list_id}`)?.removeEventListener('dragover', overEmptyList);
+      slot.removeEventListener('dragover', (e) => {
+        e.preventDefault();
+      });
+      slot.removeEventListener('drop', (e) =>
+        dropHandler(
+          e,
+          props.list_id,
+          slotsData.currentCard,
+          board,
+          props.board_id,
+          dispatch,
+          slotsData.draggedCardList,
+          slotsData.draggedCardPos
+        )
+      );
+    };
+  }, [slotsData.slotHeight, CardList.length, document.querySelectorAll(`.slot-style`)]);
   return (
     <>
-      <div draggable={false} className="list-container">
+      <div id={`list_container_${props.list_id}`} className="list-container">
         {showInputListName ? (
           <input
             maxLength={15}

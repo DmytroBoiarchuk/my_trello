@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { FaPencilAlt } from 'react-icons/fa';
 import { deleteCard, renameCard } from '../../../../store/modules/board/actions';
 import './card.scss';
@@ -6,15 +6,15 @@ import { useDispatch, useSelector } from 'react-redux';
 import { validate } from '../../../../common/functions/validate';
 import useOutsideAlerter from '../../../../common/Hooks/useOutsideAlerter';
 import Swal from 'sweetalert2';
-import { dragEnd, dragStarted, dragEnter, dragOver, dragLeave } from '../../../../common/functions/dnd';
+import { dragEnd, dragStarted, dragEnter, dragOver, drop } from '../../../../common/functions/dnd';
 import {
-  deletePrevId,
   putHeight,
   setCurrentCard,
+  setDraggedCardList,
+  setDraggedCardPos,
   setPrevId,
-  setLastSlot,
-} from '../../../../store/modules/slotHeihgt/actions';
-import { boardType, slotsProps } from '../../../../common/types/types';
+} from '../../../../store/modules/slotData/actions';
+import { slotsProps } from '../../../../common/types/types';
 import { BoardProps } from '../../../../common/interfaces/IBoard';
 
 const Card = (props: { position: number; board_id: string; list_id: number; id: number; title: string }) => {
@@ -33,6 +33,7 @@ const Card = (props: { position: number; board_id: string; list_id: number; id: 
       board: state.board,
     })
   );
+
   const openEditCardWindow = () => {
     setIsShow(true);
   };
@@ -65,20 +66,31 @@ const Card = (props: { position: number; board_id: string; list_id: number; id: 
   }
   const dragStartHandler = (e: React.DragEvent<HTMLDivElement>) => {
     putHeight(e.currentTarget.scrollHeight);
-    dragStarted(e, props.id, CardValue, e.clientX, e.clientY, slotsData);
+    setCurrentCard(+e.currentTarget.id);
+    setDraggedCardList(props.list_id);
+    setDraggedCardPos(props.position);
+    dragStarted(e, props.id, CardValue, e.clientX, e.clientY);
   };
   const dragEndHandler = (e: React.DragEvent<HTMLDivElement>) => {
-    dragEnd(e, e.currentTarget.id, slotsData);
+    dragEnd(e, e.currentTarget.id);
   };
   const dragEnterHandler = (e: React.DragEvent<HTMLDivElement>) => {
     dragEnter(e, slotsData, props.position, props.list_id);
   };
   const dragOverHandler = (e: React.DragEvent<HTMLDivElement>) => {
-    dragOver(e, slotsData, props.list_id, e.currentTarget.id, props.position);
+    dragOver(e, slotsData, props.list_id, e.currentTarget.id, props.position, board, props.board_id, dispatch);
   };
   const dragLeaveHandler = (e: React.DragEvent<HTMLDivElement>) => {
     setPrevId(+e.currentTarget.id);
-    dragLeave(e, slotsData);
+  };
+  const onDragHandler = () => {
+    let slots: NodeList = document.querySelectorAll('.slot-style');
+    if (slots.length > 1) {
+      slots[0].parentNode?.removeChild(slots[0]);
+    }
+  };
+  const dropHandler = (e: React.DragEvent<HTMLDivElement>) => {
+    drop(e, slotsData, props.list_id, props.position, board, props.board_id, dispatch);
   };
   return (
     <>
@@ -88,9 +100,11 @@ const Card = (props: { position: number; board_id: string; list_id: number; id: 
           onDragEnd={(e) => dragEndHandler(e)}
           onDragStart={(e) => dragStartHandler(e)}
           draggable
+          onDrag={() => onDragHandler()}
           onDragOver={(e) => dragOverHandler(e)}
           onDragLeave={(e) => dragLeaveHandler(e)}
           onDragEnter={(e) => dragEnterHandler(e)}
+          onDrop={(e) => dropHandler(e)}
           className="card-style"
         >
           {CardValue}

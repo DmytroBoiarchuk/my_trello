@@ -12,9 +12,15 @@ export const deletePrevId = () => {
 export const setCurrentCard = (id: number) => {
   store.dispatch({ type: 'SET_CURRENT_CARD', payload: id });
 };
-export const setLastSlot = (id: number) => {
-  store.dispatch({ type: 'SET_LAST_SLOT', payload: id });
+export const setDraggedCardList = (id: number) => {
+  store.dispatch({ type: 'SET_DRAGGED_CARD_LIST', payload: id });
 };
 export const setSlotPos = (pos: number) => {
   store.dispatch({ type: 'SET_SLOT_POS', payload: pos });
+};
+export const setLastEmptyList = (id: number) => {
+  store.dispatch({ type: 'SET_LAST_EMPTY_LIST', payload: id });
+};
+export const setDraggedCardPos = (pos: number) => {
+  store.dispatch({ type: 'SET_DRAGGED_CARD_POS', payload: pos });
 };

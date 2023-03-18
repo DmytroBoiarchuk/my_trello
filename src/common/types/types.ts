@@ -23,7 +23,9 @@ export interface slotsProps {
     slotHeight: number;
     prevId: number;
     currentCard: number;
-    last: number;
+    draggedCardList: number;
     slotPos: number;
+    lastEmptyList: number;
+    draggedCardPos: number;
   };
 }
