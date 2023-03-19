@@ -2,50 +2,22 @@ import React from 'react';
 import { insertAfter } from './simple.function';
 import { setSlotPos } from '../../store/modules/slotData/actions';
 import { IList } from '../interfaces/IList';
-import { IBoard } from '../interfaces/IBoard';
 import { replaceCard } from '../../store/modules/board/actions';
 import { AnyAction, Dispatch } from 'redux';
 import { ICard } from '../interfaces/ICard';
-export const dragStarted = (
-  e: React.DragEvent<HTMLDivElement>,
-  id: number,
-  title: string,
-  touchX: number,
-  touchY: number
-) => {
-  const card = document.getElementById(`${id}`);
+export const dragStarted = (e: React.DragEvent<HTMLDivElement>, id: number) => {
   const box = document.getElementById(`card_box_${id}`);
 
   setTimeout(() => {
     box!.style.display = 'none';
   });
-  // let touchCord = findTouchPoint(touchX, touchY, e);
-  // const draggableImage = document.createElement('div');
-  // draggableImage.classList.add('draggable-img');
-  // draggableImage.innerHTML = title;
-  // const card = document.getElementById(id.toString());
-  // const box = document.getElementById(`card_box_${id}`);
-  // card?.appendChild(draggableImage);
-  // e.dataTransfer.setDragImage(draggableImage, touchCord[0], touchCord[1]);
-  // setTimeout(() => {
-  //   box!.style.display = 'none';
-  // }, 0);
-};
-const findTouchPoint = (touchX: number, touchY: number, e: React.DragEvent) => {
-  let pointX = touchX - e.currentTarget.getBoundingClientRect().x;
-  let pointY = touchY - e.currentTarget.getBoundingClientRect().y;
-  return [pointX, pointY];
 };
 
 export const dragEnd = (e: React.DragEvent<HTMLDivElement>, id: string) => {
   setSlotPos(-2);
-  const card = document.getElementById(`${id}`);
   const box = document.getElementById(`card_box_${id}`);
   box!.style.display = 'block';
-  // const card = document.getElementById(id.toString());
-  // const box = document.getElementById(`card_box_${id}`);
-  // if (card?.lastChild !== null) card?.removeChild(card.lastChild);
-  // box!.style.display = 'block';
+
   const slots = document.querySelectorAll('.slot-style');
   slots.forEach((slot) => {
     slot.parentNode!.removeChild(slot);
@@ -94,7 +66,8 @@ export const dropHandler = (
   board_id: string,
   dispatch: Dispatch,
   draggedCardList: number,
-  draggedCardPos: number
+  draggedCardPos: number,
+  draggedCardTitle: string
 ) => {
   let currentListArr = board.lists.map((list) => {
     if (list.id === list_id) {
@@ -107,7 +80,7 @@ export const dropHandler = (
       currentList = currentListArr[i];
     }
   }
-  let neededPos;
+  let neededPos: number | undefined;
 
   if (e.target.id.slice(0, 4) === 'slot') {
     const neededPosArr = currentList?.cards.map((card) => {
@@ -148,6 +121,58 @@ export const dropHandler = (
       startList = startListArr[i];
     }
   }
+  let lists: { id: number; cards: ICard[] }[] = [];
+  board.lists.map((list) => {
+    if (list_id !== draggedCardList) {
+      if (list.id === list_id) {
+        let updated: ICard[] = [];
+        if (list.cards.length === 0) {
+          updated.push({ id: currentCard, position: 0, title: draggedCardTitle });
+        }
+        for (let i = 0; i < list.cards.length; i++) {
+          if (list.cards[i].position === neededPos) {
+            updated.push({ id: currentCard, position: neededPos, title: draggedCardTitle });
+          }
+          updated.push(list.cards[i]);
+          if (i + 1 === list.cards.length && neededPos === i + 1) {
+            updated.push({ id: currentCard, position: neededPos, title: draggedCardTitle });
+          }
+        }
+        lists.push({ id: list_id, cards: updated });
+      } else if (list.id === draggedCardList) {
+        let updated: ICard[] = [];
+        for (let i = 0; i < list.cards.length; i++) {
+          if (i !== draggedCardPos) {
+            console.log(i + ' ' + draggedCardPos);
+            updated.push(list.cards[i]);
+          }
+        }
+        lists.push({ id: draggedCardList, cards: updated });
+      } else {
+        lists.push(list);
+      }
+    } else {
+      if (list.id === list_id) {
+        let updated: ICard[] = [];
+        for (let i = 0; i < list.cards.length; i++) {
+          if (i !== neededPos && i !== draggedCardPos) {
+            updated.push(list.cards[i]);
+          } else if (i === neededPos) {
+            updated.push({ id: currentCard, position: neededPos, title: draggedCardTitle });
+            updated.push(list.cards[i]);
+          }
+        }
+        lists.push({ id: list_id, cards: updated });
+      } else {
+        lists.push(list);
+      }
+    }
+  });
+  const slots = document.querySelectorAll('.slot-style');
+  slots.forEach((slot) => {
+    slot.parentNode!.removeChild(slot);
+  });
+  dispatch({ type: 'UPDATE_BOARD_DND', payload: lists });
   replaceCard(
     board_id,
     neededPos,
@@ -170,6 +195,7 @@ export const dragOver = (
     slotPos: number;
     lastEmptyList: number;
     draggedCardPos: number;
+    draggedCardTitle: string;
   },
   list_id: number,
   id: string,
@@ -195,7 +221,8 @@ export const dragOver = (
       board_id,
       dispatch,
       slotsData.draggedCardList,
-      slotsData.draggedCardPos
+      slotsData.draggedCardPos,
+      slotsData.draggedCardTitle
     )
   );
   slot!.id = `slot_${e.currentTarget.id}`;
@@ -245,6 +272,7 @@ export const drop = (
     slotPos: number;
     lastEmptyList: number;
     draggedCardPos: number;
+    draggedCardTitle: string;
   },
   list_id: number,
   position: number,
@@ -260,6 +288,7 @@ export const drop = (
     board_id,
     dispatch,
     slotsData.draggedCardList,
-    slotsData.draggedCardPos
+    slotsData.draggedCardPos,
+    slotsData.draggedCardTitle
   );
 };

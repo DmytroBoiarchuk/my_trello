@@ -27,5 +27,6 @@ export interface slotsProps {
     slotPos: number;
     lastEmptyList: number;
     draggedCardPos: number;
+    draggedCardTitle: string;
   };
 }

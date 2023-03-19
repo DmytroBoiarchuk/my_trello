@@ -24,3 +24,6 @@ export const setLastEmptyList = (id: number) => {
 export const setDraggedCardPos = (pos: number) => {
   store.dispatch({ type: 'SET_DRAGGED_CARD_POS', payload: pos });
 };
+export const putTitle = (title: string) => {
+  store.dispatch({ type: 'SET_TITLE_CARD', payload: title });
+};

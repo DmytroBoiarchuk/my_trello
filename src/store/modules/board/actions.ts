@@ -57,6 +57,8 @@ export const replaceCard = async (
             }
           }
         }
+        // console.log(updated);
+        // store.dispatch({ type: 'UPDATE_BOARD_DND', payload: updated });
         await instance.put(`/board/${boardId}/card`, updated);
       } else {
         let position;
@@ -84,6 +86,8 @@ export const replaceCard = async (
             }
           });
         }
+        // console.log(updated);
+        // store.dispatch({ type: 'UPDATE_BOARD_DND', payload: updated });
         await instance.put(`/board/${boardId}/card`, updated);
       }
     }

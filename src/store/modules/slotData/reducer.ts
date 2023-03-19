@@ -6,10 +6,16 @@ const initialState = {
   slotPos: -2,
   lastEmptyList: 0,
   draggedCardPos: null,
+  draggedCardTitle: '',
 };
 
 export default function reducer(state = initialState, action: { type: string; payload?: any }) {
   switch (action.type) {
+    case 'SET_TITLE_CARD':
+      return {
+        ...state,
+        draggedCardTitle: action.payload,
+      };
     case 'SET_DRAGGED_CARD_POS':
       return {
         ...state,

@@ -8,6 +8,7 @@ import useOutsideAlerter from '../../../../common/Hooks/useOutsideAlerter';
 import Swal from 'sweetalert2';
 import { dragEnd, dragStarted, dragEnter, dragOver, drop } from '../../../../common/functions/dnd';
 import {
+  putTitle,
   putHeight,
   setCurrentCard,
   setDraggedCardList,
@@ -65,11 +66,12 @@ const Card = (props: { position: number; board_id: string; list_id: number; id: 
     setWarning(false);
   }
   const dragStartHandler = (e: React.DragEvent<HTMLDivElement>) => {
+    putTitle(CardValue);
     putHeight(e.currentTarget.scrollHeight);
     setCurrentCard(+e.currentTarget.id);
     setDraggedCardList(props.list_id);
     setDraggedCardPos(props.position);
-    dragStarted(e, props.id, CardValue, e.clientX, e.clientY);
+    dragStarted(e, props.id);
   };
   const dragEndHandler = (e: React.DragEvent<HTMLDivElement>) => {
     dragEnd(e, e.currentTarget.id);

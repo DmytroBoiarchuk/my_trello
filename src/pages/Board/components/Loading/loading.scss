@@ -8,13 +8,14 @@
   align-items: center;
 }
 .loading{
-  top: 50%;
-  left: 42%;
-  background-color: #409888;
-  border: 2px solid black;
+  position: absolute;
+  bottom: 5%;
+  left: 1%;
+  background-color: rgba(64, 102, 152, 0);
+  border: 0;
   border-radius: 3px;
-  width: 150px;
-  height: 50px;
+  width: 120px;
+  height: 35px;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;

@@ -157,7 +157,8 @@ export default function List(props: { board_id: string; list_id: number; title: 
         props.board_id,
         dispatch,
         slotsData.draggedCardList,
-        slotsData.draggedCardPos
+        slotsData.draggedCardPos,
+        slotsData.draggedCardTitle
       )
     );
     if (CardList.length === 0 && slotsData.slotHeight !== 0) {
@@ -177,7 +178,8 @@ export default function List(props: { board_id: string; list_id: number; title: 
           props.board_id,
           dispatch,
           slotsData.draggedCardList,
-          slotsData.draggedCardPos
+          slotsData.draggedCardPos,
+          slotsData.draggedCardTitle
         )
       );
     }
@@ -195,7 +197,8 @@ export default function List(props: { board_id: string; list_id: number; title: 
           props.board_id,
           dispatch,
           slotsData.draggedCardList,
-          slotsData.draggedCardPos
+          slotsData.draggedCardPos,
+          slotsData.draggedCardTitle
         )
       );
     };
