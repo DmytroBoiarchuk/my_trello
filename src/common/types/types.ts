@@ -1,15 +1,12 @@
-export type propsType = {
-  boards: { id: number; title: string }[];
-  getBoards: () => Promise<void>;
-};
-export type stateType = {
-  boards: [];
-};
+import { IBoard } from '../interfaces/IBoard';
+import store from '../../store/store';
+
 export type boardType = {
   id: number;
   title: string;
-  // lists: { id: number; title: string; cards: ICard[] }[];
 };
+export type RootState = ReturnType<typeof store.getState>;
+
 export type boardStateType = {
   id: number;
   title: string;
@@ -28,5 +25,13 @@ export interface slotsProps {
     lastEmptyList: number;
     draggedCardPos: number;
     draggedCardTitle: string;
+  };
+}
+export interface cardModalState {
+  cardModalData: {
+    card: {
+      id: number;
+    };
+    isOpen: boolean;
   };
 }

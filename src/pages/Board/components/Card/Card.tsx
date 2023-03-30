@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { FaPencilAlt } from 'react-icons/fa';
-import { deleteCard, renameCard } from '../../../../store/modules/board/actions';
+import { deleteCard, getBoard, getBoardTitle, renameCard } from '../../../../store/modules/board/actions';
 import './card.scss';
 import { useDispatch, useSelector } from 'react-redux';
 import { validate } from '../../../../common/functions/validate';
@@ -15,14 +15,34 @@ import {
   setDraggedCardPos,
   setPrevId,
 } from '../../../../store/modules/slotData/actions';
-import { slotsProps } from '../../../../common/types/types';
+import { cardModalState, slotsProps } from '../../../../common/types/types';
 import { BoardProps } from '../../../../common/interfaces/IBoard';
+import { Link, useNavigate, useParams } from 'react-router-dom';
+import { putCardData, setModalCardEditBig } from '../../../../store/modules/cardModal/actions';
+import CardEditModalBig from '../ModalCreating/CardEditModalBig';
 //
-const Card = (props: { position: number; board_id: string; list_id: number; id: number; title: string }) => {
+const Card = (props: {
+  list_title: string;
+  position: number;
+  board_id: string;
+  list_id: number;
+  id: number;
+  title: string;
+}) => {
+  let { card_id } = useParams();
+  useEffect(() => {
+    if (card_id) {
+      putCardData({ id: +card_id });
+      setModalCardEditBig(true);
+    } else {
+      setModalCardEditBig(false);
+    }
+  }, []);
   const { ref, isShow, setIsShow } = useOutsideAlerter(false);
   const [editCardValue, setEditCardValue] = useState(props.title);
   const [CardValue, setCardValue] = useState(editCardValue);
   const [isWarning, setWarning] = useState(false);
+  const navigate = useNavigate();
   const dispatch = useDispatch();
   const { slotsData } = useSelector(
     (state: slotsProps): slotsProps => ({
@@ -35,7 +55,8 @@ const Card = (props: { position: number; board_id: string; list_id: number; id: 
     })
   );
 
-  const openEditCardWindow = () => {
+  const openEditCardWindow = (e: React.MouseEvent<SVGElement>) => {
+    e.stopPropagation();
     setIsShow(true);
   };
   const editCardButtonSaveClicked = (e: React.FormEvent) => {
@@ -94,8 +115,28 @@ const Card = (props: { position: number; board_id: string; list_id: number; id: 
   const dropHandler = (e: React.DragEvent<HTMLDivElement>) => {
     drop(e, slotsData, props.list_id, props.position, board, props.board_id, dispatch);
   };
+  const onclickHandler = () => {
+    putCardData({ id: props.id });
+    setModalCardEditBig(true);
+    navigate(`/board/${props.board_id}/card/${props.id}`);
+  };
+  const { cardModalData } = useSelector(
+    (state: cardModalState): cardModalState => ({
+      cardModalData: state.cardModalData,
+    })
+  );
+
   return (
     <>
+      {cardModalData.isOpen && cardModalData.card.id === props.id && (
+        <CardEditModalBig
+          position={props.position}
+          list_id={props.list_id}
+          list_title={props.list_title}
+          title={CardValue}
+          setTitle={setCardValue}
+        />
+      )}
       {!isShow ? (
         <p
           id={props.id.toString()}
@@ -108,11 +149,12 @@ const Card = (props: { position: number; board_id: string; list_id: number; id: 
           onDragEnter={(e) => dragEnterHandler(e)}
           onDrop={(e) => dropHandler(e)}
           className="card-style"
+          onClick={() => setTimeout(() => onclickHandler())}
         >
           {CardValue}
           <FaPencilAlt
-            onClick={() => {
-              openEditCardWindow();
+            onClick={(e) => {
+              openEditCardWindow(e);
             }}
             className="edit-card"
           />

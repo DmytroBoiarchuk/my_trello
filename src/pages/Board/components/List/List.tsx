@@ -17,6 +17,7 @@ export default function List(props: { board_id: string; list_id: number; title: 
     return (
       <div key={key.id} className="card-box" id={`card_box_${key.id}`}>
         <Card
+          list_title={props.title}
           position={key.position}
           board_id={props.board_id}
           list_id={props.list_id}
@@ -216,7 +217,9 @@ export default function List(props: { board_id: string; list_id: number; title: 
             defaultValue={listName}
           ></input>
         ) : (
-          <h2 onClick={() => setShowInputListName(true)}>{listName}</h2>
+          <h2 className="list-container-header" onClick={() => setShowInputListName(true)}>
+            {listName}
+          </h2>
         )}
         <div className="cards" id={props.list_id.toString()}>
           {CardList}

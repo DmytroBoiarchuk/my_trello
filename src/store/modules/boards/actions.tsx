@@ -8,8 +8,8 @@ interface Response {
   boards: IBoard[];
 }
 
-export const getBoards = () => async (dispatch: Dispatch) => {
-  clearStore();
+export const getBoards = async (dispatch: Dispatch) => {
+  // clearStore();
   try {
     const { boards }: Response = await instance.get(api.baseURL + '/board');
     dispatch({ type: 'UPDATE_BOARDS', payload: boards });
@@ -21,7 +21,7 @@ export const getBoards = () => async (dispatch: Dispatch) => {
 export const createBoard = (title: string) => async (dispatch: Dispatch) => {
   try {
     await instance.post(api.baseURL + '/board', { title });
-    await store.dispatch(getBoards());
+    await getBoards(dispatch);
   } catch (e) {
     console.log(e);
     dispatch({ type: 'ERROR_ACTION_TYPE' });
@@ -30,7 +30,7 @@ export const createBoard = (title: string) => async (dispatch: Dispatch) => {
 export const deleteBoard = (id: number) => async (dispatch: Dispatch) => {
   try {
     await instance.delete(api.baseURL + '/board/' + id);
-    await store.dispatch(getBoards());
+    await getBoards(dispatch);
   } catch (e) {
     console.log(e);
     dispatch({ type: 'ERROR_ACTION_TYPE' });

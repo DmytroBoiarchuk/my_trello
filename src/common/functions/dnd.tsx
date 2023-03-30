@@ -5,6 +5,8 @@ import { IList } from '../interfaces/IList';
 import { replaceCard } from '../../store/modules/board/actions';
 import { AnyAction, Dispatch } from 'redux';
 import { ICard } from '../interfaces/ICard';
+import { logDOM } from '@testing-library/react';
+import Swal from 'sweetalert2';
 export const dragStarted = (e: React.DragEvent<HTMLDivElement>, id: number) => {
   const box = document.getElementById(`card_box_${id}`);
 
@@ -143,7 +145,6 @@ export const dropHandler = (
         let updated: ICard[] = [];
         for (let i = 0; i < list.cards.length; i++) {
           if (i !== draggedCardPos) {
-            console.log(i + ' ' + draggedCardPos);
             updated.push(list.cards[i]);
           }
         }
@@ -158,10 +159,13 @@ export const dropHandler = (
           if (i !== neededPos && i !== draggedCardPos) {
             updated.push(list.cards[i]);
           } else if (i === neededPos) {
-            updated.push({ id: currentCard, position: neededPos, title: draggedCardTitle });
+            if (neededPos !== draggedCardPos) {
+              updated.push({ id: currentCard, position: neededPos, title: draggedCardTitle });
+            }
             updated.push(list.cards[i]);
           }
         }
+        console.log(updated);
         lists.push({ id: list_id, cards: updated });
       } else {
         lists.push(list);

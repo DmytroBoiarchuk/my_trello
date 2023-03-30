@@ -235,8 +235,6 @@ export const changeBoardName = async (dispatch: Dispatch, id: string, NewTitle: 
   }
 };
 export const renameList = async (dispatch: Dispatch, board_id: string, List_id: number, NewTitle: string) => {
-  console.log(api.baseURL + '/board/' + board_id + '/list/' + List_id);
-
   await instance.put(api.baseURL + '/board/' + board_id + '/list/' + List_id, { title: NewTitle });
   await getBoard(dispatch, board_id);
 };

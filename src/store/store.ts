@@ -7,7 +7,9 @@ const store = configureStore({
   reducer: rootReducer,
 });
 export type RootState = {
-  boards: IBoard[];
+  boards: {
+    boards: IBoard[];
+  };
 
   board:
     | {

@@ -12,6 +12,14 @@ export interface BoardProps {
     lists: IList[];
   };
 }
+export interface BoardsProps {
+  boards: {
+    boards: IBoard[];
+  };
+}
+export interface ReturnType {
+  boards: IBoard[];
+}
 export interface CardsProps {
   board: {
     title: string;
