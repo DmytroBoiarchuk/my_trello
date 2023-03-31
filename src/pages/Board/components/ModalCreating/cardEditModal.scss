@@ -233,9 +233,10 @@ margin: 0;
   border-radius: 3px;
   cursor: pointer;
 }
-.chosen-column:hover,
+.chosen-column:hover
 .selection{
   background-color: #b0aeae;
+  cursor: pointer;
 }
 .chosen-column:hover {
   background-color: #b0aeae;

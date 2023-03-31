@@ -3,15 +3,43 @@ import './cardEditModal.scss';
 import { useNavigate, useParams } from 'react-router-dom';
 import { AiOutlinePlus } from 'react-icons/ai';
 import { validate } from '../../../../common/functions/validate';
-import { getBoard, renameCard } from '../../../../store/modules/board/actions';
+import { getBoard, getBoardForModal, renameCard } from '../../../../store/modules/board/actions';
 import { useDispatch, useSelector } from 'react-redux';
-import { BoardProps, BoardsProps, ReturnType } from '../../../../common/interfaces/IBoard';
+import { BoardProps, BoardsProps, IBoard, ReturnType } from '../../../../common/interfaces/IBoard';
 import { ICard } from '../../../../common/interfaces/ICard';
 import Swal from 'sweetalert2';
 import { setModalCardEditBig } from '../../../../store/modules/cardModal/actions';
 import useOutsideAlerter from '../../../../common/Hooks/useOutsideAlerter';
 import { getBoards } from '../../../../store/modules/boards/actions';
+import { IList } from '../../../../common/interfaces/IList';
 
+const createListOptions = (board: { title?: string; lists: IList[] }) => {
+  return board.lists.map((list: IList) => {
+    return (
+      <option key={list.id} value={list.id}>
+        {list.title}
+      </option>
+    );
+  });
+};
+
+const calcListPoses = (resp: { title?: string; lists: IList[] }, list_id: number) => {
+  let selectors_poses = [];
+  let list_poses = 0;
+  resp.lists.map((list) => {
+    if (list.id === list_id) {
+      list_poses = list.cards.length;
+    }
+  });
+  for (let i = 0; i < list_poses + 1; i++) {
+    selectors_poses.push(
+      <option key={i} value={i}>
+        {i}
+      </option>
+    );
+  }
+  return selectors_poses;
+};
 export default function CardEditModalBig(props: {
   position: number;
   list_id: number;
@@ -43,6 +71,9 @@ export default function CardEditModalBig(props: {
   const [CardName, setCardName] = useState(props.title);
   const [ListName, setListName] = useState(props.list_title);
   const [listID, setListID] = useState(props.list_id);
+  const [selectorsLists, setSelectorLists] = useState<any>([]);
+  const [selectorsPoses, setSelectorsPoses] = useState<any>([]);
+
   const descriptionRef = useRef<HTMLTextAreaElement>(null);
 
   const changeHandler = (e: React.KeyboardEvent) => {
@@ -121,32 +152,42 @@ export default function CardEditModalBig(props: {
     navigate(`/board/${board_id}`);
   };
   let selectors_board;
-  let selectors_lists;
-  let list_poses;
-  let selectors_poses = [];
+  let list_poses: number;
 
-  if (board) {
-    selectors_lists = board.lists.map((list) => {
-      if (list.id === props.list_id) {
-        list_poses = list.cards.length - 1;
-      }
-      return <option value={list.title}>{list.title}</option>;
-    });
-  }
-  if (list_poses) {
-    for (let i = 0; i <= list_poses; i++) {
-      selectors_poses.push(<option value={i}>{i}</option>);
-    }
-  }
+  useEffect(() => {
+    setSelectorLists(createListOptions(board));
+    setSelectorsPoses(calcListPoses(board, listID));
+  }, []);
+
   if (boards) {
     selectors_board = boards.map((board_1) => {
-      return <option value={board_1.title}>{board_1.title}</option>;
+      return (
+        <option key={board_1.id} value={board_1.id}>
+          {board_1.title}
+        </option>
+      );
     });
   }
   const onClickInListHandler = () => {
     setIsShow(true);
   };
-
+  const selectBoardHandler = (e: React.SyntheticEvent) => {
+    if (document.querySelectorAll('select')[0]) {
+      getBoardForModal(dispatch, document.querySelectorAll('select')[0].value).then((resp) => {
+        if (resp !== undefined) {
+          setSelectorLists(createListOptions(resp as IBoard));
+          setSelectorsPoses(calcListPoses(resp, createListOptions(resp as IBoard)[0].props.value));
+        }
+      });
+    }
+  };
+  const selectListHandler = (e: React.SyntheticEvent) => {
+    getBoardForModal(dispatch, document.querySelectorAll('select')[0].value).then((resp) => {
+      if (resp !== undefined) {
+        setSelectorsPoses(calcListPoses(resp, +document.querySelectorAll('select')[1].value));
+      }
+    });
+  };
   return (
     <div className="back-ground-modal-card" onClick={() => onBlurModalHandler()}>
       <div
@@ -183,21 +224,30 @@ export default function CardEditModalBig(props: {
               <p className="small-text">Select column</p>
               <div className="chosen-column board-modal">
                 <p className="small-text inside">Board</p>
-                <select defaultValue={board.title} id="selector_board" className="selection small-text custom-text">
+                <select
+                  onChange={(e) => selectBoardHandler(e)}
+                  defaultValue={board.title}
+                  id="selector_board"
+                  className="selection small-text custom-text"
+                >
                   {selectors_board}
                 </select>
               </div>
               <div className="chosen-columns-container">
                 <div className="chosen-column list-modal">
                   <p className="small-text inside">List</p>
-                  <select defaultValue={ListName} className="selection list-size small-text custom-text">
-                    {selectors_lists}
+                  <select
+                    onChange={(e) => selectListHandler(e)}
+                    defaultValue={ListName}
+                    className="selection list-size small-text custom-text"
+                  >
+                    {selectorsLists}
                   </select>
                 </div>
                 <div className="chosen-column position-modal">
                   <p className="small-text inside">Position</p>
                   <select defaultValue={props.position} className="selection pos-size small-text custom-text">
-                    {selectors_poses}
+                    {selectorsPoses}
                   </select>
                 </div>
               </div>

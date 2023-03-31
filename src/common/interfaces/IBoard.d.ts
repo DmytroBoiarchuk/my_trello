@@ -3,7 +3,7 @@ import { IList } from './IList';
 export interface IBoard {
   id: number;
   title: string;
-  lists?: IList[];
+  lists: IList[];
 }
 
 export interface BoardProps {

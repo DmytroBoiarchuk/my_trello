@@ -130,6 +130,7 @@ const Card = (props: {
     <>
       {cardModalData.isOpen && cardModalData.card.id === props.id && (
         <CardEditModalBig
+          key={props.id}
           position={props.position}
           list_id={props.list_id}
           list_title={props.list_title}

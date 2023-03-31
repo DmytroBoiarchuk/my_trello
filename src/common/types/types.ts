@@ -1,5 +1,6 @@
 import { IBoard } from '../interfaces/IBoard';
 import store from '../../store/store';
+import { IList } from '../interfaces/IList';
 
 export type boardType = {
   id: number;
@@ -10,7 +11,7 @@ export type RootState = ReturnType<typeof store.getState>;
 export type boardStateType = {
   id: number;
   title: string;
-  lists: [];
+  lists: IList[];
 };
 export type BoardResp = {
   title: string;

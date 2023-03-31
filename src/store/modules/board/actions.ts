@@ -7,7 +7,7 @@ import { IList } from '../../../common/interfaces/IList';
 import { ICard } from '../../../common/interfaces/ICard';
 interface ResponseBoard {
   title: string;
-  lists: [{ id: number }];
+  lists: IList[];
 }
 
 export const replaceCard = async (
@@ -196,6 +196,15 @@ export const getBoardTitle = async (dispatch: Dispatch, id: string) => {
     console.log(e);
     dispatch({ type: 'ERROR_ACTION_TYPE' });
     return '';
+  }
+};
+export const getBoardForModal = async (dispatch: Dispatch, id: string) => {
+  try {
+    const board: ResponseBoard = await instance.get(api.baseURL + '/board/' + id);
+    return board;
+  } catch (e) {
+    console.log(e);
+    dispatch({ type: 'ERROR_ACTION_TYPE' });
   }
 };
 export const getBoard = async (dispatch: Dispatch, id: string) => {
