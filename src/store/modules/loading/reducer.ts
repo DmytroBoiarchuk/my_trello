@@ -11,7 +11,7 @@ export default function reducer(state = initialState, action: { type: string; pa
         loading: action.payload,
       };
     default: {
-      return { ...state, ...action.payload };
+      return { ...state };
     }
   }
 }

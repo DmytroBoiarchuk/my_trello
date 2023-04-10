@@ -27,7 +27,6 @@
   background-color: #e1dbdb;
   width: 600px;
   overflow: hidden;
-  height: 1000px;
 }
 .card-name-editor{
   height: 10px;
@@ -49,9 +48,8 @@ font-weight: 700;
   color: black;
   margin: 23px 9px 7px 23px;
   box-sizing: border-box;
-  word-break: break-all;
   white-space: normal;
-
+  word-break: break-word;
 }
 .in-list{
   font-size: 20px;
@@ -127,6 +125,11 @@ font-weight: 700;
   box-shadow: 0 0 0;
   background-color: #858585;
 }
+.card-big-modal-button-disabled{
+  margin: 6px 6px 4px 4px;
+  box-shadow: 0 0 0;
+  background-color: #858585;
+}
 .description-container{
   margin-top: 20px;
   display: flex;
@@ -144,29 +147,21 @@ font-weight: 700;
   margin: 5px 15px 5px 25px;
   font-family: "Goudy Old Style", monospace;
 }
-.description-detailed-after{
-  display: block;
-  width: 90%;
-  margin: 5px 0 0 20px;
-  resize: none;
+
+.description-detailed-before {
   border: 0;
   background-color: #e1dbdb;
-  font-family: "Goudy Old Style", monospace;
-font-size: 20px;
-}
-.description-detailed-before {
-  border: 1px solid black;
-  background-color: #e8e4e4;
   display: block;
   width: 90%;
-  margin: 5px 0 0 20px;
+  margin: 5px 0 40px 20px;
   resize: none;
   font-family: "Goudy Old Style", monospace;
   font-size: 20px;
   max-height: 500px;
 }
-.description-detailed-after:focus{
-  background-color: #e8e6e6;
+
+.description-detailed-before:focus{
+  background-color: white;
 }
 .description-detailed-before::-webkit-scrollbar {
   width: 10px;
@@ -302,4 +297,10 @@ margin: 0;
 .pos-size{
   width: 25px;
   padding-left: 6px;
+}
+.red-theme{
+  background-color: #a86868;
+}
+.red-theme:hover{
+  background-color: #985757;
 }

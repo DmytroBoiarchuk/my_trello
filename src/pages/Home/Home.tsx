@@ -30,11 +30,11 @@ export default function Home() {
   return (
     <>
       <NavBar />
-      <h1>My Boards</h1>
+      <h1 className="main-title">My Boards</h1>
       <div className="home-style">
         {boardArr}
         <button onClick={() => setModalIsOpen(true)} className="add-board-button">
-          + Add new Board
+          + Add New Board
         </button>
         {modalIsOpen && <Modal openCloseModal={() => setModalIsOpen(false)} />}
       </div>

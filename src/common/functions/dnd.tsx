@@ -165,7 +165,9 @@ export const dropHandler = (
             updated.push(list.cards[i]);
           }
         }
-        console.log(updated);
+        if (neededPos === list.cards.length) {
+          updated.push({ id: currentCard, position: neededPos, title: draggedCardTitle });
+        }
         lists.push({ id: list_id, cards: updated });
       } else {
         lists.push(list);
@@ -176,6 +178,7 @@ export const dropHandler = (
   slots.forEach((slot) => {
     slot.parentNode!.removeChild(slot);
   });
+  console.log(lists);
   dispatch({ type: 'UPDATE_BOARD_DND', payload: lists });
   replaceCard(
     board_id,

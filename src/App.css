@@ -11,9 +11,7 @@
 
 .App-header {
   background: url("../unnamed.jpg");
-  background-repeat: no-repeat;
-  background-size: cover;
-  background-position-x: center;
+  background-size: 50%;
   display: flex;
   justify-content: center;
   font-size: calc(10px + 2vmin);

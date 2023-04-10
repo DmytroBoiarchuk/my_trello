@@ -24,6 +24,7 @@ export default function List(props: { board_id: string; list_id: number; title: 
           key={key.id}
           id={key.id}
           title={key.title}
+          description={key.description}
         />
       </div>
     );
@@ -81,7 +82,7 @@ export default function List(props: { board_id: string; list_id: number; title: 
   const submitFunction = (e: React.FormEvent) => {
     e.preventDefault();
     if (!validate(cardInputValue)) {
-      addNewCard(dispatch, CardList.length, props.board_id, cardInputValue, props.list_id);
+      addNewCard(dispatch, CardList.length, props.board_id, cardInputValue, props.list_id, true);
       setCardInputValue('');
       setIsShow(false);
     } else {
@@ -94,7 +95,7 @@ export default function List(props: { board_id: string; list_id: number; title: 
     if (e.key === 'Enter') {
       e.preventDefault();
       if (!validate(cardInputValue)) {
-        addNewCard(dispatch, CardList.length, props.board_id, cardInputValue, props.list_id);
+        addNewCard(dispatch, CardList.length, props.board_id, cardInputValue, props.list_id, true);
         setIsShow(false);
         setCardInputValue('');
       } else {

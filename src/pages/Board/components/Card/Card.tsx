@@ -28,6 +28,7 @@ const Card = (props: {
   list_id: number;
   id: number;
   title: string;
+  description: string | undefined;
 }) => {
   let { card_id } = useParams();
   useEffect(() => {
@@ -136,6 +137,7 @@ const Card = (props: {
           list_title={props.list_title}
           title={CardValue}
           setTitle={setCardValue}
+          description={props.description}
         />
       )}
       {!isShow ? (
@@ -172,7 +174,7 @@ const Card = (props: {
             <button onClick={(e) => editCardButtonSaveClicked(e)} className="card-edit-button">
               Save
             </button>
-            <button onClick={(e) => editCardButtonDeleteClicked(e)} className="card-edit-button">
+            <button onClick={(e) => editCardButtonDeleteClicked(e)} className="red-onbutton">
               Delete
             </button>
           </div>

@@ -1,37 +1,44 @@
 .home-board-style{
   display: flex;
   flex-direction: column;
-  background-color: #5353ef;
-  width: 200px;
-  height: 100px;
+  background-color: rgba(0, 56, 255, 0.54);
+  width: 323px;
+  height: 183px;
   margin: 20px;
   font-size: 30px;
   overflow: hidden;
   white-space: normal;
   font-weight: 700;
-  border-radius: 5px;
+  border-radius: 12px;
   box-shadow: 5px 5px 10px black;
-  border: 1px solid darkblue;
+  border: 2px solid black;
   cursor: pointer;
   text-decoration: none;
   color: rgba(63, 57, 57, 0.79);
+  font-family: New, serif;
+
 }
 .home-board-style:hover {
-  background-color: #cb6d6d;
+  background-color: rgba(12, 61, 220, 0.8);
 
 }
 .home-board-style p{
+  font-family: New, serif;
+  color: black;
   text-align: left;
   overflow: hidden;
   text-overflow: ellipsis;
   width: 145px;
-  font-size: 18px;
+  font-size: 40px;
   height: 50px;
-  margin: 2px 2px 0 5px;
+  margin: 5px 2px 0 15px;
 }
 
 .delete-board{
-  color: #9B9B9B;
-  font-size: 15px;
-  margin-top: 20px;
+  font-family: New, serif;
+
+  font-weight: 450;
+  color: #FCF6EA;
+  font-size: 25px;
+  margin-top: 100px;
 }

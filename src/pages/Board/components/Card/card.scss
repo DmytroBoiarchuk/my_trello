@@ -10,8 +10,8 @@
   word-break: break-all;
   line-height: 17px;
   font-size: 20px;
-  background-color: #cbcfd2;
-  border-radius: 4px;
+  background-color: #0F89398A;
+  border-radius: 12px;
   max-width: 275px;
   align-items:  center;
   margin: 0;
@@ -33,7 +33,7 @@
 .slot-style{
   box-shadow:  inset  1px 2px 3px black;
   max-width: 275px;
-  background-color: #dfe5e5;
+  background-color: rgba(22, 145, 61, 0.9);
   border-radius: 8px;
 }
 
@@ -41,7 +41,7 @@
   .edit-card{
     visibility: visible;
   }
-  background-color: #a7b2b7;
+  background-color: rgba(15, 137, 57, 0.9);
 }
 .card-style::-webkit-scrollbar {
   width: 10px;
@@ -61,27 +61,39 @@
   top: 3px;
   cursor: pointer;
   border-radius: 3px;
-  background-color: #a7b2b7;
+  background-color: rgba(15, 137, 57, 0.9);
   visibility: hidden;
   margin-top: 5px;
 }
 .card-edit-form{
-  background-color: #cbcfd2;
+  background-color: #0F89398A;
   display: flex;
   flex-direction: column;
   align-items: center;
-  border-radius: 5px;
+  border-radius: 12px;
 }
 .card-edit-button-container{
   margin-top: 5px;
   display: flex;
   justify-content: space-evenly;
 }
+.red-onbutton{
+  width: 75px;
+  height: 25px;
+  border-radius: 12px;
+  margin:0 5px 5px 5px;
+  border: 1px solid black;
+  cursor: pointer;
+  background-color: rgba(255, 0, 0, 0.54);
+}
+.red-onbutton:hover {
+  background-color: rgba(255, 0, 0, 0.71);
+}
 .card-edit-input{
   font-weight: 400;
   font-size: 18px;
   outline: none;
-  border-radius: 5px;
+  border-radius: 12px;
   margin-top: 7px;
   min-width: 260px;
   min-height: 30px;
@@ -89,12 +101,13 @@
 .card-edit-button{
   width: 75px;
   height: 25px;
-  border-radius: 5px;
+  border-radius: 12px;
   margin:0 5px 5px 5px;
-  border: 1px solid navy;
+  border: 1px solid black;
   cursor: pointer;
+  background-color: #0F89398A;
 
 }
 .card-edit-button:hover {
-  background-color: #61dafb;
+  background-color: rgb(15, 137, 57);
 }

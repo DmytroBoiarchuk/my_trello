@@ -3,7 +3,16 @@ import './cardEditModal.scss';
 import { useNavigate, useParams } from 'react-router-dom';
 import { AiOutlinePlus } from 'react-icons/ai';
 import { validate } from '../../../../common/functions/validate';
-import { getBoard, getBoardForModal, renameCard } from '../../../../store/modules/board/actions';
+import {
+  addNewCard,
+  changeCardDescription,
+  deleteCard,
+  getBoard,
+  getBoardForModal,
+  relocatePosBeforeReplacing,
+  renameCard,
+  replaceCard,
+} from '../../../../store/modules/board/actions';
 import { useDispatch, useSelector } from 'react-redux';
 import { BoardProps, BoardsProps, IBoard, ReturnType } from '../../../../common/interfaces/IBoard';
 import { ICard } from '../../../../common/interfaces/ICard';
@@ -12,8 +21,32 @@ import { setModalCardEditBig } from '../../../../store/modules/cardModal/actions
 import useOutsideAlerter from '../../../../common/Hooks/useOutsideAlerter';
 import { getBoards } from '../../../../store/modules/boards/actions';
 import { IList } from '../../../../common/interfaces/IList';
+import useOutsideAlerterFor2 from '../../../../common/Hooks/useOutsideAlerterFor2';
 
-const createListOptions = (board: { title?: string; lists: IList[] }) => {
+/*
+
+
+
+
+--- разобраться с удалением
+
+--- Сделать копирование карточки
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ */
+const createListOptions = (board: { title?: string; lists: IList[] }, list_ID: number) => {
   return board.lists.map((list: IList) => {
     return (
       <option key={list.id} value={list.id}>
@@ -23,15 +56,19 @@ const createListOptions = (board: { title?: string; lists: IList[] }) => {
   });
 };
 
-const calcListPoses = (resp: { title?: string; lists: IList[] }, list_id: number) => {
+const calcListPoses = (resp: { title?: string; lists: IList[] }, list_id: number, current_list: number) => {
   let selectors_poses = [];
   let list_poses = 0;
   resp.lists.map((list) => {
     if (list.id === list_id) {
-      list_poses = list.cards.length;
+      if (list_id !== current_list) {
+        list_poses = list.cards.length + 1;
+      } else {
+        list_poses = list.cards.length;
+      }
     }
   });
-  for (let i = 0; i < list_poses + 1; i++) {
+  for (let i = 0; i < list_poses; i++) {
     selectors_poses.push(
       <option key={i} value={i}>
         {i}
@@ -46,6 +83,7 @@ export default function CardEditModalBig(props: {
   list_title: string;
   title: string;
   setTitle: React.Dispatch<React.SetStateAction<string>>;
+  description: string | undefined;
 }) {
   const { boards } = useSelector(
     (state: BoardsProps): ReturnType => ({
@@ -64,7 +102,7 @@ export default function CardEditModalBig(props: {
     getBoards(dispatch);
     getBoard(dispatch, board_id!);
   }, []);
-  const { ref, isShow, setIsShow } = useOutsideAlerter(false);
+  const { ref, ref2, isShow, setIsShow } = useOutsideAlerterFor2(false);
   const [isWarning, setWarning] = useState(false);
   const [showInputCardName, setShowInputCardName] = useState(false);
   let navigate = useNavigate();
@@ -73,11 +111,20 @@ export default function CardEditModalBig(props: {
   const [listID, setListID] = useState(props.list_id);
   const [selectorsLists, setSelectorLists] = useState<any>([]);
   const [selectorsPoses, setSelectorsPoses] = useState<any>([]);
-
+  const [currentList, setCurrentList] = useState<any>([]);
+  const [startList, setStartList] = useState<any>([]);
+  const [textareaValue, setTextareaValue] = useState<string>();
+  const ignoreBlurRef = useRef(false);
   const descriptionRef = useRef<HTMLTextAreaElement>(null);
+  const [temDescr, setTempDescr] = useState(props.description);
+  const [isButtonDisabled, setIsButtonDisabled] = useState(false);
 
-  const changeHandler = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') {
+  const changeHandler = (e: React.KeyboardEvent, value: string) => {
+    if (e.key === 'Escape') {
+      ignoreBlurRef.current = true;
+      document.getElementById(`descr_${card_id}`)?.blur();
+      ignoreBlurRef.current = false;
+      setTextareaValue(temDescr);
     } else {
       let el = descriptionRef.current;
       setTimeout(function () {
@@ -145,6 +192,14 @@ export default function CardEditModalBig(props: {
     }, 1);
   };
   useEffect(() => {
+    if (props.description && props.description !== ' ') {
+      setTextareaValue(props.description);
+    }
+    board.lists.map((list) => {
+      if (list.id === props.list_id) {
+        setStartList(list);
+      }
+    });
     resizeTextarea(descriptionRef);
   }, [showInputCardName]);
   const onBlurModalHandler = () => {
@@ -152,11 +207,10 @@ export default function CardEditModalBig(props: {
     navigate(`/board/${board_id}`);
   };
   let selectors_board;
-  let list_poses: number;
 
   useEffect(() => {
-    setSelectorLists(createListOptions(board));
-    setSelectorsPoses(calcListPoses(board, listID));
+    setSelectorLists(createListOptions(board, props.list_id));
+    setSelectorsPoses(calcListPoses(board, listID, props.list_id));
   }, []);
 
   if (boards) {
@@ -169,14 +223,21 @@ export default function CardEditModalBig(props: {
     });
   }
   const onClickInListHandler = () => {
-    setIsShow(true);
+    board.lists.map((list) => {
+      if (list.id === props.list_id) {
+        setStartList(list);
+      }
+    });
+    setIsShow(!isShow);
   };
   const selectBoardHandler = (e: React.SyntheticEvent) => {
     if (document.querySelectorAll('select')[0]) {
       getBoardForModal(dispatch, document.querySelectorAll('select')[0].value).then((resp) => {
         if (resp !== undefined) {
-          setSelectorLists(createListOptions(resp as IBoard));
-          setSelectorsPoses(calcListPoses(resp, createListOptions(resp as IBoard)[0].props.value));
+          setSelectorLists(createListOptions(resp as IBoard, props.list_id));
+          setSelectorsPoses(
+            calcListPoses(resp, createListOptions(resp as IBoard, props.list_id)[0].props.value, props.list_id)
+          );
         }
       });
     }
@@ -184,9 +245,96 @@ export default function CardEditModalBig(props: {
   const selectListHandler = (e: React.SyntheticEvent) => {
     getBoardForModal(dispatch, document.querySelectorAll('select')[0].value).then((resp) => {
       if (resp !== undefined) {
-        setSelectorsPoses(calcListPoses(resp, +document.querySelectorAll('select')[1].value));
+        setSelectorsPoses(calcListPoses(resp, +document.querySelectorAll('select')[1].value, props.list_id));
       }
     });
+    board.lists.map((list) => {
+      if (list.id.toString() === document.querySelectorAll('select')[1].value) {
+        setCurrentList(list);
+      }
+    });
+  };
+  const movementHandler = () => {
+    const newPlace = document.querySelectorAll('select');
+    if (newPlace[0].value !== board_id) {
+      relocatePosBeforeReplacing(
+        document.querySelectorAll('select')[0].value,
+        document.querySelectorAll('select')[1].value,
+        +document.querySelectorAll('select')[2].value
+      )
+        .then(() => {
+          setTimeout(() => {
+            addNewCard(
+              dispatch,
+              +document.querySelectorAll('select')[2].value,
+              document.querySelectorAll('select')[0].value,
+              CardName,
+              +document.querySelectorAll('select')[1].value,
+              false,
+              props.description
+            );
+          }, 100);
+        })
+        .then(() => {
+          setTimeout(() => {
+            deleteCard(dispatch, board_id!, +card_id!, board.lists, props.list_id);
+            setModalCardEditBig(false);
+            navigate(`/board/${board_id}`);
+          }, 150);
+        });
+    } else {
+      if (newPlace[1].value === props.list_id.toString()) {
+        let neededPos = +newPlace[2].value;
+        if (+newPlace[2].value > props.position) {
+          neededPos = +newPlace[2].value + 1;
+        }
+        replaceCard(
+          board_id,
+          neededPos,
+          newPlace[1].value,
+          +card_id!,
+          dispatch,
+          startList,
+          props.position,
+          props.list_id,
+          startList.cards
+        );
+        getBoard(dispatch, board_id);
+        setIsShow(false);
+      } else {
+        replaceCard(
+          board_id,
+          +newPlace[2].value,
+          newPlace[1].value,
+          +card_id!,
+          dispatch,
+          currentList,
+          props.position,
+          props.list_id,
+          startList.cards
+        );
+      }
+    }
+  };
+  const archivingHandler = () => {
+    deleteCard(dispatch, board_id!, +card_id!, board.lists, props.list_id);
+    onBlurModalHandler();
+  };
+  const onBlurDescriptionHandler = (e: React.FocusEvent<HTMLTextAreaElement>) => {
+    document.querySelectorAll('.card-big-modal-button-disabled')[0]?.classList.remove('card-big-modal-button-disabled');
+    setIsButtonDisabled(false);
+    if (!ignoreBlurRef.current) {
+      changeCardDescription(dispatch, e.currentTarget.value, board_id!, card_id!, props.list_id);
+      setTempDescr(e.currentTarget.value);
+    }
+  };
+  const textAreaOnChangeHandler = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setTextareaValue(e.currentTarget.value);
+  };
+  const onClickChangeButtonHandler = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.currentTarget.classList.add('card-big-modal-button-disabled');
+    setIsButtonDisabled(true);
+    document.getElementById(`descr_${card_id}`)?.focus();
   };
   return (
     <div className="back-ground-modal-card" onClick={() => onBlurModalHandler()}>
@@ -226,7 +374,7 @@ export default function CardEditModalBig(props: {
                 <p className="small-text inside">Board</p>
                 <select
                   onChange={(e) => selectBoardHandler(e)}
-                  defaultValue={board.title}
+                  defaultValue={board_id}
                   id="selector_board"
                   className="selection small-text custom-text"
                 >
@@ -237,8 +385,8 @@ export default function CardEditModalBig(props: {
                 <div className="chosen-column list-modal">
                   <p className="small-text inside">List</p>
                   <select
+                    defaultValue={props.list_id}
                     onChange={(e) => selectListHandler(e)}
-                    defaultValue={ListName}
                     className="selection list-size small-text custom-text"
                   >
                     {selectorsLists}
@@ -251,7 +399,10 @@ export default function CardEditModalBig(props: {
                   </select>
                 </div>
               </div>
-              <button className="move-button"> MOVE </button>
+              <button onClick={() => movementHandler()} className="move-button">
+                {' '}
+                MOVE{' '}
+              </button>
             </div>
           )}
           <div className="users">
@@ -271,7 +422,15 @@ export default function CardEditModalBig(props: {
           <div className="description">
             <div className="description-container">
               <p className="description-header"> Description</p>
-              <button className="card-big-modal-button change">Change</button>
+              <button
+                className="card-big-modal-button change"
+                onClick={(e) => {
+                  onClickChangeButtonHandler(e);
+                }}
+                disabled={isButtonDisabled}
+              >
+                Change
+              </button>
             </div>
             <textarea
               id={`descr_${card_id}`}
@@ -279,16 +438,25 @@ export default function CardEditModalBig(props: {
               placeholder="Enter description..."
               className="description-detailed-before"
               onKeyDown={(e) => {
-                changeHandler(e);
+                changeHandler(e, e.currentTarget.value);
               }}
+              onChange={(e) => {
+                textAreaOnChangeHandler(e);
+              }}
+              value={textareaValue}
+              onBlur={(e) => onBlurDescriptionHandler(e)}
             ></textarea>
           </div>
         </div>
         <div className="actions">
           <p className="actions-header">Actions</p>
           <button className="card-big-modal-button actions-button">Coping</button>
-          <button className="card-big-modal-button actions-button">Moving</button>
-          <button className="card-big-modal-button actions-button">Archiving</button>
+          <button className="card-big-modal-button actions-button" ref={ref2} onClick={() => onClickInListHandler()}>
+            Moving
+          </button>
+          <button className="red-theme card-big-modal-button actions-button" onClick={() => archivingHandler()}>
+            Delete
+          </button>
         </div>
       </div>
     </div>

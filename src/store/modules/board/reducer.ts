@@ -24,7 +24,7 @@ export default function reducer(state = initialState, action: { type: string; pa
         lists: [],
       };
     default: {
-      return { ...state, ...action.payload };
+      return { ...state };
     }
   }
 }

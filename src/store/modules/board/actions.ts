@@ -5,17 +5,55 @@ import { BoardResp } from '../../../common/types/types';
 import store from '../../store';
 import { IList } from '../../../common/interfaces/IList';
 import { ICard } from '../../../common/interfaces/ICard';
+import { log } from 'util';
 interface ResponseBoard {
   title: string;
   lists: IList[];
 }
+interface CardData {
+  id: number;
+  title?: string;
+  position: number;
+  list_id?: string;
+}
+export const changeCardDescription = async (
+  dispatch: Dispatch,
+  description: string,
+  board_id: string,
+  card_id: string,
+  list_id: number
+) => {
+  try {
+    const data = { description: description, list_id: list_id };
+    await instance.put(api.baseURL + '/board/' + board_id + '/card/' + card_id, data);
+    getBoard(dispatch, board_id);
+  } catch (e) {
+    console.log(e);
+  }
+};
+export const relocatePosBeforeReplacing = async (board_id: string, list_id: string, newPos: number) => {
+  const board: ResponseBoard = await instance.get(api.baseURL + '/board/' + board_id);
+  let update: CardData[] = [];
+  board.lists.map((list) => {
+    if (list.id.toString() === list_id) {
+      for (let i = 0; i < list.cards.length; i++) {
+        if (i < newPos) {
+          update.push({ id: list.cards[i].id, position: i, list_id: list_id });
+        } else {
+          update.push({ id: list.cards[i].id, position: i + 1, list_id: list_id });
+        }
+      }
+    }
+  });
+  await instance.put(`/board/${board_id}/card`, update);
+};
 
 export const replaceCard = async (
   boardId: string,
   pos: number | undefined,
   listId: string | undefined,
   currentCard: number,
-  dispatch: Dispatch<AnyAction>,
+  dispatch: Dispatch,
   currentList: IList | undefined,
   draggedCardPos: number,
   draggedCardList: number,
@@ -57,8 +95,6 @@ export const replaceCard = async (
             }
           }
         }
-        // console.log(updated);
-        // store.dispatch({ type: 'UPDATE_BOARD_DND', payload: updated });
         await instance.put(`/board/${boardId}/card`, updated);
       } else {
         let position;
@@ -86,8 +122,6 @@ export const replaceCard = async (
             }
           });
         }
-        // console.log(updated);
-        // store.dispatch({ type: 'UPDATE_BOARD_DND', payload: updated });
         await instance.put(`/board/${boardId}/card`, updated);
       }
     }
@@ -97,7 +131,7 @@ export const replaceCard = async (
   }
 };
 
-const changePosAfterDeleting = async (
+export const changePosAfterDeleting = async (
   dispatch: Dispatch,
   iList: IList,
   card_id: number,
@@ -134,11 +168,12 @@ export const deleteCard = async (
 ) => {
   try {
     for (let i = 0; i < lists.length; i++) {
-      if (lists[i].id === list_id) {
+      if (lists[i].id === list_id && lists[i].cards.length !== 0) {
         changePosAfterDeleting(dispatch, lists[i], card_id, board_id, list_id);
       }
     }
     await instance.delete(`/board/${board_id}/card/${card_id}`);
+
     await getBoard(dispatch, board_id);
   } catch (e) {
     console.log(e);
@@ -171,17 +206,20 @@ export const addNewCard = async (
   position: number,
   board_id: string,
   title: string,
-  list_id: number
+  list_id: number,
+  doUpdateBoard: boolean,
+  description?: string
 ) => {
   try {
+    const descriptionCheck = description ? description : ' ';
     await instance.post(`/board/${board_id}/card`, {
       title: title,
       list_id: list_id,
       position: position,
-      description: ' ',
+      description: descriptionCheck,
       custom: '',
     });
-    await getBoard(dispatch, board_id);
+    if (doUpdateBoard) await getBoard(dispatch, board_id);
   } catch (e) {
     console.log(e);
     dispatch({ type: 'ERROR_ACTION_TYPE' });

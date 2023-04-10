@@ -124,7 +124,11 @@ export default function Board() {
             onChange={(event) => setTitle(event.target.value)}
           ></input>
         )}
-        {!showInput && <h1 onClick={() => setShowInput(true)}>{boardTitle}</h1>}
+        {!showInput && (
+          <h1 className="board-name-h1" onClick={() => setShowInput(true)}>
+            {boardTitle}
+          </h1>
+        )}
       </div>
       <div className="list-style">
         {listArr}
@@ -138,7 +142,7 @@ export default function Board() {
             listTitle={listTitle}
             buttonOnClick={createList}
             defaultValue={cashMemoryListInput}
-            modalTitle="Add List"
+            modalTitle="Add list"
             onChange={setListTitle}
             onKeyDown={createListByEnter}
             onBlur={onBlurFunctionList}
