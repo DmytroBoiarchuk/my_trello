@@ -1,11 +1,10 @@
 import api from '../../../common/constants/api';
-import { AnyAction, Dispatch } from 'redux';
+import { Dispatch } from 'redux';
 import instance from '../../../api/request';
 import { BoardResp } from '../../../common/types/types';
 import store from '../../store';
 import { IList } from '../../../common/interfaces/IList';
 import { ICard } from '../../../common/interfaces/ICard';
-import { log } from 'util';
 interface ResponseBoard {
   title: string;
   lists: IList[];
@@ -24,6 +23,9 @@ export const changeCardDescription = async (
   list_id: number
 ) => {
   try {
+    if (description.length === 0) {
+      description = ' ';
+    }
     const data = { description: description, list_id: list_id };
     await instance.put(api.baseURL + '/board/' + board_id + '/card/' + card_id, data);
     getBoard(dispatch, board_id);
@@ -153,7 +155,9 @@ export const changePosAfterDeleting = async (
       listData.push({ id: card.id, position: card.position - 1, list_id: list_id });
     }
   });
-  await instance.put(`/board/${board_id}/card`, listData);
+  await instance.put(`/board/${board_id}/card`, listData).then(() => {
+    instance.delete(`/board/${board_id}/card/${card_id}`).then(() => getBoard(dispatch, board_id));
+  });
 };
 
 export const clearStore = () => {
@@ -172,9 +176,6 @@ export const deleteCard = async (
         changePosAfterDeleting(dispatch, lists[i], card_id, board_id, list_id);
       }
     }
-    await instance.delete(`/board/${board_id}/card/${card_id}`);
-
-    await getBoard(dispatch, board_id);
   } catch (e) {
     console.log(e);
     dispatch({ type: 'ERROR_ACTION_TYPE' });

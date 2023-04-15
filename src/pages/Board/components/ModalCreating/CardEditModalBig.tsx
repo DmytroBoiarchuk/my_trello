@@ -15,38 +15,20 @@ import {
 } from '../../../../store/modules/board/actions';
 import { useDispatch, useSelector } from 'react-redux';
 import { BoardProps, BoardsProps, IBoard, ReturnType } from '../../../../common/interfaces/IBoard';
-import { ICard } from '../../../../common/interfaces/ICard';
 import Swal from 'sweetalert2';
 import { setModalCardEditBig } from '../../../../store/modules/cardModal/actions';
-import useOutsideAlerter from '../../../../common/Hooks/useOutsideAlerter';
 import { getBoards } from '../../../../store/modules/boards/actions';
 import { IList } from '../../../../common/interfaces/IList';
-import useOutsideAlerterFor2 from '../../../../common/Hooks/useOutsideAlerterFor2';
+import ModalInModal from '../Card/ModalInModal';
 
 /*
 
-
-
-
 --- разобраться с удалением
 
---- Сделать копирование карточки
-
-
-
-
-
-
-
-
-
-
-
-
-
+--- переделать роутинг
 
  */
-const createListOptions = (board: { title?: string; lists: IList[] }, list_ID: number) => {
+const createListOptions = (board: { title?: string; lists: IList[] }) => {
   return board.lists.map((list: IList) => {
     return (
       <option key={list.id} value={list.id}>
@@ -102,24 +84,25 @@ export default function CardEditModalBig(props: {
     getBoards(dispatch);
     getBoard(dispatch, board_id!);
   }, []);
-  const { ref, ref2, isShow, setIsShow } = useOutsideAlerterFor2(false);
+  const [isShow, setIsShow] = useState<boolean>(false);
   const [isWarning, setWarning] = useState(false);
   const [showInputCardName, setShowInputCardName] = useState(false);
   let navigate = useNavigate();
   const [CardName, setCardName] = useState(props.title);
-  const [ListName, setListName] = useState(props.list_title);
-  const [listID, setListID] = useState(props.list_id);
-  const [selectorsLists, setSelectorLists] = useState<any>([]);
-  const [selectorsPoses, setSelectorsPoses] = useState<any>([]);
-  const [currentList, setCurrentList] = useState<any>([]);
-  const [startList, setStartList] = useState<any>([]);
+  const [ListName] = useState(props.list_title);
+  const [listID] = useState(props.list_id);
+  const [selectorsLists, setSelectorLists] = useState<Array<JSX.Element>>([]);
+  const [selectorsPoses, setSelectorsPoses] = useState<Array<JSX.Element>>([]);
+  const [currentList, setCurrentList] = useState<IList>();
+  const [startList, setStartList] = useState<IList>();
+  const [isCopying, setIsCopying] = useState<boolean>(false);
   const [textareaValue, setTextareaValue] = useState<string>();
   const ignoreBlurRef = useRef(false);
   const descriptionRef = useRef<HTMLTextAreaElement>(null);
   const [temDescr, setTempDescr] = useState(props.description);
   const [isButtonDisabled, setIsButtonDisabled] = useState(false);
 
-  const changeHandler = (e: React.KeyboardEvent, value: string) => {
+  const changeHandler = (e: React.KeyboardEvent) => {
     if (e.key === 'Escape') {
       ignoreBlurRef.current = true;
       document.getElementById(`descr_${card_id}`)?.blur();
@@ -209,7 +192,7 @@ export default function CardEditModalBig(props: {
   let selectors_board;
 
   useEffect(() => {
-    setSelectorLists(createListOptions(board, props.list_id));
+    setSelectorLists(createListOptions(board));
     setSelectorsPoses(calcListPoses(board, listID, props.list_id));
   }, []);
 
@@ -228,21 +211,24 @@ export default function CardEditModalBig(props: {
         setStartList(list);
       }
     });
-    setIsShow(!isShow);
+    if (isShow && isCopying) {
+      setIsCopying(false);
+    } else {
+      setIsCopying(false);
+      setIsShow(!isShow);
+    }
   };
-  const selectBoardHandler = (e: React.SyntheticEvent) => {
+  const selectBoardHandler = () => {
     if (document.querySelectorAll('select')[0]) {
       getBoardForModal(dispatch, document.querySelectorAll('select')[0].value).then((resp) => {
         if (resp !== undefined) {
-          setSelectorLists(createListOptions(resp as IBoard, props.list_id));
-          setSelectorsPoses(
-            calcListPoses(resp, createListOptions(resp as IBoard, props.list_id)[0].props.value, props.list_id)
-          );
+          setSelectorLists(createListOptions(resp as IBoard));
+          setSelectorsPoses(calcListPoses(resp, createListOptions(resp as IBoard)[0].props.value, props.list_id));
         }
       });
     }
   };
-  const selectListHandler = (e: React.SyntheticEvent) => {
+  const selectListHandler = () => {
     getBoardForModal(dispatch, document.querySelectorAll('select')[0].value).then((resp) => {
       if (resp !== undefined) {
         setSelectorsPoses(calcListPoses(resp, +document.querySelectorAll('select')[1].value, props.list_id));
@@ -263,12 +249,14 @@ export default function CardEditModalBig(props: {
         +document.querySelectorAll('select')[2].value
       )
         .then(() => {
+          const inputElement = document.getElementById('title_for_copy') as HTMLInputElement;
+          const card_name = isCopying ? inputElement.value : CardName;
           setTimeout(() => {
             addNewCard(
               dispatch,
               +document.querySelectorAll('select')[2].value,
               document.querySelectorAll('select')[0].value,
-              CardName,
+              card_name!,
               +document.querySelectorAll('select')[1].value,
               false,
               props.description
@@ -277,42 +265,72 @@ export default function CardEditModalBig(props: {
         })
         .then(() => {
           setTimeout(() => {
-            deleteCard(dispatch, board_id!, +card_id!, board.lists, props.list_id);
+            if (!isCopying) {
+              deleteCard(dispatch, board_id!, +card_id!, board.lists, props.list_id);
+            }
             setModalCardEditBig(false);
             navigate(`/board/${board_id}`);
           }, 150);
         });
     } else {
-      if (newPlace[1].value === props.list_id.toString()) {
-        let neededPos = +newPlace[2].value;
-        if (+newPlace[2].value > props.position) {
-          neededPos = +newPlace[2].value + 1;
+      if (!isCopying) {
+        if (newPlace[1].value === props.list_id.toString()) {
+          let neededPos = +newPlace[2].value;
+          if (+newPlace[2].value > props.position) {
+            neededPos = +newPlace[2].value + 1;
+          }
+          replaceCard(
+            board_id,
+            neededPos,
+            newPlace[1].value,
+            +card_id!,
+            dispatch,
+            startList,
+            props.position,
+            props.list_id,
+            startList?.cards
+          );
+          getBoard(dispatch, board_id);
+          setIsShow(false);
+        } else {
+          replaceCard(
+            board_id,
+            +newPlace[2].value,
+            newPlace[1].value,
+            +card_id!,
+            dispatch,
+            currentList,
+            props.position,
+            props.list_id,
+            startList?.cards
+          );
         }
-        replaceCard(
-          board_id,
-          neededPos,
-          newPlace[1].value,
-          +card_id!,
-          dispatch,
-          startList,
-          props.position,
-          props.list_id,
-          startList.cards
-        );
-        getBoard(dispatch, board_id);
-        setIsShow(false);
       } else {
-        replaceCard(
-          board_id,
-          +newPlace[2].value,
-          newPlace[1].value,
-          +card_id!,
-          dispatch,
-          currentList,
-          props.position,
-          props.list_id,
-          startList.cards
-        );
+        relocatePosBeforeReplacing(
+          document.querySelectorAll('select')[0].value,
+          document.querySelectorAll('select')[1].value,
+          +document.querySelectorAll('select')[2].value
+        )
+          .then(() => {
+            const inputElement = document.getElementById('title_for_copy') as HTMLInputElement;
+            setTimeout(() => {
+              addNewCard(
+                dispatch,
+                +document.querySelectorAll('select')[2].value,
+                document.querySelectorAll('select')[0].value,
+                inputElement.value,
+                +document.querySelectorAll('select')[1].value,
+                true,
+                props.description
+              );
+            }, 100);
+          })
+          .then(() => {
+            setTimeout(() => {
+              setModalCardEditBig(false);
+              navigate(`/board/${board_id}`);
+            }, 150);
+          });
       }
     }
   };
@@ -335,6 +353,14 @@ export default function CardEditModalBig(props: {
     e.currentTarget.classList.add('card-big-modal-button-disabled');
     setIsButtonDisabled(true);
     document.getElementById(`descr_${card_id}`)?.focus();
+  };
+  const onClickCopingHandler = () => {
+    if (isShow && !isCopying) {
+      setIsCopying(true);
+    } else {
+      setIsCopying(true);
+      setIsShow(!isShow);
+    }
   };
   return (
     <div className="back-ground-modal-card" onClick={() => onBlurModalHandler()}>
@@ -366,44 +392,20 @@ export default function CardEditModalBig(props: {
             </span>{' '}
           </p>
           {isShow && (
-            <div ref={ref} className="moving-card-modal">
-              <p className="big-text"> Card Moving</p>
-              <hr className="hr-style" />
-              <p className="small-text">Select column</p>
-              <div className="chosen-column board-modal">
-                <p className="small-text inside">Board</p>
-                <select
-                  onChange={(e) => selectBoardHandler(e)}
-                  defaultValue={board_id}
-                  id="selector_board"
-                  className="selection small-text custom-text"
-                >
-                  {selectors_board}
-                </select>
-              </div>
-              <div className="chosen-columns-container">
-                <div className="chosen-column list-modal">
-                  <p className="small-text inside">List</p>
-                  <select
-                    defaultValue={props.list_id}
-                    onChange={(e) => selectListHandler(e)}
-                    className="selection list-size small-text custom-text"
-                  >
-                    {selectorsLists}
-                  </select>
-                </div>
-                <div className="chosen-column position-modal">
-                  <p className="small-text inside">Position</p>
-                  <select defaultValue={props.position} className="selection pos-size small-text custom-text">
-                    {selectorsPoses}
-                  </select>
-                </div>
-              </div>
-              <button onClick={() => movementHandler()} className="move-button">
-                {' '}
-                MOVE{' '}
-              </button>
-            </div>
+            <ModalInModal
+              board_id={board_id!}
+              position={props.position}
+              list_id={props.list_id.toString()}
+              selectors_board={selectors_board}
+              selectorsLists={selectorsLists}
+              key={card_id}
+              selectorsPoses={selectorsPoses}
+              isCopying={isCopying}
+              selectBoardHandler={selectBoardHandler}
+              selectListHandler={selectListHandler}
+              movementHandler={movementHandler}
+              setIsShow={setIsShow}
+            />
           )}
           <div className="users">
             <p className="users-h">Users</p>
@@ -438,7 +440,7 @@ export default function CardEditModalBig(props: {
               placeholder="Enter description..."
               className="description-detailed-before"
               onKeyDown={(e) => {
-                changeHandler(e, e.currentTarget.value);
+                changeHandler(e);
               }}
               onChange={(e) => {
                 textAreaOnChangeHandler(e);
@@ -450,8 +452,15 @@ export default function CardEditModalBig(props: {
         </div>
         <div className="actions">
           <p className="actions-header">Actions</p>
-          <button className="card-big-modal-button actions-button">Coping</button>
-          <button className="card-big-modal-button actions-button" ref={ref2} onClick={() => onClickInListHandler()}>
+          <button
+            className="card-big-modal-button actions-button"
+            onClick={() => {
+              onClickCopingHandler();
+            }}
+          >
+            Coping
+          </button>
+          <button className="card-big-modal-button actions-button" onClick={() => onClickInListHandler()}>
             Moving
           </button>
           <button className="red-theme card-big-modal-button actions-button" onClick={() => archivingHandler()}>

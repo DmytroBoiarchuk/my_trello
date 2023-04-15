@@ -5,8 +5,6 @@ import { IList } from '../interfaces/IList';
 import { replaceCard } from '../../store/modules/board/actions';
 import { AnyAction, Dispatch } from 'redux';
 import { ICard } from '../interfaces/ICard';
-import { logDOM } from '@testing-library/react';
-import Swal from 'sweetalert2';
 export const dragStarted = (e: React.DragEvent<HTMLDivElement>, id: number) => {
   const box = document.getElementById(`card_box_${id}`);
 
@@ -178,7 +176,6 @@ export const dropHandler = (
   slots.forEach((slot) => {
     slot.parentNode!.removeChild(slot);
   });
-  console.log(lists);
   dispatch({ type: 'UPDATE_BOARD_DND', payload: lists });
   replaceCard(
     board_id,

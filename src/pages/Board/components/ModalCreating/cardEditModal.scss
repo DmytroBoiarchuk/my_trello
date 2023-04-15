@@ -157,7 +157,8 @@ font-weight: 700;
   resize: none;
   font-family: "Goudy Old Style", monospace;
   font-size: 20px;
-  max-height: 500px;
+  min-height: 100px;
+  max-height: 600px;
 }
 
 .description-detailed-before:focus{
@@ -195,7 +196,6 @@ font-weight: 700;
   left: 75px;
   position: absolute;
   width: 300px;
-  height: 260px;
   border-radius: 6px;
   box-shadow: -2px 2px 2px  black;
   background-color: #ece6e6;
@@ -206,7 +206,7 @@ font-weight: 700;
   font-weight: 400;
   font-size: 25px;
   font-family: "Goudy Old Style", monospace;
-margin: 0;
+margin: 0 0 0 14px;
 }
 .hr-style{
   width: 90%;
@@ -254,7 +254,8 @@ margin: 0;
 }
 .move-button{
   margin-left: 15px;
-  margin-top: 20px;
+  margin-top: 10px;
+  margin-bottom: 20px;
   background-color: #0b84c9;
   width: 50%;
   font-size: 22px;
@@ -303,4 +304,25 @@ margin: 0;
 }
 .red-theme:hover{
   background-color: #985757;
+}
+.copied-card-name-input{
+  resize: none;
+width: 90%;
+  margin-left: 12px;
+  border-radius: 3px;
+  border: 0;
+  height: 50px;
+}
+.title-container-small-modal{
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+.cross-to-exit{
+  border-radius: 3px;
+  cursor: pointer;
+  margin: 4px 13px 0 0 ;
+}
+.cross-to-exit:hover {
+  background-color: #9b9b9b;
 }
