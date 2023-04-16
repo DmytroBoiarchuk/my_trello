@@ -21,13 +21,6 @@ import { getBoards } from '../../../../store/modules/boards/actions';
 import { IList } from '../../../../common/interfaces/IList';
 import ModalInModal from '../Card/ModalInModal';
 
-/*
-
---- разобраться с удалением
-
---- переделать роутинг
-
- */
 const createListOptions = (board: { title?: string; lists: IList[] }) => {
   return board.lists.map((list: IList) => {
     return (
@@ -59,14 +52,7 @@ const calcListPoses = (resp: { title?: string; lists: IList[] }, list_id: number
   }
   return selectors_poses;
 };
-export default function CardEditModalBig(props: {
-  position: number;
-  list_id: number;
-  list_title: string;
-  title: string;
-  setTitle: React.Dispatch<React.SetStateAction<string>>;
-  description: string | undefined;
-}) {
+export default function CardEditModalBig() {
   const { boards } = useSelector(
     (state: BoardsProps): ReturnType => ({
       boards: state.boards.boards,
@@ -77,20 +63,43 @@ export default function CardEditModalBig(props: {
       board: state.board,
     })
   );
+  const [list_id, setList_id] = useState(0);
+  const [position, setPosition] = useState(0);
+
+  const [list_title, setList_title] = useState('');
+
+  const [title, setTitle] = useState('');
+  const [description, setDescription] = useState<string | undefined>('');
+
   let { card_id } = useParams();
   let { board_id } = useParams();
   const dispatch = useDispatch();
   useEffect(() => {
     getBoards(dispatch);
-    getBoard(dispatch, board_id!);
+    getBoard(dispatch, board_id!).then(() => {
+      board.lists.map((list) => {
+        list.cards.map((card) => {
+          if (card.id.toString() === card_id) {
+            setList_id(list.id);
+            setPosition(card.position);
+            setList_title(list.title);
+            setTitle(card.title);
+            setDescription(card.description);
+            setTempDescr(description);
+          }
+        });
+      });
+    });
+    resizeTextarea(descriptionRef);
   }, []);
+  useEffect(() => {
+    setSelectorLists(createListOptions(board));
+    setSelectorsPoses(calcListPoses(board, list_id, list_id));
+  }, [list_id]);
   const [isShow, setIsShow] = useState<boolean>(false);
   const [isWarning, setWarning] = useState(false);
   const [showInputCardName, setShowInputCardName] = useState(false);
   let navigate = useNavigate();
-  const [CardName, setCardName] = useState(props.title);
-  const [ListName] = useState(props.list_title);
-  const [listID] = useState(props.list_id);
   const [selectorsLists, setSelectorLists] = useState<Array<JSX.Element>>([]);
   const [selectorsPoses, setSelectorsPoses] = useState<Array<JSX.Element>>([]);
   const [currentList, setCurrentList] = useState<IList>();
@@ -99,7 +108,7 @@ export default function CardEditModalBig(props: {
   const [textareaValue, setTextareaValue] = useState<string>();
   const ignoreBlurRef = useRef(false);
   const descriptionRef = useRef<HTMLTextAreaElement>(null);
-  const [temDescr, setTempDescr] = useState(props.description);
+  const [temDescr, setTempDescr] = useState(description);
   const [isButtonDisabled, setIsButtonDisabled] = useState(false);
 
   const changeHandler = (e: React.KeyboardEvent) => {
@@ -121,10 +130,10 @@ export default function CardEditModalBig(props: {
   const onKeyDownFunction = (e: React.KeyboardEvent, value: string) => {
     if (e.key === 'Enter') {
       if (!validate(value)) {
-        if (value !== CardName) {
-          setCardName(value);
-          props.setTitle(value);
-          renameCard(dispatch, board_id!, listID, +card_id!, value);
+        if (value !== title) {
+          setTitle(value);
+          //props.setTitle(value);
+          renameCard(dispatch, board_id!, list_id, +card_id!, value);
         }
         setShowInputCardName(false);
       } else {
@@ -143,11 +152,11 @@ export default function CardEditModalBig(props: {
   };
   const onBlurFunction = (e: React.FormEvent, value: string) => {
     if (!validate(value)) {
-      setCardName(value);
-      if (value !== CardName) {
-        setCardName(value);
-        props.setTitle(value);
-        renameCard(dispatch, board_id!, listID, +card_id!, value);
+      setTitle(value);
+      if (value !== title) {
+        setTitle(value);
+        //props.setTitle(value);
+        renameCard(dispatch, board_id!, list_id, +card_id!, value);
       }
       setShowInputCardName(false);
     } else {
@@ -170,31 +179,26 @@ export default function CardEditModalBig(props: {
     const textarea = ref.current;
     setTimeout(() => {
       if (textarea) {
+        console.log(textarea.scrollHeight);
         textarea.style.cssText = 'height:' + textarea.scrollHeight + 'px';
       }
-    }, 1);
+    }, 150);
   };
   useEffect(() => {
-    if (props.description && props.description !== ' ') {
-      setTextareaValue(props.description);
+    if (description && description !== ' ') {
+      setTextareaValue(description);
     }
     board.lists.map((list) => {
-      if (list.id === props.list_id) {
+      if (list.id === list_id) {
         setStartList(list);
       }
     });
-    resizeTextarea(descriptionRef);
   }, [showInputCardName]);
   const onBlurModalHandler = () => {
     setModalCardEditBig(false);
     navigate(`/board/${board_id}`);
   };
   let selectors_board;
-
-  useEffect(() => {
-    setSelectorLists(createListOptions(board));
-    setSelectorsPoses(calcListPoses(board, listID, props.list_id));
-  }, []);
 
   if (boards) {
     selectors_board = boards.map((board_1) => {
@@ -207,7 +211,7 @@ export default function CardEditModalBig(props: {
   }
   const onClickInListHandler = () => {
     board.lists.map((list) => {
-      if (list.id === props.list_id) {
+      if (list.id === list_id) {
         setStartList(list);
       }
     });
@@ -223,7 +227,7 @@ export default function CardEditModalBig(props: {
       getBoardForModal(dispatch, document.querySelectorAll('select')[0].value).then((resp) => {
         if (resp !== undefined) {
           setSelectorLists(createListOptions(resp as IBoard));
-          setSelectorsPoses(calcListPoses(resp, createListOptions(resp as IBoard)[0].props.value, props.list_id));
+          setSelectorsPoses(calcListPoses(resp, createListOptions(resp as IBoard)[0].props.value, list_id));
         }
       });
     }
@@ -231,7 +235,7 @@ export default function CardEditModalBig(props: {
   const selectListHandler = () => {
     getBoardForModal(dispatch, document.querySelectorAll('select')[0].value).then((resp) => {
       if (resp !== undefined) {
-        setSelectorsPoses(calcListPoses(resp, +document.querySelectorAll('select')[1].value, props.list_id));
+        setSelectorsPoses(calcListPoses(resp, +document.querySelectorAll('select')[1].value, list_id));
       }
     });
     board.lists.map((list) => {
@@ -250,7 +254,7 @@ export default function CardEditModalBig(props: {
       )
         .then(() => {
           const inputElement = document.getElementById('title_for_copy') as HTMLInputElement;
-          const card_name = isCopying ? inputElement.value : CardName;
+          const card_name = isCopying ? inputElement.value : title;
           setTimeout(() => {
             addNewCard(
               dispatch,
@@ -259,14 +263,14 @@ export default function CardEditModalBig(props: {
               card_name!,
               +document.querySelectorAll('select')[1].value,
               false,
-              props.description
+              description
             );
           }, 100);
         })
         .then(() => {
           setTimeout(() => {
             if (!isCopying) {
-              deleteCard(dispatch, board_id!, +card_id!, board.lists, props.list_id);
+              deleteCard(dispatch, board_id!, +card_id!, board.lists, list_id);
             }
             setModalCardEditBig(false);
             navigate(`/board/${board_id}`);
@@ -274,9 +278,9 @@ export default function CardEditModalBig(props: {
         });
     } else {
       if (!isCopying) {
-        if (newPlace[1].value === props.list_id.toString()) {
+        if (newPlace[1].value === list_id.toString()) {
           let neededPos = +newPlace[2].value;
-          if (+newPlace[2].value > props.position) {
+          if (+newPlace[2].value > position) {
             neededPos = +newPlace[2].value + 1;
           }
           replaceCard(
@@ -286,8 +290,8 @@ export default function CardEditModalBig(props: {
             +card_id!,
             dispatch,
             startList,
-            props.position,
-            props.list_id,
+            position,
+            list_id,
             startList?.cards
           );
           getBoard(dispatch, board_id);
@@ -300,11 +304,12 @@ export default function CardEditModalBig(props: {
             +card_id!,
             dispatch,
             currentList,
-            props.position,
-            props.list_id,
+            position,
+            list_id,
             startList?.cards
           );
         }
+        navigate(`/board/${board_id}`);
       } else {
         relocatePosBeforeReplacing(
           document.querySelectorAll('select')[0].value,
@@ -321,7 +326,7 @@ export default function CardEditModalBig(props: {
                 inputElement.value,
                 +document.querySelectorAll('select')[1].value,
                 true,
-                props.description
+                description
               );
             }, 100);
           })
@@ -335,14 +340,14 @@ export default function CardEditModalBig(props: {
     }
   };
   const archivingHandler = () => {
-    deleteCard(dispatch, board_id!, +card_id!, board.lists, props.list_id);
+    deleteCard(dispatch, board_id!, +card_id!, board.lists, list_id);
     onBlurModalHandler();
   };
   const onBlurDescriptionHandler = (e: React.FocusEvent<HTMLTextAreaElement>) => {
     document.querySelectorAll('.card-big-modal-button-disabled')[0]?.classList.remove('card-big-modal-button-disabled');
     setIsButtonDisabled(false);
     if (!ignoreBlurRef.current) {
-      changeCardDescription(dispatch, e.currentTarget.value, board_id!, card_id!, props.list_id);
+      changeCardDescription(dispatch, e.currentTarget.value, board_id!, card_id!, list_id);
       setTempDescr(e.currentTarget.value);
     }
   };
@@ -378,24 +383,24 @@ export default function CardEditModalBig(props: {
               ref={descriptionRef}
               onKeyDown={(e) => onKeyDownFunction(e, e.currentTarget.value)}
               onBlur={(e) => onBlurFunction(e, e.target.value)}
-              defaultValue={CardName}
+              defaultValue={title}
             ></textarea>
           ) : (
             <h2 className="card-name-modal" onClick={() => setShowInputCardName(true)}>
-              {CardName}
+              {title}
             </h2>
           )}{' '}
           <p className="in-list">
             In list{' '}
             <span onClick={() => onClickInListHandler()} className="list-name-span">
-              {ListName}
+              {list_title}
             </span>{' '}
           </p>
           {isShow && (
             <ModalInModal
               board_id={board_id!}
-              position={props.position}
-              list_id={props.list_id.toString()}
+              position={position}
+              list_id={list_id.toString()}
               selectors_board={selectors_board}
               selectorsLists={selectorsLists}
               key={card_id}
@@ -421,7 +426,7 @@ export default function CardEditModalBig(props: {
               <button className="card-big-modal-button">Join</button>
             </div>
           </div>
-          <div className="description">
+          <div>
             <div className="description-container">
               <p className="description-header"> Description</p>
               <button
@@ -443,9 +448,10 @@ export default function CardEditModalBig(props: {
                 changeHandler(e);
               }}
               onChange={(e) => {
+                setDescription(e.target.value);
                 textAreaOnChangeHandler(e);
               }}
-              value={textareaValue}
+              value={description}
               onBlur={(e) => onBlurDescriptionHandler(e)}
             ></textarea>
           </div>

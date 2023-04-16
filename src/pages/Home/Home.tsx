@@ -8,6 +8,7 @@ import store, { RootState } from '../../store/store';
 import Modal from './components/Modal/Modal';
 import NavBar from './components/NavBar/NavBar';
 import LoadingP from '../Board/components/Loading/LoadingP';
+import { clearStore } from '../../store/modules/board/actions';
 
 export default function Home() {
   const [modalIsOpen, setModalIsOpen] = useState(false);
@@ -26,6 +27,7 @@ export default function Home() {
   }
   useEffect(() => {
     getBoards(dispatch);
+    clearStore();
   }, []);
   return (
     <>

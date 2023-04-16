@@ -7,6 +7,7 @@ const initialState = {
   lastEmptyList: 0,
   draggedCardPos: null,
   draggedCardTitle: '',
+  isItCard: false,
 };
 
 export default function reducer(state = initialState, action: { type: string; payload?: any }) {

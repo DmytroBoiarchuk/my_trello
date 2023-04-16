@@ -12,8 +12,8 @@ function App() {
         <Router>
           <Routes>
             <Route path="/" element={<Home />}></Route>
-            <Route path="/board/:board_id" element={<Board />}>
-              <Route path="/board/:board_id/card/:card_id/"></Route>
+            <Route path="/board/:board_id/*" element={<Board />}>
+              <Route path="card/:card_id/" element={<CardEditModalBig />}></Route>
             </Route>
           </Routes>
         </Router>

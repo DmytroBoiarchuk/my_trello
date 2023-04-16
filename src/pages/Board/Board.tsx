@@ -108,6 +108,7 @@ export default function Board() {
     });
     setWarning(false);
   }
+
   return (
     <>
       <NavBar />
@@ -115,7 +116,7 @@ export default function Board() {
         {showInput && (
           <input
             type="text"
-            maxLength={25}
+            maxLength={20}
             autoFocus
             className="board-input-boardName"
             defaultValue={boardTitle}

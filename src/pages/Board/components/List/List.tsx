@@ -11,6 +11,7 @@ import { slotsProps } from '../../../../common/types/types';
 import { setLastEmptyList } from '../../../../store/modules/slotData/actions';
 import { dropHandler } from '../../../../common/functions/dnd';
 import { BoardProps } from '../../../../common/interfaces/IBoard';
+import { Outlet } from 'react-router-dom';
 
 export default function List(props: { board_id: string; list_id: number; title: string; cards: ICard[] }) {
   const CardList = props.cards.map((key) => {
@@ -258,6 +259,7 @@ export default function List(props: { board_id: string; list_id: number; title: 
             </button>
           </form>
         )}
+        <Outlet />
       </div>
     </>
   );

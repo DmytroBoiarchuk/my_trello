@@ -17,9 +17,8 @@ import {
 } from '../../../../store/modules/slotData/actions';
 import { cardModalState, slotsProps } from '../../../../common/types/types';
 import { BoardProps } from '../../../../common/interfaces/IBoard';
-import { Link, useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { putCardData, setModalCardEditBig } from '../../../../store/modules/cardModal/actions';
-import CardEditModalBig from '../ModalCreating/CardEditModalBig';
 //
 const Card = (props: {
   list_title: string;
@@ -96,9 +95,12 @@ const Card = (props: {
     dragStarted(e, props.id);
   };
   const dragEndHandler = (e: React.DragEvent<HTMLDivElement>) => {
-    dragEnd(e, e.currentTarget.id);
+    if (e.currentTarget.className === 'card-style') {
+      dragEnd(e, e.currentTarget.id);
+    }
   };
   const dragEnterHandler = (e: React.DragEvent<HTMLDivElement>) => {
+    console.log(e.currentTarget);
     dragEnter(e, slotsData, props.position, props.list_id);
   };
   const dragOverHandler = (e: React.DragEvent<HTMLDivElement>) => {
@@ -129,17 +131,6 @@ const Card = (props: {
 
   return (
     <>
-      {cardModalData.isOpen && cardModalData.card.id === props.id && (
-        <CardEditModalBig
-          key={props.id}
-          position={props.position}
-          list_id={props.list_id}
-          list_title={props.list_title}
-          title={CardValue}
-          setTitle={setCardValue}
-          description={props.description}
-        />
-      )}
       {!isShow ? (
         <p
           id={props.id.toString()}

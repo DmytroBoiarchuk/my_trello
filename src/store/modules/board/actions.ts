@@ -212,7 +212,7 @@ export const addNewCard = async (
   description?: string
 ) => {
   try {
-    const descriptionCheck = description ? description : ' ';
+    const descriptionCheck = description ? description : '';
     await instance.post(`/board/${board_id}/card`, {
       title: title,
       list_id: list_id,
