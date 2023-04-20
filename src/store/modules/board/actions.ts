@@ -171,6 +171,7 @@ export const deleteCard = async (
   list_id: number
 ) => {
   try {
+    document.getElementById(`card_box_${card_id}`)!.style.display = 'none';
     for (let i = 0; i < lists.length; i++) {
       if (lists[i].id === list_id && lists[i].cards.length !== 0) {
         changePosAfterDeleting(dispatch, lists[i], card_id, board_id, list_id);
@@ -191,6 +192,7 @@ export const renameCard = async (
   title: string
 ) => {
   try {
+    store.dispatch({ type: 'PUT_RENAMED_TO_STORE', payload: { card_title: title, listId: list_id, cardId: card_id } });
     await instance.put(`/board/${board_id}/card/${card_id}`, {
       title: title,
       list_id,
@@ -212,6 +214,7 @@ export const addNewCard = async (
   description?: string
 ) => {
   try {
+    store.dispatch({ type: 'ADD_NEW_CARD_TO_STORE', payload: { title: title, list_id: list_id } });
     const descriptionCheck = description ? description : '';
     await instance.post(`/board/${board_id}/card`, {
       title: title,
@@ -257,6 +260,7 @@ export const getBoard = async (dispatch: Dispatch, id: string) => {
 };
 export const deleteListFetch = async (dispatch: Dispatch, board_id: string, list_id: number) => {
   try {
+    document.getElementById(`list_container_${list_id}`)!.style.display = 'none';
     await instance.delete(api.baseURL + '/board/' + board_id + '/list/' + list_id);
     await getBoard(dispatch, board_id);
   } catch (e) {
@@ -264,8 +268,9 @@ export const deleteListFetch = async (dispatch: Dispatch, board_id: string, list
     dispatch({ type: 'ERROR_ACTION_TYPE' });
   }
 };
-export const addList = async (dispatch: Dispatch, id: string, title?: { position: number; title: string }) => {
+export const addList = async (dispatch: Dispatch, id: string, title: { position: number; title: string }) => {
   try {
+    store.dispatch({ type: 'ADD_EMPTY_LIST', payload: title.title });
     await instance.post(api.baseURL + '/board/' + id + '/list', title);
     await getBoard(dispatch, id);
   } catch (e) {

@@ -127,7 +127,7 @@ export default function List(props: { board_id: string; list_id: number; title: 
   let slot = document.createElement('div');
 
   const overEmptyList = () => {
-    setLastEmptyList(props.list_id);
+    if (slotsData.isItCard) setLastEmptyList(props.list_id);
     const slots = document.querySelectorAll('.slot-style');
     slots.forEach((slot) => {
       if (slot.id !== `slot_in_empty_list_${props.list_id}`) slot.parentNode!.removeChild(slot);
@@ -141,7 +141,7 @@ export default function List(props: { board_id: string; list_id: number; title: 
           .getElementById(`slot_in_empty_list_${slotsData.lastEmptyList}`)!
           .parentNode!.removeChild(document.getElementById(`slot_in_empty_list_${slotsData.lastEmptyList}`) as Node);
       }
-      document.getElementById(`list_container_${props.list_id}`)!.children[1].appendChild(slot);
+      if (slotsData.isItCard) document.getElementById(`list_container_${props.list_id}`)!.children[1].appendChild(slot);
     }
   };
   useEffect(() => {
@@ -259,7 +259,6 @@ export default function List(props: { board_id: string; list_id: number; title: 
             </button>
           </form>
         )}
-        <Outlet />
       </div>
     </>
   );

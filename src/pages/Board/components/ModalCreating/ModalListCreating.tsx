@@ -1,6 +1,6 @@
 import React from 'react';
 
-const ModalCreating = (props: {
+const ModalListCreating = (props: {
   listTitle: string;
   buttonOnClick: (e: React.FormEvent, value: string) => void;
   defaultValue: string;
@@ -14,7 +14,7 @@ const ModalCreating = (props: {
       <form className="list-creating-modal-window">
         <input
           type="text"
-          maxLength={15}
+          maxLength={16}
           autoFocus
           defaultValue={props.defaultValue}
           onChange={(e) => {
@@ -25,7 +25,7 @@ const ModalCreating = (props: {
           onKeyDown={(e) => props.onKeyDown(e, e.currentTarget.value)}
           onBlur={(e) => props.onBlur(e.target.value)}
         ></input>
-        <button onClick={(e) => props.buttonOnClick(e, props.listTitle)} className="submit-list-button">
+        <button type={'button'} onClick={(e) => props.buttonOnClick(e, props.listTitle)} className="submit-list-button">
           {props.modalTitle}
         </button>
       </form>
@@ -33,4 +33,4 @@ const ModalCreating = (props: {
   );
 };
 
-export default ModalCreating;
+export default ModalListCreating;

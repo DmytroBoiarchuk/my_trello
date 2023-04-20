@@ -14,6 +14,7 @@ import {
   setDraggedCardList,
   setDraggedCardPos,
   setPrevId,
+  isCardDragged,
 } from '../../../../store/modules/slotData/actions';
 import { cardModalState, slotsProps } from '../../../../common/types/types';
 import { BoardProps } from '../../../../common/interfaces/IBoard';
@@ -40,7 +41,6 @@ const Card = (props: {
   }, []);
   const { ref, isShow, setIsShow } = useOutsideAlerter(false);
   const [editCardValue, setEditCardValue] = useState(props.title);
-  const [CardValue, setCardValue] = useState(editCardValue);
   const [isWarning, setWarning] = useState(false);
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -62,7 +62,6 @@ const Card = (props: {
   const editCardButtonSaveClicked = (e: React.FormEvent) => {
     e.preventDefault();
     if (!validate(editCardValue)) {
-      setCardValue(editCardValue);
       setTimeout(() => renameCard(dispatch, props.board_id, props.list_id, props.id, editCardValue), 100);
       setIsShow(false);
     } else {
@@ -87,7 +86,8 @@ const Card = (props: {
     setWarning(false);
   }
   const dragStartHandler = (e: React.DragEvent<HTMLDivElement>) => {
-    putTitle(CardValue);
+    isCardDragged(true);
+    putTitle(props.title);
     putHeight(e.currentTarget.scrollHeight);
     setCurrentCard(+e.currentTarget.id);
     setDraggedCardList(props.list_id);
@@ -95,19 +95,18 @@ const Card = (props: {
     dragStarted(e, props.id);
   };
   const dragEndHandler = (e: React.DragEvent<HTMLDivElement>) => {
-    if (e.currentTarget.className === 'card-style') {
-      dragEnd(e, e.currentTarget.id);
-    }
+    dragEnd(e, e.currentTarget.id);
+    isCardDragged(false);
   };
   const dragEnterHandler = (e: React.DragEvent<HTMLDivElement>) => {
-    console.log(e.currentTarget);
-    dragEnter(e, slotsData, props.position, props.list_id);
+    if (slotsData.isItCard) dragEnter(e, slotsData, props.position, props.list_id);
   };
   const dragOverHandler = (e: React.DragEvent<HTMLDivElement>) => {
-    dragOver(e, slotsData, props.list_id, e.currentTarget.id, props.position, board, props.board_id, dispatch);
+    if (slotsData.isItCard)
+      dragOver(e, slotsData, props.list_id, e.currentTarget.id, props.position, board, props.board_id, dispatch);
   };
   const dragLeaveHandler = (e: React.DragEvent<HTMLDivElement>) => {
-    setPrevId(+e.currentTarget.id);
+    if (slotsData.isItCard) setPrevId(+e.currentTarget.id);
   };
   const onDragHandler = () => {
     let slots: NodeList = document.querySelectorAll('.slot-style');
@@ -117,17 +116,13 @@ const Card = (props: {
   };
   const dropHandler = (e: React.DragEvent<HTMLDivElement>) => {
     drop(e, slotsData, props.list_id, props.position, board, props.board_id, dispatch);
+    isCardDragged(false);
   };
   const onclickHandler = () => {
     putCardData({ id: props.id });
     setModalCardEditBig(true);
     navigate(`/board/${props.board_id}/card/${props.id}`);
   };
-  const { cardModalData } = useSelector(
-    (state: cardModalState): cardModalState => ({
-      cardModalData: state.cardModalData,
-    })
-  );
 
   return (
     <>
@@ -145,7 +140,7 @@ const Card = (props: {
           className="card-style"
           onClick={() => setTimeout(() => onclickHandler())}
         >
-          {CardValue}
+          {props.title}
           <FaPencilAlt
             onClick={(e) => {
               openEditCardWindow(e);
@@ -156,10 +151,12 @@ const Card = (props: {
       ) : (
         <form ref={ref} className="card-edit-form">
           <input
-            defaultValue={CardValue}
+            defaultValue={props.title}
+            onChange={(e) => {
+              setEditCardValue(e.target.value);
+            }}
             autoFocus
             className="card-edit-input"
-            onChange={(e) => setEditCardValue(e.currentTarget.value)}
           />
           <div className="card-edit-button-container">
             <button onClick={(e) => editCardButtonSaveClicked(e)} className="card-edit-button">

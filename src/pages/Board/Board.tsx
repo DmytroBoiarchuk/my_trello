@@ -5,11 +5,11 @@ import List from './components/List/List';
 import { useDispatch, useSelector } from 'react-redux';
 import { changeBoardName, getBoard, getBoardTitle } from '../../store/modules/board/actions';
 import { IList } from '../../common/interfaces/IList';
-import { useParams } from 'react-router-dom';
+import { Outlet, useParams } from 'react-router-dom';
 import { addList } from '../../store/modules/board/actions';
 import { BoardProps } from '../../common/interfaces/IBoard';
 import { validate } from '../../common/functions/validate';
-import ModalCreating from './components/ModalCreating/ModalCreating';
+import ModalListCreating from './components/ModalCreating/ModalListCreating';
 import NavBar from '../Home/components/NavBar/NavBar';
 import { RootState } from '../../store/store';
 import LoadingP from './components/Loading/LoadingP';
@@ -70,7 +70,7 @@ export default function Board() {
   };
   const onBlurFunctionList = (value: string) => {
     setCashMemoryListInput(value);
-    setTimeout(() => setListCreatingInput(false), 100);
+    setTimeout(() => setListCreatingInput(false), 250);
   };
   const createListByEnter = (e: React.KeyboardEvent, value: string) => {
     if (e.key === 'Enter') {
@@ -139,7 +139,7 @@ export default function Board() {
           </button>
         )}
         {listCreatingInput && (
-          <ModalCreating
+          <ModalListCreating
             listTitle={listTitle}
             buttonOnClick={createList}
             defaultValue={cashMemoryListInput}
@@ -151,6 +151,7 @@ export default function Board() {
         )}
       </div>
       {loadingState.loading && <LoadingP />}
+      <Outlet />
     </>
   );
 }

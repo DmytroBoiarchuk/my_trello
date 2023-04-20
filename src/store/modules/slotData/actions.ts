@@ -6,9 +6,6 @@ export const putHeight = (height: number) => {
 export const setPrevId = (id: number) => {
   store.dispatch({ type: 'PREV_ID', payload: id });
 };
-export const deletePrevId = () => {
-  store.dispatch({ type: 'DELETE_ID' });
-};
 export const setCurrentCard = (id: number) => {
   store.dispatch({ type: 'SET_CURRENT_CARD', payload: id });
 };
@@ -26,4 +23,7 @@ export const setDraggedCardPos = (pos: number) => {
 };
 export const putTitle = (title: string) => {
   store.dispatch({ type: 'SET_TITLE_CARD', payload: title });
+};
+export const isCardDragged = (isCard: boolean) => {
+  store.dispatch({ type: 'IS_CARD_DRAGGED', payload: isCard });
 };

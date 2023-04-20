@@ -26,6 +26,7 @@ export interface slotsProps {
     lastEmptyList: number;
     draggedCardPos: number;
     draggedCardTitle: string;
+    isItCard: boolean;
   };
 }
 export interface cardModalState {

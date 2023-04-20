@@ -20,6 +20,7 @@ import { setModalCardEditBig } from '../../../../store/modules/cardModal/actions
 import { getBoards } from '../../../../store/modules/boards/actions';
 import { IList } from '../../../../common/interfaces/IList';
 import ModalInModal from '../Card/ModalInModal';
+import { cardModalState } from '../../../../common/types/types';
 
 const createListOptions = (board: { title?: string; lists: IList[] }) => {
   return board.lists.map((list: IList) => {
@@ -66,6 +67,16 @@ export default function CardEditModalBig() {
   const [list_id, setList_id] = useState(0);
   const [position, setPosition] = useState(0);
 
+  const { cardModalData } = useSelector(
+    (state: cardModalState): cardModalState => ({
+      cardModalData: state.cardModalData,
+    })
+  );
+  useEffect(() => {
+    if (cardModalData.isOpen) {
+      resizeTextarea(descriptionRef);
+    }
+  }, [cardModalData.isOpen]);
   const [list_title, setList_title] = useState('');
 
   const [title, setTitle] = useState('');
@@ -90,7 +101,6 @@ export default function CardEditModalBig() {
         });
       });
     });
-    resizeTextarea(descriptionRef);
   }, []);
   useEffect(() => {
     setSelectorLists(createListOptions(board));
@@ -179,7 +189,6 @@ export default function CardEditModalBig() {
     const textarea = ref.current;
     setTimeout(() => {
       if (textarea) {
-        console.log(textarea.scrollHeight);
         textarea.style.cssText = 'height:' + textarea.scrollHeight + 'px';
       }
     }, 150);

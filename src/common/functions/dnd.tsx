@@ -1,6 +1,6 @@
 import React from 'react';
 import { insertAfter } from './simple.function';
-import { setSlotPos } from '../../store/modules/slotData/actions';
+import { isCardDragged, setSlotPos } from '../../store/modules/slotData/actions';
 import { IList } from '../interfaces/IList';
 import { replaceCard } from '../../store/modules/board/actions';
 import { AnyAction, Dispatch } from 'redux';
@@ -188,6 +188,7 @@ export const dropHandler = (
     draggedCardList,
     startList?.cards
   );
+  isCardDragged(false);
 };
 export const dragOver = (
   e: React.DragEvent<HTMLDivElement>,
