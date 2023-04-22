@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import './cardEditModal.scss';
 import { useNavigate, useParams } from 'react-router-dom';
 import { AiOutlinePlus } from 'react-icons/ai';
+import { FcBookmark } from 'react-icons/fc';
 import { validate } from '../../../../common/functions/validate';
 import {
   addNewCard,
@@ -115,7 +116,6 @@ export default function CardEditModalBig() {
   const [currentList, setCurrentList] = useState<IList>();
   const [startList, setStartList] = useState<IList>();
   const [isCopying, setIsCopying] = useState<boolean>(false);
-  const [textareaValue, setTextareaValue] = useState<string>();
   const ignoreBlurRef = useRef(false);
   const descriptionRef = useRef<HTMLTextAreaElement>(null);
   const [temDescr, setTempDescr] = useState(description);
@@ -126,7 +126,7 @@ export default function CardEditModalBig() {
       ignoreBlurRef.current = true;
       document.getElementById(`descr_${card_id}`)?.blur();
       ignoreBlurRef.current = false;
-      setTextareaValue(temDescr);
+      setDescription(temDescr);
     } else {
       let el = descriptionRef.current;
       setTimeout(function () {
@@ -142,7 +142,6 @@ export default function CardEditModalBig() {
       if (!validate(value)) {
         if (value !== title) {
           setTitle(value);
-          //props.setTitle(value);
           renameCard(dispatch, board_id!, list_id, +card_id!, value);
         }
         setShowInputCardName(false);
@@ -150,14 +149,6 @@ export default function CardEditModalBig() {
         setWarning(true);
         setTimeout(() => setWarning(false), 1500);
       }
-    } else {
-      let el = descriptionRef.current;
-      setTimeout(function () {
-        if (el !== null) {
-          el.style.cssText = 'height:10px';
-          el.style.cssText = 'height:' + el.scrollHeight + 'px';
-        }
-      }, 1);
     }
   };
   const onBlurFunction = (e: React.FormEvent, value: string) => {
@@ -194,9 +185,6 @@ export default function CardEditModalBig() {
     }, 150);
   };
   useEffect(() => {
-    if (description && description !== ' ') {
-      setTextareaValue(description);
-    }
     board.lists.map((list) => {
       if (list.id === list_id) {
         setStartList(list);
@@ -335,7 +323,8 @@ export default function CardEditModalBig() {
                 inputElement.value,
                 +document.querySelectorAll('select')[1].value,
                 true,
-                description
+                description,
+                false
               );
             }, 100);
           })
@@ -360,9 +349,6 @@ export default function CardEditModalBig() {
       setTempDescr(e.currentTarget.value);
     }
   };
-  const textAreaOnChangeHandler = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setTextareaValue(e.currentTarget.value);
-  };
   const onClickChangeButtonHandler = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.currentTarget.classList.add('card-big-modal-button-disabled');
     setIsButtonDisabled(true);
@@ -376,6 +362,13 @@ export default function CardEditModalBig() {
       setIsShow(!isShow);
     }
   };
+  const handleInput = (e: React.FormEvent<HTMLTextAreaElement>) => {
+    if (e.currentTarget) {
+      e.currentTarget.style.height = 'auto';
+      e.currentTarget.style.height = e.currentTarget.scrollHeight - 7 + 'px';
+    }
+  };
+
   return (
     <div className="back-ground-modal-card" onClick={() => onBlurModalHandler()}>
       <div
@@ -385,20 +378,30 @@ export default function CardEditModalBig() {
         }}
       >
         <div className="other">
-          {showInputCardName ? (
-            <textarea
-              className="card-name-editor"
-              autoFocus
-              ref={descriptionRef}
-              onKeyDown={(e) => onKeyDownFunction(e, e.currentTarget.value)}
-              onBlur={(e) => onBlurFunction(e, e.target.value)}
-              defaultValue={title}
-            ></textarea>
-          ) : (
-            <h2 className="card-name-modal" onClick={() => setShowInputCardName(true)}>
-              {title}
-            </h2>
-          )}{' '}
+          <div className="title-container-big-modal">
+            <div className="mark"></div>
+            {showInputCardName ? (
+              <textarea
+                className="card-name-editor"
+                autoFocus
+                ref={descriptionRef}
+                onKeyDown={(e) => onKeyDownFunction(e, e.currentTarget.value)}
+                onBlur={(e) => onBlurFunction(e, e.target.value)}
+                defaultValue={title}
+                onInput={(e) => {
+                  handleInput(e);
+                }}
+                onFocus={(e) => {
+                  const target = e.target as HTMLTextAreaElement;
+                  target.style.height = target.scrollHeight - 7 + 'px';
+                }}
+              ></textarea>
+            ) : (
+              <h2 className="card-name-modal" onClick={() => setShowInputCardName(true)}>
+                {title}
+              </h2>
+            )}{' '}
+          </div>
           <p className="in-list">
             In list{' '}
             <span onClick={() => onClickInListHandler()} className="list-name-span">
@@ -425,9 +428,9 @@ export default function CardEditModalBig() {
             <p className="users-h">Users</p>
             <div className="users-container">
               <div className="circles">
-                <div className="circle red"></div>
-                <div className="circle green"></div>
-                <div className="circle blue"></div>
+                <div className="circle first"></div>
+                <div className="circle second"></div>
+                <div className="circle third"></div>
                 <div className="circle plus">
                   <AiOutlinePlus className="plus-icon" />
                 </div>
@@ -458,7 +461,6 @@ export default function CardEditModalBig() {
               }}
               onChange={(e) => {
                 setDescription(e.target.value);
-                textAreaOnChangeHandler(e);
               }}
               value={description}
               onBlur={(e) => onBlurDescriptionHandler(e)}

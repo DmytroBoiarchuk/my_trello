@@ -10,26 +10,39 @@
   background-color: rgba(0, 0, 0, 0.5);
   overflow: auto;
 }
-
+.title-container-big-modal{
+  display: flex;
+  flex-direction: row;
+}
+.mark{
+  background: url("mark.png");
+  width: 50px;
+  height: 99px;
+  background-size: 100% ;
+  margin-left: 20px;
+}
 .other{
-  width: 70%;
+  width: 75%;
   justify-content: flex-start;
 }
 
 .modal{
+  border: 2px solid black;
   z-index: 1000000;
   position: absolute;
   top: 35px;
-  left: calc(50% - 300px);
+  left: calc(50% - 350px);
   display: flex;
   flex-direction: row;
-  border-radius: 6px;
+  border-radius: 12px;
   box-shadow: -5px 5px 5px  black;
-  background-color: #e1dbdb;
-  width: 600px;
+  background: url("./1515.jpg");
+  opacity: 1;
+  width: 700px;
   overflow: auto;
 }
 .card-name-editor{
+overflow: hidden;
   resize: none;
   display: block;
   width: 377px;
@@ -37,25 +50,28 @@
   border: 1px solid black;
   font-family: "Goudy Old Style", monospace;
   color: black;
-  margin: 20px 0 0 20px;
-  background-color: #e1dbdb;
+  margin: 19px 0 0 20px;
+  background-color: rgba(225, 219, 219, 0);
 font-weight: 700;
+  min-height: 50px;
 }
 .card-name-modal{
+  display: block;
+  width: 377px;
   text-align: start;
   font-size: 45px;
   font-family: "Goudy Old Style", monospace;
   color: black;
-  margin: 23px 9px 7px 23px;
+  margin: 23px 0 0 23px;
   box-sizing: border-box;
   white-space: normal;
   word-break: break-word;
 }
 .in-list{
-  font-size: 20px;
+  font-size: 25px;
   font-family: "Goudy Old Style", monospace;
   text-align: start;
-  margin: 0 0 0 25px;
+  margin: 2px 0 0 20px;
   color: black;
 
 }
@@ -86,15 +102,12 @@ font-weight: 700;
   border-radius: 100px;
   margin: 2px 5px 2px 5px;
 }
-.red{
-  background-color: red;
-}
-.green{
-  background-color: green;
-}
-.blue{
-  background-color: blue;
-}
+.first{
+  background: rgba(0, 56, 255, 0.54);}
+.second{
+  background: rgba(112, 0, 255, 0.54);}
+.third{
+  background: rgba(15, 137, 57, 0.54);}
 .plus{
   display: flex;
   justify-content: center;
@@ -109,7 +122,7 @@ font-weight: 700;
 .card-big-modal-button{
   font-weight: 700;
   border: 0;
-  border-radius: 2px;
+  border-radius: 12px;
   background-color: #9b9b9b;
   margin: 5px 5px 5px 5px;
   width: 100px;
@@ -150,10 +163,10 @@ font-weight: 700;
 
 .description-detailed-before {
   border: 0;
-  background-color: #e1dbdb;
+  background-color: rgba(225, 219, 219, 0);
   display: block;
   width: 90%;
-  margin: 5px 0 40px 20px;
+  margin: 5px 0 55px 20px;
   resize: none;
   font-family: "Goudy Old Style", monospace;
   font-size: 20px;
@@ -161,7 +174,7 @@ font-weight: 700;
 }
 
 .description-detailed-before:focus{
-  background-color: white;
+  background-color: rgba(255, 255, 255, 0);
 }
 .description-detailed-before::-webkit-scrollbar {
   width: 10px;
@@ -175,17 +188,19 @@ font-weight: 700;
   margin-left: 20px;
   display: flex;
   flex-direction: column;
-  width: 30%;
+  width: 25%;
 }
 .actions-button{
-  width: 120px;
+  background: rgba(112, 143, 255, 0.71);
+  width: 150px;
+  height: 65px;
 }
 .actions-header{
   font-family: "Goudy Old Style", monospace;
   font-size: 27px;
   color: #625656;
   text-align: start;
-  margin: 75px 0 5px 20px;
+  margin: 100px 0 5px 35px;
 }
 .list-name-span{
   text-decoration: underline 1px;

@@ -211,10 +211,12 @@ export const addNewCard = async (
   title: string,
   list_id: number,
   doUpdateBoard: boolean,
-  description?: string
+  description?: string,
+  isCopying?: boolean
 ) => {
   try {
-    store.dispatch({ type: 'ADD_NEW_CARD_TO_STORE', payload: { title: title, list_id: list_id } });
+    if (isCopying === undefined)
+      store.dispatch({ type: 'ADD_NEW_CARD_TO_STORE', payload: { title: title, list_id: list_id } });
     const descriptionCheck = description ? description : '';
     await instance.post(`/board/${board_id}/card`, {
       title: title,
