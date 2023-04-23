@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import './cardEditModal.scss';
 import { useNavigate, useParams } from 'react-router-dom';
 import { AiOutlinePlus } from 'react-icons/ai';
+import { GrClose } from 'react-icons/gr';
 import { validate } from '../../../../common/functions/validate';
 import {
   changeCardDescription,
@@ -346,6 +347,7 @@ export default function CardEditModalBig() {
           </div>
         </div>
         <div className="actions">
+          <GrClose className="close-modal" onClick={() => onBlurModalHandler()} />
           <p className="actions-header">Actions</p>
           <button
             className="card-big-modal-button actions-button"
