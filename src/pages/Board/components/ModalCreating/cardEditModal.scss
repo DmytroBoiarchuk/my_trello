@@ -13,6 +13,7 @@
 .title-container-big-modal{
   display: flex;
   flex-direction: row;
+  align-items: flex-start;
 }
 .mark{
   background: url("mark.png");
@@ -41,6 +42,7 @@
   width: 700px;
   overflow: auto;
 }
+
 .card-name-editor{
 overflow: hidden;
   resize: none;
@@ -53,6 +55,7 @@ overflow: hidden;
   margin: 19px 0 0 20px;
   background-color: rgba(225, 219, 219, 0);
 font-weight: 700;
+  box-sizing: border-box;
   min-height: 50px;
 }
 .card-name-modal{

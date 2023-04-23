@@ -88,21 +88,22 @@ export default function CardEditModalBig() {
   const dispatch = useDispatch();
   useEffect(() => {
     getBoards(dispatch);
-    getBoard(dispatch, board_id!).then(() => {
-      board.lists.map((list) => {
-        list.cards.map((card) => {
-          if (card.id.toString() === card_id) {
-            setList_id(list.id);
-            setPosition(card.position);
-            setList_title(list.title);
-            setTitle(card.title);
-            setDescription(card.description);
-            setTempDescr(description);
-          }
-        });
+    getBoard(dispatch, board_id!);
+  }, []);
+  useEffect(() => {
+    board.lists.map((list: IList) => {
+      list.cards.map((card) => {
+        if (card.id.toString() === card_id) {
+          setList_id(list.id);
+          setPosition(card.position);
+          setList_title(list.title);
+          setTitle(card.title);
+          setDescription(card.description);
+          setTempDescr(description);
+        }
       });
     });
-  }, []);
+  }, [board]);
   useEffect(() => {
     setSelectorLists(createListOptions(board));
     setSelectorsPoses(calcListPoses(board, list_id, list_id));
@@ -156,7 +157,6 @@ export default function CardEditModalBig() {
       setTitle(value);
       if (value !== title) {
         setTitle(value);
-        //props.setTitle(value);
         renameCard(dispatch, board_id!, list_id, +card_id!, value);
       }
       setShowInputCardName(false);
@@ -384,7 +384,6 @@ export default function CardEditModalBig() {
               <textarea
                 className="card-name-editor"
                 autoFocus
-                ref={descriptionRef}
                 onKeyDown={(e) => onKeyDownFunction(e, e.currentTarget.value)}
                 onBlur={(e) => onBlurFunction(e, e.target.value)}
                 defaultValue={title}
@@ -393,7 +392,7 @@ export default function CardEditModalBig() {
                 }}
                 onFocus={(e) => {
                   const target = e.target as HTMLTextAreaElement;
-                  target.style.height = target.scrollHeight - 7 + 'px';
+                  target.style.height = target.scrollHeight + 'px';
                 }}
               ></textarea>
             ) : (
@@ -406,7 +405,7 @@ export default function CardEditModalBig() {
             In list{' '}
             <span onClick={() => onClickInListHandler()} className="list-name-span">
               {list_title}
-            </span>{' '}
+            </span>
           </p>
           {isShow && (
             <ModalInModal

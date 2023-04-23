@@ -7,7 +7,6 @@ import { AnyAction, Dispatch } from 'redux';
 import { ICard } from '../interfaces/ICard';
 export const dragStarted = (e: React.DragEvent<HTMLDivElement>, id: number) => {
   const box = document.getElementById(`card_box_${id}`);
-
   setTimeout(() => {
     box!.style.display = 'none';
   });
