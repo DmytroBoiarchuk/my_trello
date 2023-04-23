@@ -2,17 +2,13 @@ import React, { useEffect, useRef, useState } from 'react';
 import './cardEditModal.scss';
 import { useNavigate, useParams } from 'react-router-dom';
 import { AiOutlinePlus } from 'react-icons/ai';
-import { FcBookmark } from 'react-icons/fc';
 import { validate } from '../../../../common/functions/validate';
 import {
-  addNewCard,
   changeCardDescription,
   deleteCard,
   getBoard,
   getBoardForModal,
-  relocatePosBeforeReplacing,
   renameCard,
-  replaceCard,
 } from '../../../../store/modules/board/actions';
 import { useDispatch, useSelector } from 'react-redux';
 import { BoardProps, BoardsProps, IBoard, ReturnType } from '../../../../common/interfaces/IBoard';
@@ -22,39 +18,17 @@ import { getBoards } from '../../../../store/modules/boards/actions';
 import { IList } from '../../../../common/interfaces/IList';
 import ModalInModal from '../Card/ModalInModal';
 import { cardModalState } from '../../../../common/types/types';
+import {
+  calcListPoses,
+  createListOptions,
+  handleInput,
+  resizeTextarea,
+} from '../../../../common/functions/simple.function';
+import { movementHandler } from '../../../../common/functions/functions';
 
-const createListOptions = (board: { title?: string; lists: IList[] }) => {
-  return board.lists.map((list: IList) => {
-    return (
-      <option key={list.id} value={list.id}>
-        {list.title}
-      </option>
-    );
-  });
-};
-
-const calcListPoses = (resp: { title?: string; lists: IList[] }, list_id: number, current_list: number) => {
-  let selectors_poses = [];
-  let list_poses = 0;
-  resp.lists.map((list) => {
-    if (list.id === list_id) {
-      if (list_id !== current_list) {
-        list_poses = list.cards.length + 1;
-      } else {
-        list_poses = list.cards.length;
-      }
-    }
-  });
-  for (let i = 0; i < list_poses; i++) {
-    selectors_poses.push(
-      <option key={i} value={i}>
-        {i}
-      </option>
-    );
-  }
-  return selectors_poses;
-};
 export default function CardEditModalBig() {
+  let { card_id } = useParams();
+  let { board_id } = useParams();
   const { boards } = useSelector(
     (state: BoardsProps): ReturnType => ({
       boards: state.boards.boards,
@@ -65,27 +39,36 @@ export default function CardEditModalBig() {
       board: state.board,
     })
   );
-  const [list_id, setList_id] = useState(0);
-  const [position, setPosition] = useState(0);
-
   const { cardModalData } = useSelector(
     (state: cardModalState): cardModalState => ({
       cardModalData: state.cardModalData,
     })
   );
+  const [title, setTitle] = useState('');
+  const [description, setDescription] = useState<string | undefined>('');
+  const [list_id, setList_id] = useState(0);
+  const [position, setPosition] = useState(0);
+  const [isShow, setIsShow] = useState<boolean>(false);
+  const [isWarning, setWarning] = useState(false);
+  const [showInputCardName, setShowInputCardName] = useState(false);
+  const [selectorsLists, setSelectorLists] = useState<Array<JSX.Element>>([]);
+  const [selectorsPoses, setSelectorsPoses] = useState<Array<JSX.Element>>([]);
+  const [currentList, setCurrentList] = useState<IList>();
+  const [startList, setStartList] = useState<IList>();
+  const [isCopying, setIsCopying] = useState<boolean>(false);
+  const ignoreBlurRef = useRef(false);
+  const descriptionRef = useRef<HTMLTextAreaElement>(null);
+  const [temDescr, setTempDescr] = useState(description);
+  const [isButtonDisabled, setIsButtonDisabled] = useState(false);
+  const [list_title, setList_title] = useState('');
+
+  let navigate = useNavigate();
+  const dispatch = useDispatch();
   useEffect(() => {
     if (cardModalData.isOpen) {
       resizeTextarea(descriptionRef);
     }
   }, [cardModalData.isOpen]);
-  const [list_title, setList_title] = useState('');
-
-  const [title, setTitle] = useState('');
-  const [description, setDescription] = useState<string | undefined>('');
-
-  let { card_id } = useParams();
-  let { board_id } = useParams();
-  const dispatch = useDispatch();
   useEffect(() => {
     getBoards(dispatch);
     getBoard(dispatch, board_id!);
@@ -108,19 +91,13 @@ export default function CardEditModalBig() {
     setSelectorLists(createListOptions(board));
     setSelectorsPoses(calcListPoses(board, list_id, list_id));
   }, [list_id]);
-  const [isShow, setIsShow] = useState<boolean>(false);
-  const [isWarning, setWarning] = useState(false);
-  const [showInputCardName, setShowInputCardName] = useState(false);
-  let navigate = useNavigate();
-  const [selectorsLists, setSelectorLists] = useState<Array<JSX.Element>>([]);
-  const [selectorsPoses, setSelectorsPoses] = useState<Array<JSX.Element>>([]);
-  const [currentList, setCurrentList] = useState<IList>();
-  const [startList, setStartList] = useState<IList>();
-  const [isCopying, setIsCopying] = useState<boolean>(false);
-  const ignoreBlurRef = useRef(false);
-  const descriptionRef = useRef<HTMLTextAreaElement>(null);
-  const [temDescr, setTempDescr] = useState(description);
-  const [isButtonDisabled, setIsButtonDisabled] = useState(false);
+  useEffect(() => {
+    board.lists.map((list) => {
+      if (list.id === list_id) {
+        setStartList(list);
+      }
+    });
+  }, [showInputCardName]);
 
   const changeHandler = (e: React.KeyboardEvent) => {
     if (e.key === 'Escape') {
@@ -166,31 +143,7 @@ export default function CardEditModalBig() {
       setShowInputCardName(false);
     }
   };
-  if (isWarning) {
-    Swal.fire({
-      icon: 'error',
-      iconColor: '#da4c4c',
-      showConfirmButton: false,
-      showCloseButton: true,
-      text: 'Error: Prohibited symbols!',
-    });
-    setWarning(false);
-  }
-  const resizeTextarea = (ref: React.RefObject<HTMLTextAreaElement>) => {
-    const textarea = ref.current;
-    setTimeout(() => {
-      if (textarea) {
-        textarea.style.cssText = 'height:' + textarea.scrollHeight + 'px';
-      }
-    }, 150);
-  };
-  useEffect(() => {
-    board.lists.map((list) => {
-      if (list.id === list_id) {
-        setStartList(list);
-      }
-    });
-  }, [showInputCardName]);
+
   const onBlurModalHandler = () => {
     setModalCardEditBig(false);
     navigate(`/board/${board_id}`);
@@ -241,102 +194,7 @@ export default function CardEditModalBig() {
       }
     });
   };
-  const movementHandler = () => {
-    const newPlace = document.querySelectorAll('select');
-    if (newPlace[0].value !== board_id) {
-      relocatePosBeforeReplacing(
-        document.querySelectorAll('select')[0].value,
-        document.querySelectorAll('select')[1].value,
-        +document.querySelectorAll('select')[2].value
-      )
-        .then(() => {
-          const inputElement = document.getElementById('title_for_copy') as HTMLInputElement;
-          const card_name = isCopying ? inputElement.value : title;
-          setTimeout(() => {
-            addNewCard(
-              dispatch,
-              +document.querySelectorAll('select')[2].value,
-              document.querySelectorAll('select')[0].value,
-              card_name!,
-              +document.querySelectorAll('select')[1].value,
-              false,
-              description
-            );
-          }, 100);
-        })
-        .then(() => {
-          setTimeout(() => {
-            if (!isCopying) {
-              deleteCard(dispatch, board_id!, +card_id!, board.lists, list_id);
-            }
-            setModalCardEditBig(false);
-            navigate(`/board/${board_id}`);
-          }, 150);
-        });
-    } else {
-      if (!isCopying) {
-        if (newPlace[1].value === list_id.toString()) {
-          let neededPos = +newPlace[2].value;
-          if (+newPlace[2].value > position) {
-            neededPos = +newPlace[2].value + 1;
-          }
-          replaceCard(
-            board_id,
-            neededPos,
-            newPlace[1].value,
-            +card_id!,
-            dispatch,
-            startList,
-            position,
-            list_id,
-            startList?.cards
-          );
-          getBoard(dispatch, board_id);
-          setIsShow(false);
-        } else {
-          replaceCard(
-            board_id,
-            +newPlace[2].value,
-            newPlace[1].value,
-            +card_id!,
-            dispatch,
-            currentList,
-            position,
-            list_id,
-            startList?.cards
-          );
-        }
-        navigate(`/board/${board_id}`);
-      } else {
-        relocatePosBeforeReplacing(
-          document.querySelectorAll('select')[0].value,
-          document.querySelectorAll('select')[1].value,
-          +document.querySelectorAll('select')[2].value
-        )
-          .then(() => {
-            const inputElement = document.getElementById('title_for_copy') as HTMLInputElement;
-            setTimeout(() => {
-              addNewCard(
-                dispatch,
-                +document.querySelectorAll('select')[2].value,
-                document.querySelectorAll('select')[0].value,
-                inputElement.value,
-                +document.querySelectorAll('select')[1].value,
-                true,
-                description,
-                false
-              );
-            }, 100);
-          })
-          .then(() => {
-            setTimeout(() => {
-              setModalCardEditBig(false);
-              navigate(`/board/${board_id}`);
-            }, 150);
-          });
-      }
-    }
-  };
+
   const archivingHandler = () => {
     deleteCard(dispatch, board_id!, +card_id!, board.lists, list_id);
     onBlurModalHandler();
@@ -362,12 +220,17 @@ export default function CardEditModalBig() {
       setIsShow(!isShow);
     }
   };
-  const handleInput = (e: React.FormEvent<HTMLTextAreaElement>) => {
-    if (e.currentTarget) {
-      e.currentTarget.style.height = 'auto';
-      e.currentTarget.style.height = e.currentTarget.scrollHeight - 7 + 'px';
-    }
-  };
+
+  if (isWarning) {
+    Swal.fire({
+      icon: 'error',
+      iconColor: '#da4c4c',
+      showConfirmButton: false,
+      showCloseButton: true,
+      text: 'Error: Prohibited symbols!',
+    });
+    setWarning(false);
+  }
 
   return (
     <div className="back-ground-modal-card" onClick={() => onBlurModalHandler()}>
@@ -399,7 +262,7 @@ export default function CardEditModalBig() {
               <h2 className="card-name-modal" onClick={() => setShowInputCardName(true)}>
                 {title}
               </h2>
-            )}{' '}
+            )}
           </div>
           <p className="in-list">
             In list{' '}
@@ -419,7 +282,23 @@ export default function CardEditModalBig() {
               isCopying={isCopying}
               selectBoardHandler={selectBoardHandler}
               selectListHandler={selectListHandler}
-              movementHandler={movementHandler}
+              movementHandler={() =>
+                movementHandler(
+                  board_id!,
+                  isCopying,
+                  title,
+                  dispatch,
+                  description!,
+                  card_id!,
+                  board,
+                  list_id,
+                  navigate,
+                  position,
+                  startList,
+                  setIsShow,
+                  currentList
+                )
+              }
               setIsShow={setIsShow}
             />
           )}

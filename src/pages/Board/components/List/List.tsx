@@ -11,7 +11,6 @@ import { slotsProps } from '../../../../common/types/types';
 import { setLastEmptyList } from '../../../../store/modules/slotData/actions';
 import { dropHandler } from '../../../../common/functions/dnd';
 import { BoardProps } from '../../../../common/interfaces/IBoard';
-import { Outlet } from 'react-router-dom';
 
 export default function List(props: { board_id: string; list_id: number; title: string; cards: ICard[] }) {
   const CardList = props.cards.map((key) => {
@@ -114,16 +113,7 @@ export default function List(props: { board_id: string; list_id: number; title: 
       }, 1);
     }
   };
-  if (isWarning) {
-    Swal.fire({
-      icon: 'error',
-      iconColor: '#da4c4c',
-      showConfirmButton: false,
-      showCloseButton: true,
-      text: 'Error: Prohibited symbols!',
-    });
-    setWarning(false);
-  }
+
   let slot = document.createElement('div');
 
   const overEmptyList = () => {
@@ -143,6 +133,25 @@ export default function List(props: { board_id: string; list_id: number; title: 
       }
       if (slotsData.isItCard) document.getElementById(`list_container_${props.list_id}`)!.children[1].appendChild(slot);
     }
+  };
+  const removeListeners = () => {
+    document.getElementById(`list_container_${props.list_id}`)?.removeEventListener('dragover', overEmptyList);
+    slot.removeEventListener('dragover', (e) => {
+      e.preventDefault();
+    });
+    slot.removeEventListener('drop', (e) =>
+      dropHandler(
+        e,
+        props.list_id,
+        slotsData.currentCard,
+        board,
+        props.board_id,
+        dispatch,
+        slotsData.draggedCardList,
+        slotsData.draggedCardPos,
+        slotsData.draggedCardTitle
+      )
+    );
   };
   useEffect(() => {
     slot.classList.add('slot-style');
@@ -168,44 +177,22 @@ export default function List(props: { board_id: string; list_id: number; title: 
       document.getElementById(`list_container_${props.list_id}`)?.addEventListener('dragover', overEmptyList);
     }
     if (CardList.length > 0) {
-      document.getElementById(`list_container_${props.list_id}`)?.removeEventListener('dragover', overEmptyList);
-      slot.removeEventListener('dragover', (e) => {
-        e.preventDefault();
-      });
-      slot.removeEventListener('drop', (e) =>
-        dropHandler(
-          e,
-          props.list_id,
-          slotsData.currentCard,
-          board,
-          props.board_id,
-          dispatch,
-          slotsData.draggedCardList,
-          slotsData.draggedCardPos,
-          slotsData.draggedCardTitle
-        )
-      );
+      removeListeners();
     }
     return () => {
-      document.getElementById(`list_container_${props.list_id}`)?.removeEventListener('dragover', overEmptyList);
-      slot.removeEventListener('dragover', (e) => {
-        e.preventDefault();
-      });
-      slot.removeEventListener('drop', (e) =>
-        dropHandler(
-          e,
-          props.list_id,
-          slotsData.currentCard,
-          board,
-          props.board_id,
-          dispatch,
-          slotsData.draggedCardList,
-          slotsData.draggedCardPos,
-          slotsData.draggedCardTitle
-        )
-      );
+      removeListeners();
     };
   }, [slotsData.slotHeight, CardList.length, document.querySelectorAll(`.slot-style`)]);
+  if (isWarning) {
+    Swal.fire({
+      icon: 'error',
+      iconColor: '#da4c4c',
+      showConfirmButton: false,
+      showCloseButton: true,
+      text: 'Error: Prohibited symbols!',
+    });
+    setWarning(false);
+  }
   return (
     <>
       <div id={`list_container_${props.list_id}`} className="list-container">

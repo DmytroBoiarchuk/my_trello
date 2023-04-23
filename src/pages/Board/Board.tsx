@@ -21,6 +21,7 @@ export default function Board() {
       board: state.board,
     })
   );
+  let { board_id } = useParams();
   let loadingState = useSelector((state: RootState) => state.loading);
   const [boardTitle, setTitle] = useState('');
   const [showInput, setShowInput] = useState(false);
@@ -36,7 +37,6 @@ export default function Board() {
     getBoard(dispatch, board_id || '');
   }, []);
 
-  let { board_id } = useParams();
   let listArr = null;
   if (board.lists) {
     listArr = board.lists.map((key: IList) => {
@@ -72,20 +72,6 @@ export default function Board() {
     setCashMemoryListInput(value);
     setTimeout(() => setListCreatingInput(false), 250);
   };
-  const createListByEnter = (e: React.KeyboardEvent, value: string) => {
-    if (e.key === 'Enter') {
-      if (!validate(value)) {
-        addList(dispatch, board_id || '', { title: value, position: 0 });
-        setCashMemoryListInput('');
-        setListTitle('');
-        setListCreatingInput(false);
-      } else {
-        e.preventDefault();
-        setWarning(true);
-        setTimeout(() => setWarning(false), 1500);
-      }
-    }
-  };
   const createList = (e: React.FormEvent, value: string) => {
     if (!validate(value)) {
       addList(dispatch, board_id || '', { title: value, position: 0 });
@@ -98,6 +84,12 @@ export default function Board() {
       setTimeout(() => setWarning(false), 1500);
     }
   };
+  const createListByEnter = (e: React.KeyboardEvent, value: string) => {
+    if (e.key === 'Enter') {
+      createList(e, value);
+    }
+  };
+
   if (isWarning) {
     Swal.fire({
       icon: 'error',

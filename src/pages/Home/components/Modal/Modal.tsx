@@ -9,6 +9,8 @@ interface ModalIsOpen {
 }
 
 const Modal = ({ openCloseModal }: ModalIsOpen) => {
+  const [value, setValue] = useState('');
+  const [error, setError] = useState('');
   const submitHandler = (e: React.FormEvent) => {
     e.preventDefault();
   };
@@ -20,9 +22,6 @@ const Modal = ({ openCloseModal }: ModalIsOpen) => {
     store.dispatch(createBoard(value));
     openCloseModal();
   };
-  const [value, setValue] = useState('');
-  const [error, setError] = useState('');
-
   return (
     <>
       <div>

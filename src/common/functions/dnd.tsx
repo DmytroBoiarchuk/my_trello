@@ -79,28 +79,18 @@ export const dropHandler = (
       currentList = currentListArr[i];
     }
   }
-  let neededPos: number | undefined;
+  let neededPos: number | undefined = 0;
 
   if (e.target.id.slice(0, 4) === 'slot') {
-    const neededPosArr = currentList?.cards.map((card) => {
+    currentList?.cards.map((card) => {
       if (e.target.nextSibling === null) {
-        return currentList?.cards.length;
+        neededPos = currentList?.cards.length;
+        return;
       }
       if (card.id === +e.target.nextSibling.id.slice(9)) {
-        return card.position;
+        neededPos = card.position;
       }
     });
-
-    if (neededPosArr !== undefined) {
-      if (neededPosArr.length === 0) {
-        neededPos = 0;
-      }
-      for (let i = 0; i < neededPosArr.length; i++) {
-        if (neededPosArr[i] !== undefined) {
-          neededPos = neededPosArr[i];
-        }
-      }
-    }
   } else {
     let arr = e.target.parentNode.parentNode.children;
     for (let i = 0; i < arr.length; i++) {
@@ -109,17 +99,13 @@ export const dropHandler = (
       }
     }
   }
-  let startListArr = board.lists.map((list) => {
+  let startList: IList | undefined;
+  board.lists.map((list) => {
     if (list.id === draggedCardList) {
-      return list;
+      startList = list;
     }
   });
-  let startList: IList | undefined;
-  for (let i = 0; i < startListArr.length; i++) {
-    if (startListArr[i] !== undefined) {
-      startList = startListArr[i];
-    }
-  }
+
   let lists: { id: number; cards: ICard[] }[] = [];
   board.lists.map((list) => {
     if (list_id !== draggedCardList) {
@@ -206,7 +192,7 @@ export const dragOver = (
   position: number,
   board: { title: string; lists: IList[] },
   board_id: string,
-  dispatch: Dispatch<AnyAction>
+  dispatch: Dispatch
 ) => {
   e.preventDefault();
   let midlOfCard = e.currentTarget.scrollHeight / 2 + e.currentTarget.getBoundingClientRect().y;

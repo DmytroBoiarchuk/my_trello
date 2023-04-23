@@ -20,17 +20,3 @@ export interface BoardsProps {
 export interface ReturnType {
   boards: IBoard[];
 }
-export interface CardsProps {
-  board: {
-    title: string;
-    lists: [
-      IList: {
-        cards: [
-          ICard: {
-            position: number;
-          }
-        ];
-      }
-    ];
-  };
-}

@@ -1,3 +1,5 @@
+import React from 'react';
+
 export const validate = (value: string) => {
   if (value.trim().length === 0) {
     return true;

@@ -1,11 +1,8 @@
 import React from 'react';
 import './boardAtHome.scss';
-import { Link, Route, Routes } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { deleteBoard } from '../../../../store/modules/boards/actions';
 import store from '../../../../store/store';
-import Board from '../../../Board/Board';
-import { useDispatch } from 'react-redux';
-import { type } from 'os';
 
 const BoardAtHome = (props: { id: number; title: string }) => {
   return (

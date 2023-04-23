@@ -3,7 +3,6 @@ import { api } from '../common/constants';
 import { setLoading } from '../store/modules/loading/actions';
 import Swal from 'sweetalert2';
 
-//123
 const instance = axios.create({
   baseURL: api.baseURL,
   headers: {

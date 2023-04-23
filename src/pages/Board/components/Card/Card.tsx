@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { FaPencilAlt } from 'react-icons/fa';
-import { deleteCard, getBoard, getBoardTitle, renameCard } from '../../../../store/modules/board/actions';
+import { deleteCard, renameCard } from '../../../../store/modules/board/actions';
 import './card.scss';
 import { useDispatch, useSelector } from 'react-redux';
 import { validate } from '../../../../common/functions/validate';
@@ -16,11 +16,11 @@ import {
   setPrevId,
   isCardDragged,
 } from '../../../../store/modules/slotData/actions';
-import { cardModalState, slotsProps } from '../../../../common/types/types';
+import { slotsProps } from '../../../../common/types/types';
 import { BoardProps } from '../../../../common/interfaces/IBoard';
 import { useNavigate, useParams } from 'react-router-dom';
 import { putCardData, setModalCardEditBig } from '../../../../store/modules/cardModal/actions';
-//
+
 const Card = (props: {
   list_title: string;
   position: number;
@@ -31,14 +31,6 @@ const Card = (props: {
   description: string | undefined;
 }) => {
   let { card_id } = useParams();
-  useEffect(() => {
-    if (card_id) {
-      putCardData({ id: +card_id });
-      setModalCardEditBig(true);
-    } else {
-      setModalCardEditBig(false);
-    }
-  }, []);
   const { ref, isShow, setIsShow } = useOutsideAlerter(false);
   const [editCardValue, setEditCardValue] = useState(props.title);
   const [isWarning, setWarning] = useState(false);
@@ -54,7 +46,14 @@ const Card = (props: {
       board: state.board,
     })
   );
-
+  useEffect(() => {
+    if (card_id) {
+      putCardData({ id: +card_id });
+      setModalCardEditBig(true);
+    } else {
+      setModalCardEditBig(false);
+    }
+  }, []);
   const openEditCardWindow = (e: React.MouseEvent<SVGElement>) => {
     e.stopPropagation();
     setIsShow(true);
@@ -75,16 +74,7 @@ const Card = (props: {
     deleteCard(dispatch, props.board_id, props.id, board.lists, props.list_id);
     setIsShow(false);
   };
-  if (isWarning) {
-    Swal.fire({
-      icon: 'error',
-      iconColor: '#da4c4c',
-      showConfirmButton: false,
-      showCloseButton: true,
-      text: 'Error: Prohibited symbols!',
-    });
-    setWarning(false);
-  }
+
   const dragStartHandler = (e: React.DragEvent<HTMLDivElement>) => {
     isCardDragged(true);
     putTitle(props.title);
@@ -123,7 +113,16 @@ const Card = (props: {
     setModalCardEditBig(true);
     navigate(`/board/${props.board_id}/card/${props.id}`);
   };
-
+  if (isWarning) {
+    Swal.fire({
+      icon: 'error',
+      iconColor: '#da4c4c',
+      showConfirmButton: false,
+      showCloseButton: true,
+      text: 'Error: Prohibited symbols!',
+    });
+    setWarning(false);
+  }
   return (
     <>
       {!isShow ? (
