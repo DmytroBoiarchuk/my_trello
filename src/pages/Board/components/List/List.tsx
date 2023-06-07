@@ -1,37 +1,26 @@
-import { ICard } from '../../../../common/interfaces/ICard';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { JSX, useEffect, useRef, useState } from 'react';
 import { BsThreeDots } from 'react-icons/bs';
+import { useDispatch, useSelector } from 'react-redux';
+import Swal from 'sweetalert2';
 import Card from '../Card/Card';
 import { renameList, deleteListFetch, addNewCard } from '../../../../store/modules/board/actions';
-import { useDispatch, useSelector } from 'react-redux';
-import { validate } from '../../../../common/functions/validate';
+import { inputValidation } from '../../../../common/functions/inputValidation';
 import useOutsideAlerter from '../../../../common/Hooks/useOutsideAlerter';
-import Swal from 'sweetalert2';
-import { slotsProps } from '../../../../common/types/types';
-import { setLastEmptyList } from '../../../../store/modules/slotData/actions';
-import { dropHandler } from '../../../../common/functions/dnd';
-import { BoardProps } from '../../../../common/interfaces/IBoard';
+import { BoardProps, SlotsProps } from '../../../../common/types/types';
+import { setCurrentList } from '../../../../store/modules/slotData/actions';
+import { dropHandler } from '../../../../common/functions/dragAndDropFunctions';
 
-export default function List(props: { board_id: string; list_id: number; title: string; cards: ICard[] }) {
-  const CardList = props.cards.map((key) => {
-    return (
-      <div key={key.id} className="card-box" id={`card_box_${key.id}`}>
-        <Card
-          list_title={props.title}
-          position={key.position}
-          board_id={props.board_id}
-          list_id={props.list_id}
-          key={key.id}
-          id={key.id}
-          title={key.title}
-          description={key.description}
-        />
-      </div>
-    );
-  });
-
+export default function List({
+  board_id,
+  list_id,
+  title,
+}: {
+  board_id: string;
+  list_id: number;
+  title: string;
+}): JSX.Element {
   const { slotsData } = useSelector(
-    (state: slotsProps): slotsProps => ({
+    (state: SlotsProps): SlotsProps => ({
       slotsData: state.slotsData,
     })
   );
@@ -40,149 +29,118 @@ export default function List(props: { board_id: string; list_id: number; title: 
       board: state.board,
     })
   );
+  const [CardList, setCardList] = useState<JSX.Element[]>([]);
+  useEffect(() => {
+    board.lists.forEach((list) => {
+      if (list.id === list_id) {
+        setCardList(
+          list.cards.map((card) => (
+            <Card
+              position={card.position}
+              board_id={board_id}
+              list_id={list_id}
+              key={card.id}
+              id={card.id}
+              title={card.title}
+            />
+          ))
+        );
+      }
+    });
+  }, [board.lists]);
   const referenceForCartInput = useRef<HTMLTextAreaElement>(null);
   const { ref, isShow, setIsShow } = useOutsideAlerter(false);
   const [showInputListName, setShowInputListName] = useState(false);
-  const [listName, setListName] = useState(props.title);
+  const [listName, setListName] = useState(title);
   const [isWarning, setWarning] = useState(false);
   const [listMenu, setListMenu] = useState(false);
   const [cardInputValue, setCardInputValue] = useState('');
+  const [isSlotVisible, setSlotVisibility] = useState<boolean>(false);
+  const listContainerRef = useRef<HTMLDivElement>(null);
+  const slotRef = useRef<HTMLDivElement>(null);
+
   const dispatch = useDispatch();
-  const onBlurFunction = (e: React.FormEvent, value: string) => {
-    if (!validate(value)) {
+  const validationHandler = (value: string): void => {
+    if (!inputValidation(value)) {
       if (value !== listName) {
         setListName(value);
-        renameList(dispatch, props.board_id, props.list_id, value);
+        renameList(dispatch, board_id, list_id, value).catch(() => {
+          dispatch({ type: 'ERROR_ACTION_TYPE' });
+        });
       }
       setShowInputListName(false);
-    } else {
-      setWarning(true);
-      setTimeout(() => setWarning(false), 1500);
-      setShowInputListName(false);
+      return;
     }
+    setWarning(true);
+    setTimeout(() => setWarning(false), 1500);
   };
-  const onKeyDownFunction = (e: React.KeyboardEvent, value: string) => {
+  const onBlurFunction = (e: React.FormEvent, value: string): void => {
+    validationHandler(value);
+    if (inputValidation(value)) setShowInputListName(false);
+  };
+  const onKeyDownFunction = (e: React.KeyboardEvent, value: string): void => {
     if (e.key === 'Enter') {
-      if (!validate(value)) {
-        if (value !== listName) {
-          setListName(value);
-          renameList(dispatch, props.board_id, props.list_id, value);
-        }
-        setShowInputListName(false);
-      } else {
-        setWarning(true);
-        setTimeout(() => setWarning(false), 1500);
-      }
+      validationHandler(value);
     }
   };
-  const deleteList = () => {
-    deleteListFetch(dispatch, props.board_id, props.list_id);
+  const deleteList = (): void => {
+    if (listContainerRef.current !== null) listContainerRef.current.style.display = 'none';
+    deleteListFetch(dispatch, board_id, list_id).catch(() => {
+      dispatch({ type: 'ERROR_ACTION_TYPE' });
+    });
     setListMenu(false);
   };
-  const submitFunction = (e: React.FormEvent) => {
+  const submitFunction = (e: React.FormEvent): void => {
     e.preventDefault();
-    if (!validate(cardInputValue)) {
-      addNewCard(dispatch, CardList.length, props.board_id, cardInputValue, props.list_id, true);
+    if (!inputValidation(cardInputValue)) {
+      addNewCard(dispatch, CardList.length, board_id, cardInputValue, list_id, true).catch(() => {
+        dispatch({ type: 'ERROR_ACTION_TYPE' });
+      });
       setCardInputValue('');
       setIsShow(false);
-    } else {
+      return;
+    }
+    setWarning(true);
+    setTimeout(() => setWarning(false), 1500);
+    setCardInputValue('');
+  };
+  const enterPressedCard = (e: React.KeyboardEvent): void => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      if (!inputValidation(cardInputValue)) {
+        addNewCard(dispatch, CardList.length, board_id, cardInputValue, list_id, true).catch(() => {
+          dispatch({ type: 'ERROR_ACTION_TYPE' });
+        });
+        setIsShow(false);
+        setCardInputValue('');
+        return;
+      }
       setWarning(true);
       setTimeout(() => setWarning(false), 1500);
       setCardInputValue('');
+      return;
     }
-  };
-  const enterPressedCard = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') {
-      e.preventDefault();
-      if (!validate(cardInputValue)) {
-        addNewCard(dispatch, CardList.length, props.board_id, cardInputValue, props.list_id, true);
-        setIsShow(false);
-        setCardInputValue('');
-      } else {
-        setWarning(true);
-        setTimeout(() => setWarning(false), 1500);
-        setCardInputValue('');
+    const el = referenceForCartInput.current;
+    setTimeout(() => {
+      if (el !== null) {
+        el.style.cssText = 'height:auto; padding:0';
+        el.style.cssText = `height:${el.scrollHeight}px`;
       }
-    } else {
-      let el = referenceForCartInput.current;
-      setTimeout(function () {
-        if (el !== null) {
-          el.style.cssText = 'height:auto; padding:0';
-          el.style.cssText = 'height:' + el.scrollHeight + 'px';
-        }
-      }, 1);
-    }
+    }, 1);
   };
-
-  let slot = document.createElement('div');
-
-  const overEmptyList = () => {
-    if (slotsData.isItCard) setLastEmptyList(props.list_id);
-    const slots = document.querySelectorAll('.slot-style');
-    slots.forEach((slot) => {
-      if (slot.id !== `slot_in_empty_list_${props.list_id}`) slot.parentNode!.removeChild(slot);
-    });
-    if (!document.getElementById(`slot_in_empty_list_${props.list_id}`)) {
-      if (
-        document.getElementById(`slot_in_empty_list_${slotsData.lastEmptyList}`) &&
-        slotsData.lastEmptyList !== props.list_id
-      ) {
-        document
-          .getElementById(`slot_in_empty_list_${slotsData.lastEmptyList}`)!
-          .parentNode!.removeChild(document.getElementById(`slot_in_empty_list_${slotsData.lastEmptyList}`) as Node);
-      }
-      if (slotsData.isItCard) document.getElementById(`list_container_${props.list_id}`)!.children[1].appendChild(slot);
-    }
-  };
-  const removeListeners = () => {
-    document.getElementById(`list_container_${props.list_id}`)?.removeEventListener('dragover', overEmptyList);
-    slot.removeEventListener('dragover', (e) => {
-      e.preventDefault();
-    });
-    slot.removeEventListener('drop', (e) =>
-      dropHandler(
-        e,
-        props.list_id,
-        slotsData.currentCard,
-        board,
-        props.board_id,
-        dispatch,
-        slotsData.draggedCardList,
-        slotsData.draggedCardPos,
-        slotsData.draggedCardTitle
-      )
-    );
+  const overEmptyList = (): void => {
+    setSlotVisibility(true);
+    if (slotRef.current) slotRef.current.style.height = `${slotsData.slotHeight}px`;
   };
   useEffect(() => {
-    slot.classList.add('slot-style');
-    slot.style.height = slotsData.slotHeight + 'px';
-    slot.id = `slot_in_empty_list_${props.list_id}`;
-    slot.addEventListener('dragover', (e) => {
-      e.preventDefault();
-    });
-    slot.addEventListener('drop', (e) =>
-      dropHandler(
-        e,
-        props.list_id,
-        slotsData.currentCard,
-        board,
-        props.board_id,
-        dispatch,
-        slotsData.draggedCardList,
-        slotsData.draggedCardPos,
-        slotsData.draggedCardTitle
-      )
-    );
-    if (CardList.length === 0 && slotsData.slotHeight !== 0) {
-      document.getElementById(`list_container_${props.list_id}`)?.addEventListener('dragover', overEmptyList);
+    if (CardList.length === 0 && slotsData.isCardDragged) {
+      listContainerRef.current?.addEventListener('dragover', overEmptyList);
     }
-    if (CardList.length > 0) {
-      removeListeners();
+    if (!slotsData.isCardDragged) {
+      listContainerRef.current?.removeEventListener('dragover', overEmptyList);
+      setSlotVisibility(false);
     }
-    return () => {
-      removeListeners();
-    };
-  }, [slotsData.slotHeight, CardList.length, document.querySelectorAll(`.slot-style`)]);
+  }, [slotsData.isCardDragged]);
   if (isWarning) {
     Swal.fire({
       icon: 'error',
@@ -194,59 +152,88 @@ export default function List(props: { board_id: string; list_id: number; title: 
     setWarning(false);
   }
   return (
-    <>
-      <div id={`list_container_${props.list_id}`} className="list-container">
-        {showInputListName ? (
-          <input
-            maxLength={15}
-            className="list-name-input"
-            autoFocus
-            onKeyDown={(e) => onKeyDownFunction(e, e.currentTarget.value)}
-            onBlur={(e) => onBlurFunction(e, e.target.value)}
-            defaultValue={listName}
-          ></input>
-        ) : (
-          <h2 className="list-container-header" onClick={() => setShowInputListName(true)}>
-            {listName}
-          </h2>
-        )}
-        <div className="cards" id={props.list_id.toString()}>
-          {CardList}
-        </div>
-        <BsThreeDots onClick={() => setListMenu(!listMenu)} className="menu-dots" />
-        {listMenu && (
-          <div className="list-menu">
-            <button onClick={() => deleteList()} className="delete-list-button">
-              Delete list
-            </button>
-          </div>
-        )}
-        {!isShow && (
-          <button onClick={() => setIsShow(!isShow)} className="add-card-button">
-            + Add card
-          </button>
-        )}
-        {isShow && (
-          <form ref={ref} className="from-for-card">
-            <textarea
-              ref={referenceForCartInput}
-              id="resizable"
-              autoFocus
-              onChange={(e) => {
-                setCardInputValue(e.currentTarget.value);
-              }}
-              placeholder="Enter a card..."
-              className="input-for-card"
-              onKeyDown={(e) => {
-                enterPressedCard(e);
-              }}
-            />
-            <button onClick={(e) => submitFunction(e)} className="submit-button-card">
-              Submit
-            </button>
-          </form>
+    <div
+      onDragEnter={(): void => {
+        dispatch(setCurrentList(list_id));
+      }}
+      ref={listContainerRef}
+      id={`list_container_${list_id}`}
+      className="list-container"
+    >
+      {showInputListName ? (
+        <input
+          maxLength={15}
+          className="list-name-input"
+          autoFocus
+          onKeyDown={(e): void => onKeyDownFunction(e, e.currentTarget.value)}
+          onBlur={(e): void => onBlurFunction(e, e.target.value)}
+          defaultValue={listName}
+        />
+      ) : (
+        <h2 className="list-container-header" onClick={(): void => setShowInputListName(true)}>
+          {listName}
+        </h2>
+      )}
+      <div className="cards" id={list_id.toString()}>
+        {CardList}
+        {CardList.length === 0 && isSlotVisible && slotsData.currentList === list_id && (
+          <div
+            draggable
+            onDragOver={(e): void => {
+              e.preventDefault();
+            }}
+            onDrop={(e): void =>
+              dropHandler(
+                e,
+                list_id,
+                slotsData.currentCard,
+                board,
+                board_id,
+                dispatch,
+                slotsData.draggedCardList,
+                slotsData.draggedCardPos,
+                slotsData.draggedCardTitle,
+                0
+              )
+            }
+            ref={slotRef}
+            className="slot-style"
+          />
         )}
       </div>
-    </>
+      <BsThreeDots onClick={(): void => setListMenu(!listMenu)} className="menu-dots" />
+      {listMenu && (
+        <div className="list-menu">
+          <button onClick={(): void => deleteList()} className="delete-list-button">
+            Delete list
+          </button>
+        </div>
+      )}
+      {!isShow && (
+        <button onClick={(): void => setIsShow(!isShow)} className="add-card-button">
+          + Add card
+        </button>
+      )}
+      {isShow && (
+        <form ref={ref} className="from-for-card">
+          <textarea
+            ref={referenceForCartInput}
+            id="resizable"
+            autoFocus
+            onChange={(e): void => {
+              setCardInputValue(e.currentTarget.value);
+            }}
+            placeholder="Enter a card..."
+            className="input-for-card"
+            onKeyDown={(e): void => {
+              enterPressedCard(e);
+            }}
+          />
+          <button onClick={(e): void => submitFunction(e)} className="submit-button-card">
+            Submit
+          </button>
+        </form>
+      )}
+    </div>
   );
 }

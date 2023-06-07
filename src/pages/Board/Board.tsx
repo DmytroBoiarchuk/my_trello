@@ -1,28 +1,27 @@
-import React, { useEffect, useState } from 'react';
+import React, { JSX, useEffect, useState } from 'react';
 import './board.scss';
 import './components/List/list.scss';
-import List from './components/List/List';
 import { useDispatch, useSelector } from 'react-redux';
-import { changeBoardName, getBoard, getBoardTitle } from '../../store/modules/board/actions';
-import { IList } from '../../common/interfaces/IList';
 import { Outlet, useParams } from 'react-router-dom';
-import { addList } from '../../store/modules/board/actions';
-import { BoardProps } from '../../common/interfaces/IBoard';
-import { validate } from '../../common/functions/validate';
-import ModalListCreating from './components/ModalCreating/ModalListCreating';
+import Swal from 'sweetalert2';
+import List from './components/List/List';
+import { changeBoardName, getBoard, getBoardTitle, addList } from '../../store/modules/board/actions';
+import { IList } from '../../common/interfaces/IList';
+import { inputValidation } from '../../common/functions/inputValidation';
+import ModalListCreating from './components/Modals/ModalListCreating';
 import NavBar from '../Home/components/NavBar/NavBar';
 import { RootState } from '../../store/store';
-import LoadingP from './components/Loading/LoadingP';
-import Swal from 'sweetalert2';
+import Loading from './components/Loading/Loading';
+import { BoardProps } from '../../common/types/types';
 
-export default function Board() {
+export default function Board(): JSX.Element {
   const { board } = useSelector(
     (state: BoardProps): BoardProps => ({
       board: state.board,
     })
   );
-  let { board_id } = useParams();
-  let loadingState = useSelector((state: RootState) => state.loading);
+  const { boardId } = useParams();
+  const loadingState = useSelector((state: RootState) => state.loading);
   const [boardTitle, setTitle] = useState('');
   const [showInput, setShowInput] = useState(false);
   const [isWarning, setWarning] = useState(false);
@@ -30,66 +29,72 @@ export default function Board() {
   const [cashMemoryListInput, setCashMemoryListInput] = useState('');
   const [listTitle, setListTitle] = useState('');
   const dispatch = useDispatch();
+  let listArr = null;
   useEffect(() => {
-    getBoardTitle(dispatch, board_id || '').then((resp) => {
+    getBoardTitle(dispatch, boardId || '').then((resp) => {
       setTitle(resp);
     });
-    getBoard(dispatch, board_id || '');
-  }, []);
-
-  let listArr = null;
-  if (board.lists) {
-    listArr = board.lists.map((key: IList) => {
-      return <List key={key.id} board_id={board_id || ''} list_id={key.id} title={key.title} cards={key.cards} />;
+    getBoard(dispatch, boardId || '').catch(() => {
+      dispatch({ type: 'ERROR_ACTION_TYPE' });
     });
+  }, []);
+  if (board.lists) {
+    listArr = board.lists.map((key: IList) => (
+      <List key={key.id} board_id={boardId || ''} list_id={key.id} title={key.title} />
+    ));
   }
-  const renameBoardByEnter = (e: React.KeyboardEvent, value: string) => {
+  const renameBoardByEnter = (e: React.KeyboardEvent, value: string): void => {
     if (e.key === 'Enter') {
-      if (!validate(value)) {
+      if (!inputValidation(value)) {
         setTitle(value);
         setShowInput(false);
-        changeBoardName(dispatch, board_id || '', value);
-      } else {
-        setTitle(board.title);
-        setWarning(true);
-        setTimeout(() => setWarning(false), 1500);
+        changeBoardName(dispatch, boardId || '', value).catch(() => {
+          dispatch({ type: 'ERROR_ACTION_TYPE' });
+        });
+        return;
       }
-    }
-  };
-  const renameBoard = (value: string) => {
-    if (!validate(value)) {
-      setTitle(value);
-      setShowInput(false);
-      changeBoardName(dispatch, board_id || '', value);
-    } else {
-      setShowInput(false);
       setTitle(board.title);
       setWarning(true);
       setTimeout(() => setWarning(false), 1500);
     }
   };
-  const onBlurFunctionList = (value: string) => {
+  const renameBoard = (value: string): void => {
+    if (!inputValidation(value)) {
+      setTitle(value);
+      setShowInput(false);
+      changeBoardName(dispatch, boardId || '', value).catch(() => {
+        dispatch({ type: 'ERROR_ACTION_TYPE' });
+      });
+      return;
+    }
+    setShowInput(false);
+    setTitle(board.title);
+    setWarning(true);
+    setTimeout(() => setWarning(false), 1500);
+  };
+  const onBlurFunctionList = (value: string): void => {
     setCashMemoryListInput(value);
     setTimeout(() => setListCreatingInput(false), 250);
   };
-  const createList = (e: React.FormEvent, value: string) => {
-    if (!validate(value)) {
-      addList(dispatch, board_id || '', { title: value, position: 0 });
+  const createList = (e: React.FormEvent, value: string): void => {
+    if (!inputValidation(value)) {
+      addList(dispatch, boardId || '', { title: value, position: 0 }).catch(() => {
+        dispatch({ type: 'ERROR_ACTION_TYPE' });
+      });
       setCashMemoryListInput('');
       setListTitle('');
       setListCreatingInput(false);
-    } else {
-      e.preventDefault();
-      setWarning(true);
-      setTimeout(() => setWarning(false), 1500);
+      return;
     }
+    e.preventDefault();
+    setWarning(true);
+    setTimeout(() => setWarning(false), 1500);
   };
-  const createListByEnter = (e: React.KeyboardEvent, value: string) => {
+  const createListByEnter = (e: React.KeyboardEvent, value: string): void => {
     if (e.key === 'Enter') {
       createList(e, value);
     }
   };
-
   if (isWarning) {
     Swal.fire({
       icon: 'error',
@@ -97,10 +102,11 @@ export default function Board() {
       showConfirmButton: false,
       showCloseButton: true,
       text: 'Error: Prohibited symbols!',
+    }).catch(() => {
+      dispatch({ type: 'ERROR_ACTION_TYPE' });
     });
     setWarning(false);
   }
-
   return (
     <>
       <NavBar />
@@ -112,13 +118,13 @@ export default function Board() {
             autoFocus
             className="board-input-boardName"
             defaultValue={boardTitle}
-            onKeyDown={(e) => renameBoardByEnter(e, e.currentTarget.value)}
-            onBlur={(e) => renameBoard(e.currentTarget.value)}
-            onChange={(event) => setTitle(event.target.value)}
-          ></input>
+            onKeyDown={(e): void => renameBoardByEnter(e, e.currentTarget.value)}
+            onBlur={(e): void => renameBoard(e.currentTarget.value)}
+            onChange={(event): void => setTitle(event.target.value)}
+          />
         )}
         {!showInput && (
-          <h1 className="board-name-h1" onClick={() => setShowInput(true)}>
+          <h1 className="board-name-h1" onClick={(): void => setShowInput(true)}>
             {boardTitle}
           </h1>
         )}
@@ -126,7 +132,11 @@ export default function Board() {
       <div className="list-style">
         {listArr}
         {!listCreatingInput && (
-          <button disabled={listCreatingInput} onClick={() => setListCreatingInput(true)} className="create-button">
+          <button
+            disabled={listCreatingInput}
+            onClick={(): void => setListCreatingInput(true)}
+            className="create-button"
+          >
             Create new list
           </button>
         )}
@@ -142,7 +152,7 @@ export default function Board() {
           />
         )}
       </div>
-      {loadingState.loading && <LoadingP />}
+      {loadingState.loading && <Loading />}
       <Outlet />
     </>
   );

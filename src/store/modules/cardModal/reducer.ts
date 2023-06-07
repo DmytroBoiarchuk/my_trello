@@ -1,11 +1,14 @@
-const initialState = {
+import { AnyAction } from 'redux';
+import { CardModalType } from '../../../common/types/types';
+
+const initialState: CardModalType = {
   card: {
     id: 0,
   },
   isOpen: false,
 };
 
-export default function reducer(state = initialState, action: { type: string; payload?: any }) {
+export default function reducer(state = initialState, action: AnyAction): CardModalType {
   switch (action.type) {
     case 'SET_MODAL_OPENING':
       return {

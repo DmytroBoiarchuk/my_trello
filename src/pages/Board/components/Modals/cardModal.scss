@@ -1,5 +1,6 @@
+@import "../../../Home/variables";
 .back-ground-modal-card{
-  z-index: 100000;
+  z-index: 1058;
   justify-content: center;
   align-items: center;
   position: fixed;
@@ -16,7 +17,7 @@
   align-items: flex-start;
 }
 .mark{
-  background: url("mark.png");
+  background: url("/../pictures/MarkForCardModal.png");
   width: 50px;
   height: 99px;
   background-size: 100% ;
@@ -29,32 +30,32 @@
 
 .modal{
   border: 2px solid black;
-  z-index: 1000000;
+  z-index: 1059;
   position: absolute;
   top: 35px;
   left: calc(50% - 350px);
   display: flex;
   flex-direction: row;
   border-radius: 12px;
+  background: url("/../pictures/CardModalBackGround.jpg");
   box-shadow: -5px 5px 5px  black;
-  background: url("./1515.jpg");
   opacity: 1;
   width: 700px;
   overflow: auto;
 }
 
 .card-name-editor{
-overflow: hidden;
+  overflow: hidden;
   resize: none;
   display: block;
   width: 405px;
   font-size: 45px;
   border: 1px solid black;
-  font-family: "Goudy Old Style", monospace;
+  font-family: $tertiary-font;
   color: black;
   margin: 19px 0 0 20px;
   background-color: rgba(225, 219, 219, 0);
-font-weight: 700;
+  font-weight: 700;
   box-sizing: border-box;
   min-height: 50px;
 }
@@ -63,7 +64,7 @@ font-weight: 700;
   width: 400px;
   text-align: start;
   font-size: 45px;
-  font-family: "Goudy Old Style", monospace;
+  font-family: $tertiary-font;
   color: black;
   margin: 23px 0 0 23px;
   box-sizing: border-box;
@@ -72,7 +73,7 @@ font-weight: 700;
 }
 .in-list{
   font-size: 25px;
-  font-family: "Goudy Old Style", monospace;
+  font-family: $tertiary-font;
   text-align: start;
   margin: 2px 0 0 20px;
   color: black;
@@ -84,7 +85,7 @@ font-weight: 700;
 .users-h{
   color: black;
   text-align: start;
-  font-family: "Goudy Old Style", monospace;
+  font-family: $tertiary-font;
   margin: 20px 0 0 25px;
 }
 .circles{
@@ -102,7 +103,7 @@ font-weight: 700;
   width: 40px;
   height: 40px;
   border: 2px solid black;
-  border-radius: 100px;
+  border-radius: $circle-border-radius;
   margin: 2px 5px 2px 5px;
 }
 .first{
@@ -131,15 +132,15 @@ font-weight: 700;
   width: 100px;
   height: 40px;
   color: black;
-  font-family: "Goudy Old Style", monospace;
+  font-family: $tertiary-font;
   font-size: 25px;
   cursor: pointer;
   box-shadow: -1px 1px 2px black;
-}
-.card-big-modal-button:hover{
-  margin: 6px 6px 4px 4px;
-  box-shadow: 0 0 0;
-  background-color: #858585;
+  &:hover{
+    margin: 6px 6px 4px 4px;
+    box-shadow: 0 0 0;
+    background-color: #858585;
+  }
 }
 .card-big-modal-button-disabled{
   margin: 6px 6px 4px 4px;
@@ -161,31 +162,29 @@ font-weight: 700;
   color: black;
   font-size: 23px;
   margin: 5px 15px 5px 25px;
-  font-family: "Goudy Old Style", monospace;
+  font-family: $tertiary-font;
 }
 
-.description-detailed-before {
+.description-detailed {
   border: 0;
   background-color: rgba(225, 219, 219, 0);
   display: block;
   width: 90%;
   margin: 5px 0 55px 20px;
   resize: none;
-  font-family: "Goudy Old Style", monospace;
+  font-family: $tertiary-font;
   font-size: 20px;
   min-height: 100px;
-}
-
-.description-detailed-before:focus{
-  background-color: rgba(255, 255, 255, 0);
-}
-.description-detailed-before::-webkit-scrollbar {
-  width: 10px;
-}
-
-.description-detailed-before::-webkit-scrollbar-thumb {
-  background-color: rgba(180, 173, 173, 0.75);
-  border-radius: 5px;
+  &:focus{
+    background-color: rgba(255, 255, 255, 0);
+  }
+  &::-webkit-scrollbar {
+    width: 10px;
+  }
+  &::-webkit-scrollbar-thumb {
+    background-color: rgba(180, 173, 173, 0.75);
+    border-radius: $border-radius-for-small-obj;
+  }
 }
 .actions{
   margin-left: 20px;
@@ -199,7 +198,7 @@ font-weight: 700;
   height: 65px;
 }
 .actions-header{
-  font-family: "Goudy Old Style", monospace;
+  font-family: $tertiary-font;
   font-size: 27px;
   color: #625656;
   text-align: start;
@@ -213,16 +212,16 @@ font-weight: 700;
   left: 75px;
   position: absolute;
   width: 300px;
-  border-radius: 6px;
+  border-radius: $medium-border-radius;
   box-shadow: -2px 2px 2px  black;
-  background-color: #ece6e6;
+  background-color: $micro-modal-bg;
   z-index: 99999999999999;
 }
 .big-text{
   text-align: center;
   font-weight: 400;
   font-size: 25px;
-  font-family: "Goudy Old Style", monospace;
+  font-family: $tertiary-font;
 margin: 0 0 0 14px;
 }
 .hr-style{
@@ -235,7 +234,7 @@ margin: 0 0 0 14px;
   text-align: start;
   font-weight: 700;
   font-size: 17px;
-  font-family: "Goudy Old Style", monospace;
+  font-family: $tertiary-font;
   margin: 0 0 0 15px ;
 }
 .chosen-column{
@@ -245,17 +244,17 @@ margin: 0 0 0 14px;
   height: 50px;
   background-color: #dad2d2;
   margin-bottom: 10px;
-  border-radius: 3px;
+  border-radius: $border-radius-for-small-obj;
   cursor: pointer;
+  &:hover {
+    background-color: #b0aeae;
+    .selection {
+      background-color: #b0aeae;
+      cursor: pointer;
+    }
+  }
 }
-.chosen-column:hover
-.selection{
-  background-color: #b0aeae;
-  cursor: pointer;
-}
-.chosen-column:hover {
-  background-color: #b0aeae;
-}
+
 .board-modal{
   width: 90%;
   margin-left: 15px;
@@ -283,11 +282,12 @@ margin: 0 0 0 14px;
   height: 35px;
   cursor: pointer;
   border: 0;
-  border-radius: 3px;
+  border-radius: $border-radius-for-small-obj;
+  &:hover {
+    background-color: #14628f;
+  }
 }
-.move-button:hover {
-  background-color: #14628f;
-}
+
 .inside{
   color: #3b3a3a;
   font-weight: 150;
@@ -300,20 +300,19 @@ margin: 0 0 0 14px;
 .selection{
   height: 25px;
   width: 260px;
-  border: 0;
-  background-color: #dad2d2;
+  border: 2px solid black;
+  border-radius: $border-radius-for-small-obj;
+  background-color: $micro-modal-bg;
   -webkit-appearance: none;
   -moz-appearance: none;
   appearance: none;
-}
-
-.selection:hover{
-  background-color: #b0aeae;
+  &:hover{
+    background-color: #b0aeae;
+  }
 }
 .list-size{
-    width: 150px;
+  width: 150px;
   padding-left: 6px;
-
 }
 .pos-size{
   width: 25px;
@@ -321,17 +320,28 @@ margin: 0 0 0 14px;
 }
 .red-theme{
   background-color: #a86868;
-}
-.red-theme:hover{
-  background-color: #985757;
+  &:hover{
+    background-color: #985757;
+  };
 }
 .copied-card-name-input{
   resize: none;
-width: 90%;
+  width: 90%;
   margin-left: 12px;
-  border-radius: 3px;
+  border-radius: $border-radius-for-small-obj;
   border: 0;
   height: 50px;
+  &::-webkit-scrollbar {
+    width: 10px;
+    position: relative;
+    height: 20px;
+    border-radius: $deep-border-radius;
+    background-color: rgba(229, 218, 218, 0.58);
+  }
+  &::-webkit-scrollbar-thumb {
+    background-color: rgba(143, 137, 137, 0.78);
+    border-radius: $deep-border-radius;
+  }
 }
 .title-container-small-modal{
   display: flex;
@@ -339,13 +349,14 @@ width: 90%;
   justify-content: space-between;
 }
 .cross-to-exit{
-  border-radius: 3px;
+  border-radius: $border-radius-for-small-obj;
   cursor: pointer;
   margin: 4px 13px 0 0 ;
+  &:hover {
+    background-color: #9b9b9b;
+  }
 }
-.cross-to-exit:hover {
-  background-color: #9b9b9b;
-}
+
 .close-modal{
   margin-left: 120px;
   cursor: pointer;

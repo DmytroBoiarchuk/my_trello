@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { JSX } from 'react';
 import { Link } from 'react-router-dom';
 import './navBar.scss';
-const NavBar = () => {
+
+function NavBar(): JSX.Element {
   return (
     <div className="nav-bar">
       <Link className="link-bar" to={{ pathname: '/' }}>
@@ -9,6 +10,6 @@ const NavBar = () => {
       </Link>
     </div>
   );
-};
+}
 
 export default NavBar;

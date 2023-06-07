@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { JSX } from 'react';
 import './error.scss';
-const Error = (props: { error: string }) => {
-  return <p className="error-massage">{props.error}</p>;
-};
+
+function Error({ error }: { error: string }): JSX.Element {
+  return <p className="error-massage">{error}</p>;
+}
 
 export default Error;

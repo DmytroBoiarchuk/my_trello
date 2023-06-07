@@ -1,6 +1,4 @@
-import React from 'react';
-
-export const validate = (value: string) => {
+export const inputValidation = (value: string): boolean => {
   if (value.trim().length === 0) {
     return true;
   }

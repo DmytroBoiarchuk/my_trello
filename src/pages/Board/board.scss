@@ -1,11 +1,11 @@
+@import "../Home/variables";
 .App-header{
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
   white-space: nowrap;
 }
-.App-header div{
-}
+
 .list-creating-modal-window{
   min-width: 322px;
   border: 2px solid black;
@@ -13,7 +13,7 @@
   background-color: #FCF6EADE;
   margin: 15px 15px 15px 50px;
   box-shadow: 5px 5px 10px black;
-  border-radius: 12px;
+  border-radius: $deep-border-radius;
   cursor: pointer;
   font-size: 17px;
   display: flex;
@@ -21,18 +21,18 @@
 }
 .board-name-container{
   display: flex;
+  h1{
+    font-family: $secondary-font;
+    margin: 20px 0 0 15px;
+    width: 190px;
+    height: 45px;
+    font-size: 40px;
+    text-align: start;
+    font-weight: 700;
+  }
 }
 .board-name-h1{
   color: black;
-}
-.board-name-container h1 {
-  font-family: Arial, serif;
-  margin: 20px 0 0 15px;
-  width: 190px;
-  height: 45px;
-  font-size: 40px;
-  text-align: start;
-  font-weight: 700;
 }
 .board-input-boardName{
   min-width: 755px;
@@ -50,7 +50,7 @@
   height: 30px;
   font-size: 25px;
   outline: 0;
-  border-radius: 12px;
+  border-radius: $deep-border-radius;
 }
 .submit-list-button{
   margin: 5px;
@@ -58,6 +58,6 @@
   height: 30px;
   background-color: #dcd5d5;
   border: 0;
-  border-radius: 8px;
+  border-radius: $medium-border-radius;
   cursor: pointer;
 }

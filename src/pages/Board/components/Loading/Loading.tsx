@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { JSX } from 'react';
 import './loading.scss';
 import { BiLoaderCircle } from 'react-icons/bi';
-const LoadingP = () => {
+
+function Loading(): JSX.Element {
   return (
     <div className="modal-body">
       <div className="loading">
@@ -10,6 +11,6 @@ const LoadingP = () => {
       </div>
     </div>
   );
-};
+}
 
-export default LoadingP;
+export default Loading;

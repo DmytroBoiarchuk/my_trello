@@ -1,5 +1,7 @@
+@import "../../../Home/variables";
+
 .card-box{
-  margin: 0 0 5px 0;
+  margin: 0 0 0 0;
 }
 $darkGreen: #0F89398A;
 .card-style{
@@ -12,21 +14,35 @@ $darkGreen: #0F89398A;
   line-height: 17px;
   font-size: 20px;
   background-color: $darkGreen;
-  border-radius: 12px;
+  border-radius: $deep-border-radius;
   max-width: 275px;
   align-items:  center;
-  margin: 0;
+  margin: 0 0 5px 0;
   white-space: normal;
   padding: 7px 5px 9px 10px;
   overflow: hidden;
   cursor: pointer;
+  &:hover{
+    .edit-card{
+      visibility: visible;
+    }
+    background-color: rgba(15, 137, 57, 0.9);
+  }
+  &::-webkit-scrollbar {
+    width: 10px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: rgba(180, 173, 173, 0.75);
+    border-radius: $border-radius-for-small-obj;
+  }
 }
 
 .draggable-img{
   opacity: 0.9999999;
   background-color: #cbcfd2;
   font-size: 20px;
-  border-radius: 4px;
+  border-radius: $border-radius-for-small-obj;
   min-width: 257px;
   padding: 7px 5px 9px 10px;
 }
@@ -35,24 +51,9 @@ $darkGreen: #0F89398A;
   box-shadow:  inset  1px 2px 3px black;
   max-width: 275px;
   background-color: rgba(22, 145, 61, 0.9);
-  border-radius: 8px;
+  border-radius: $medium-border-radius;
   margin: 0 0 5px 0;
   overflow: hidden;
-}
-
-.card-style:hover{
-  .edit-card{
-    visibility: visible;
-  }
-  background-color: rgba(15, 137, 57, 0.9);
-}
-.card-style::-webkit-scrollbar {
-  width: 10px;
-}
-
-.card-style::-webkit-scrollbar-thumb {
-  background-color: rgba(180, 173, 173, 0.75);
-  border-radius: 5px;
 }
 .edit-card{
   width: 20px;
@@ -63,7 +64,7 @@ $darkGreen: #0F89398A;
   right: 5px;
   top: 3px;
   cursor: pointer;
-  border-radius: 3px;
+  border-radius: $border-radius-for-small-obj;
   background-color: rgba(15, 137, 57, 0.9);
   visibility: hidden;
   margin-top: 5px;
@@ -73,30 +74,30 @@ $darkGreen: #0F89398A;
   display: flex;
   flex-direction: column;
   align-items: center;
-  border-radius: 12px;
+  border-radius: $deep-border-radius;
 }
 .card-edit-button-container{
   margin-top: 5px;
   display: flex;
   justify-content: space-evenly;
 }
-.red-onbutton{
+.red-on-button{
   width: 75px;
   height: 25px;
-  border-radius: 12px;
+  border-radius: $deep-border-radius;
   margin:0 5px 5px 5px;
   border: 1px solid black;
   cursor: pointer;
   background-color: rgba(255, 0, 0, 0.54);
-}
-.red-onbutton:hover {
-  background-color: rgba(255, 0, 0, 0.71);
+  &:hover {
+    background-color: rgba(255, 0, 0, 0.71);
+  }
 }
 .card-edit-input{
   font-weight: 400;
   font-size: 18px;
   outline: none;
-  border-radius: 12px;
+  border-radius: $deep-border-radius;
   margin-top: 7px;
   min-width: 260px;
   min-height: 30px;
@@ -104,13 +105,12 @@ $darkGreen: #0F89398A;
 .card-edit-button{
   width: 75px;
   height: 25px;
-  border-radius: 12px;
+  border-radius: $deep-border-radius;
   margin:0 5px 5px 5px;
   border: 1px solid black;
   cursor: pointer;
   background-color: $darkGreen;
-
-}
-.card-edit-button:hover {
-  background-color: rgb(15, 137, 57);
+  &:hover {
+    background-color: rgb(15, 137, 57);
+  }
 }

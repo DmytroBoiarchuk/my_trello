@@ -1,6 +1,8 @@
+import { AnyAction } from 'redux';
+
 const initialState = {};
 
-export default function reducer(state = initialState, action: { type: string; payload?: any }) {
+export default function reducer(state = initialState, action: AnyAction): NonNullable<unknown> {
   switch (action.type) {
     default: {
       return { ...state };

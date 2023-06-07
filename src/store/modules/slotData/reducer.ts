@@ -1,66 +1,63 @@
-const initialState = {
+import { AnyAction } from 'redux';
+
+const initialState: SlotDataType = {
   slotHeight: 0,
   prevId: 0,
   currentCard: 0,
   draggedCardList: 0,
   slotPos: -2,
-  lastEmptyList: 0,
+  currentList: 0,
   draggedCardPos: null,
   draggedCardTitle: '',
-  isItCard: false,
+  isCardDragged: false,
+};
+type SlotDataType = {
+  slotHeight: number;
+  prevId: number;
+  currentCard: number;
+  draggedCardList: number;
+  slotPos: number;
+  currentList: number;
+  draggedCardPos: number | null;
+  draggedCardTitle: string;
+  isCardDragged: boolean;
 };
 
-export default function reducer(state = initialState, action: { type: string; payload?: any }) {
+export default function reducer(state = initialState, action: AnyAction): SlotDataType {
   switch (action.type) {
+    case 'PUT_DRAGGED_CARD_DATA':
+      return {
+        ...state,
+        slotHeight: action.payload.height,
+        currentCard: action.payload.currentCardId,
+        draggedCardList: action.payload.draggedCardListId,
+        draggedCardPos: action.payload.draggedCardPos,
+        draggedCardTitle: action.payload.title,
+      };
     case 'IS_CARD_DRAGGED':
       return {
         ...state,
-        isItCard: action.payload,
+        isCardDragged: action.payload,
       };
-    case 'SET_TITLE_CARD':
+    case 'SET_CURRENT_LIST':
       return {
         ...state,
-        draggedCardTitle: action.payload,
-      };
-    case 'SET_DRAGGED_CARD_POS':
-      return {
-        ...state,
-        draggedCardPos: action.payload,
-      };
-    case 'SET_LAST_EMPTY_LIST':
-      return {
-        ...state,
-        lastEmptyList: action.payload,
+        currentList: action.payload,
       };
     case 'SET_SLOT_POS':
       return {
         ...state,
         slotPos: action.payload,
       };
-    case 'CURRENT_HEIGHT':
-      return {
-        ...state,
-        slotHeight: action.payload,
-      };
     case 'PREV_ID':
       return {
         ...state,
         prevId: action.payload,
       };
-    case 'SET_CURRENT_CARD':
-      return {
-        ...state,
-        currentCard: action.payload,
-      };
     case 'DELETE_ID':
       return {
         ...state,
         prevId: 0,
-      };
-    case 'SET_DRAGGED_CARD_LIST':
-      return {
-        ...state,
-        draggedCardList: action.payload,
       };
     default: {
       return { ...state };

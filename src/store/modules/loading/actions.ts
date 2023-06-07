@@ -1,5 +1,3 @@
-import store from '../../store';
+import { PayloadAction } from '@reduxjs/toolkit';
 
-export const setLoading = (isShown: boolean) => {
-  store.dispatch({ type: 'LOADING', payload: isShown });
-};
+export const setLoading = (isShown: boolean): PayloadAction<boolean> => ({ type: 'LOADING', payload: isShown });

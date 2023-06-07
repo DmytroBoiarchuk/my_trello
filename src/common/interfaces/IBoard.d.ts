@@ -6,17 +6,6 @@ export interface IBoard {
   lists: IList[];
 }
 
-export interface BoardProps {
-  board: {
-    title: string;
-    lists: IList[];
-  };
-}
-export interface BoardsProps {
-  boards: {
-    boards: IBoard[];
-  };
-}
-export interface ReturnType {
+export interface BoardsInterface {
   boards: IBoard[];
 }

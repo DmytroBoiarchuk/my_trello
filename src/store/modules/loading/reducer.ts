@@ -1,9 +1,11 @@
+import { AnyAction } from 'redux';
+import { LoadingType } from '../../../common/types/types';
+
 const initialState = {
-  board: { title: '', lists: [], id: undefined },
   loading: false,
 };
 
-export default function reducer(state = initialState, action: { type: string; payload?: any }) {
+export default function reducer(state = initialState, action: AnyAction): LoadingType {
   switch (action.type) {
     case 'LOADING':
       return {

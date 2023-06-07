@@ -1,3 +1,5 @@
+@import "../../../Home/variables";
+
 .list-style {
   height:100vh;
   width: 100%;
@@ -5,17 +7,16 @@
   flex-direction: row;
   align-items: flex-start;
   overflow-x: auto;
-}
-.list-style::-webkit-scrollbar {
-  position: relative;
-  height: 20px;
-  border-radius: 10px;
-  background-color: rgba(229, 218, 218, 0.58);
-}
-
-.list-style::-webkit-scrollbar-thumb {
-  background-color: rgba(143, 137, 137, 0.78);
-  border-radius: 10px;
+  &::-webkit-scrollbar {
+    position: relative;
+    height: 20px;
+    border-radius: $deep-border-radius;
+    background-color: rgba(229, 218, 218, 0.58);
+  }
+  &::-webkit-scrollbar-thumb {
+    background-color: rgba(143, 137, 137, 0.78);
+    border-radius: $deep-border-radius;
+  }
 }
 .list-container{
   position: relative;
@@ -28,23 +29,12 @@
   margin: 15px;
   box-shadow: 5px 5px 10px #0b752c;
 ;
-  border-radius: 16px;
+  border-radius: $X-deep-border-radius;
   border: 2px solid black;
-}
-.cards::-webkit-scrollbar {
-  position: relative;
-  height: 20px;
-  border-radius: 10px;
-  background-color: rgba(229, 218, 218, 0.58);
-}
-
-.cards::-webkit-scrollbar-thumb {
-  background-color: rgba(143, 137, 137, 0.78);
-  border-radius: 10px;
 }
 .list-name-input{
   font-weight: 400;
-  font-family: Arial, serif ;
+  font-family: $secondary-font;
   width: 85%;
   font-size: 25px;
   margin: 0 32px 4px 0;
@@ -55,7 +45,7 @@
 .list-container-header{
   color: black;
   font-weight: 400;
-  font-family: Arial, serif ;
+  font-family: $secondary-font;
   font-size: 25px;
   margin: 4px 0 7px 6px;
   text-align: start;
@@ -70,7 +60,7 @@
   background-color: #FCF6EADE;
   margin: 15px 15px 15px 50px;
   box-shadow: 5px 5px 10px black;
-  border-radius: 12px;
+  border-radius: $deep-border-radius;
   cursor: pointer;
   font-size: 20px;
 }
@@ -86,26 +76,29 @@
   text-align: start;
   color: black;
   overflow-y: auto;
+  &::-webkit-scrollbar {
+    width: 10px;
+    position: relative;
+    height: 20px;
+    border-radius: $deep-border-radius;
+    background-color: rgba(229, 218, 218, 0.58);
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: rgba(143, 137, 137, 0.78);
+    border-radius: $deep-border-radius;
+  }
+  div {
+    overflow-y: auto;
+  }
 }
 
-.cards div {
-  overflow-y: auto;
-}
-
-.cards::-webkit-scrollbar {
-  width: 10px;
-}
-
-.cards::-webkit-scrollbar-thumb {
-  background-color: rgba(180, 173, 173, 0.75);
-  border-radius: 5px;
-}
 .from-for-card{
   display: flex;
   align-items: center;
   flex-direction: column;
   width: 100%;
-  border-radius: 12px;
+  border-radius: $deep-border-radius;
   background-color: rgba(15, 137, 57, 0);
 
 }
@@ -116,31 +109,31 @@
   resize: none;
   max-height: 185px;
   width: 95%;
-  border-radius: 12px;
-}
-.input-for-card::-webkit-scrollbar {
-  position: relative;
-  height: 20px;
-  border-radius: 10px;
-  background-color: rgba(229, 218, 218, 0.58);
+  border-radius: $deep-border-radius;
+  &::-webkit-scrollbar {
+    position: relative;
+    height: 20px;
+    border-radius: $deep-border-radius;
+    background-color: rgba(229, 218, 218, 0.58);
+  }
+  &::-webkit-scrollbar-thumb {
+    background-color: rgba(143, 137, 137, 0.78);
+    border-radius: $deep-border-radius;
+  }
 }
 
-.input-for-card::-webkit-scrollbar-thumb {
-  background-color: rgba(143, 137, 137, 0.78);
-  border-radius: 10px;
-}
 .submit-button-card{
   width: 95%;
   height: 30px;
   background-color: #dcd5d5;
   cursor: pointer;
   border-radius: 12px;
-font-size: 17px;
+  font-size: 17px;
   font-weight: 550;
   border: 0;
-}
-.submit-button-card:hover{
-  background-color: #d7cdcd;
+  &:hover{
+    background-color: #d7cdcd;
+  }
 }
 .add-card-button{
   font-size: 17px;
@@ -152,9 +145,9 @@ font-size: 17px;
   margin-right: 12px;
   background-color: #dcd5d5;
   cursor: pointer;
-}
-.add-card-button:hover{
-  background-color: #d7cdcd;
+  &:hover{
+    background-color: #d7cdcd;
+  }
 }
 .menu-dots{
   position: absolute;
@@ -175,7 +168,7 @@ font-size: 17px;
   font-size: 18px;
   border: 2px solid #443838;
   border-radius: 3px;
-}
-.delete-list-button:hover{
-  background-color: #d7cdcd;
+  &:hover{
+    background-color: #d7cdcd;
+  }
 }

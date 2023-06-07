@@ -1,19 +1,19 @@
-import React from 'react';
+import React, { JSX } from 'react';
 import './App.css';
 import { Route, BrowserRouter as Router, Routes } from 'react-router-dom';
 import Board from './pages/Board/Board';
 import Home from './pages/Home/Home';
-import CardEditModalBig from './pages/Board/components/ModalCreating/CardEditModalBig';
+import CardModal from './pages/Board/components/Modals/CardModal';
 
-function App() {
+function App(): JSX.Element {
   return (
     <div className="App">
       <header className="App-header">
         <Router>
           <Routes>
-            <Route path="/" element={<Home />}></Route>
-            <Route path="/board/:board_id/*" element={<Board />}>
-              <Route path="card/:card_id/" element={<CardEditModalBig />}></Route>
+            <Route path="/" element={<Home />} />
+            <Route path="/board/:boardId/*" element={<Board />}>
+              <Route path="card/:cardId/" element={<CardModal />} />
             </Route>
           </Routes>
         </Router>

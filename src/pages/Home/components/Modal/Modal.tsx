@@ -1,54 +1,54 @@
-import React, { useState } from 'react';
+import React, { JSX, useState } from 'react';
 import './modal.scss';
-import store from '../../../../store/store';
+import { useDispatch } from 'react-redux';
 import { createBoard } from '../../../../store/modules/boards/actions';
 import Error from '../Error/Error';
-import { validate } from '../../../../common/functions/validate';
+import { inputValidation } from '../../../../common/functions/inputValidation';
+
 interface ModalIsOpen {
   openCloseModal: () => void;
 }
 
-const Modal = ({ openCloseModal }: ModalIsOpen) => {
+function Modal({ openCloseModal }: ModalIsOpen): JSX.Element {
   const [value, setValue] = useState('');
   const [error, setError] = useState('');
-  const submitHandler = (e: React.FormEvent) => {
+  const dispatch = useDispatch();
+  const submitHandler = (e: React.FormEvent): void => {
     e.preventDefault();
   };
-  const CreateNew = () => {
-    if (validate(value)) {
+  const CreateNew = (): void => {
+    if (inputValidation(value)) {
       setError('Invalid symbols, please change name');
       return;
     }
-    store.dispatch(createBoard(value));
+    createBoard(value, dispatch);
     openCloseModal();
   };
   return (
-    <>
-      <div>
-        <div className="modal-bg" />
-        <div className="modal-window">
-          <h1>New board...</h1>
-          <div onClick={() => openCloseModal()} className="cancel-x">
-            &#10006;
-          </div>
-          <form onSubmit={submitHandler}>
-            <input
-              autoFocus
-              type="text"
-              className="input-modal"
-              placeholder="Enter name of new board..."
-              value={value}
-              onChange={(event) => setValue(event.target.value)}
-            />
-            {error && <Error error={error} />}
-            <button onClick={CreateNew} type="submit" className="submit-button">
-              Submit
-            </button>
-          </form>
+    <div>
+      <div className="modal-bg" />
+      <div className="modal-window">
+        <h1>New board...</h1>
+        <div onClick={(): void => openCloseModal()} className="cancel-x">
+          &#10006;
         </div>
+        <form onSubmit={submitHandler}>
+          <input
+            autoFocus
+            type="text"
+            className="input-modal"
+            placeholder="Enter name of new board..."
+            value={value}
+            onChange={(event): void => setValue(event.target.value)}
+          />
+          {error && <Error error={error} />}
+          <button onClick={CreateNew} type="submit" className="submit-button">
+            Submit
+          </button>
+        </form>
       </div>
-    </>
+    </div>
   );
-};
+}
 
 export default Modal;

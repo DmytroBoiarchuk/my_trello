@@ -1,7 +1,9 @@
-import { boardType } from '../../../common/types/types';
-const initialState: boardType[] = [];
+import { AnyAction } from 'redux';
+import { BoardsInterface } from '../../../common/interfaces/IBoard';
 
-export default function reducer(state = initialState, action: { type: string; payload?: any }) {
+const initialState: BoardsInterface[] = [];
+
+export default function reducer(state = initialState, action: AnyAction): BoardsInterface {
   switch (action.type) {
     case 'UPDATE_BOARDS':
       return {
@@ -9,7 +11,7 @@ export default function reducer(state = initialState, action: { type: string; pa
         boards: action.payload,
       };
     default: {
-      return { ...state };
+      return { boards: [], ...state };
     }
   }
 }

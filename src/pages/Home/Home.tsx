@@ -1,33 +1,32 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { JSX, useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import BoardAtHome from './components/BoardAtHome/BoardAtHome';
 import './home.scss';
-import { BoardProps, BoardsProps, IBoard, ReturnType } from '../../common/interfaces/IBoard';
-import { useDispatch, useSelector } from 'react-redux';
+import { IBoard, BoardsInterface } from '../../common/interfaces/IBoard';
 import { getBoards } from '../../store/modules/boards/actions';
-import store, { RootState } from '../../store/store';
+import { RootState } from '../../store/store';
 import Modal from './components/Modal/Modal';
 import NavBar from './components/NavBar/NavBar';
-import LoadingP from '../Board/components/Loading/LoadingP';
+import Loading from '../Board/components/Loading/Loading';
 import { clearStore } from '../../store/modules/board/actions';
+import { BoardsProps } from '../../common/types/types';
 
-export default function Home() {
+export default function Home(): JSX.Element {
   const [modalIsOpen, setModalIsOpen] = useState(false);
-  let loadingState = useSelector((state: RootState) => state.loading);
+  const loadingState = useSelector((state: RootState) => state.loading);
   const dispatch = useDispatch();
   const { boards } = useSelector(
-    (state: BoardsProps): ReturnType => ({
+    (state: BoardsProps): BoardsInterface => ({
       boards: state.boards.boards,
     })
   );
   let boardArr = null;
   if (boards) {
-    boardArr = boards.map((board: IBoard) => {
-      return <BoardAtHome key={board.id} id={board.id} title={board.title}></BoardAtHome>;
-    });
+    boardArr = boards.map((board: IBoard) => <BoardAtHome key={board.id} id={board.id} title={board.title} />);
   }
   useEffect(() => {
     getBoards(dispatch);
-    clearStore();
+    dispatch(clearStore());
   }, []);
   return (
     <>
@@ -35,12 +34,12 @@ export default function Home() {
       <h1 className="main-title">My Boards</h1>
       <div className="home-style">
         {boardArr}
-        <button onClick={() => setModalIsOpen(true)} className="add-board-button">
+        <button onClick={(): void => setModalIsOpen(true)} className="add-board-button">
           + Add New Board
         </button>
-        {modalIsOpen && <Modal openCloseModal={() => setModalIsOpen(false)} />}
+        {modalIsOpen && <Modal openCloseModal={(): void => setModalIsOpen(false)} />}
       </div>
-      {loadingState.loading && <LoadingP />}
+      {loadingState.loading && <Loading />}
     </>
   );
 }

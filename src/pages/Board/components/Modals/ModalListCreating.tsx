@@ -1,6 +1,14 @@
-import React from 'react';
+import React, { JSX } from 'react';
 
-const ModalListCreating = (props: {
+function ModalListCreating({
+  listTitle,
+  buttonOnClick,
+  defaultValue,
+  modalTitle,
+  onChange,
+  onKeyDown,
+  onBlur,
+}: {
   listTitle: string;
   buttonOnClick: (e: React.FormEvent, value: string) => void;
   defaultValue: string;
@@ -8,7 +16,7 @@ const ModalListCreating = (props: {
   onChange: React.Dispatch<React.SetStateAction<string>>;
   onKeyDown: (e: React.KeyboardEvent, value: string) => void;
   onBlur: (value: string) => void;
-}) => {
+}): JSX.Element {
   return (
     <div>
       <form className="list-creating-modal-window">
@@ -16,21 +24,21 @@ const ModalListCreating = (props: {
           type="text"
           maxLength={16}
           autoFocus
-          defaultValue={props.defaultValue}
-          onChange={(e) => {
-            props.onChange(e.target.value);
+          defaultValue={defaultValue}
+          onChange={(e): void => {
+            onChange(e.target.value);
           }}
           className="new-list-input"
           placeholder="Enter name of list..."
-          onKeyDown={(e) => props.onKeyDown(e, e.currentTarget.value)}
-          onBlur={(e) => props.onBlur(e.target.value)}
-        ></input>
-        <button type={'button'} onClick={(e) => props.buttonOnClick(e, props.listTitle)} className="submit-list-button">
-          {props.modalTitle}
+          onKeyDown={(e): void => onKeyDown(e, e.currentTarget.value)}
+          onBlur={(e): void => onBlur(e.target.value)}
+        />
+        <button type="button" onClick={(e): void => buttonOnClick(e, listTitle)} className="submit-list-button">
+          {modalTitle}
         </button>
       </form>
     </div>
   );
-};
+}
 
 export default ModalListCreating;
