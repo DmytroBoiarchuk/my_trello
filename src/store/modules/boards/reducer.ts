@@ -5,6 +5,10 @@ const initialState: BoardsInterface[] = [];
 
 export default function reducer(state = initialState, action: AnyAction): BoardsInterface {
   switch (action.type) {
+    case 'DELETE_STORE':
+      return {
+        boards: [],
+      };
     case 'UPDATE_BOARDS':
       return {
         ...state,

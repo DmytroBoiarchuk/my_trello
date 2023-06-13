@@ -4,7 +4,6 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { AiOutlinePlus } from 'react-icons/ai';
 import { GrClose } from 'react-icons/gr';
 import { useDispatch, useSelector } from 'react-redux';
-import Swal from 'sweetalert2';
 import { deleteCard, getBoard } from '../../../../store/modules/board/actions';
 import { BoardsInterface } from '../../../../common/interfaces/IBoard';
 import { setModalCardEditBig } from '../../../../store/modules/cardModal/actions';
@@ -29,6 +28,7 @@ import {
   selectBoardHandlerFunc,
   selectListHandlerFunc,
 } from '../../../../common/functions/cardModalHandlers';
+import { useSweetAlert } from '../../../../common/functions/sweetAlertHandler';
 
 export default function CardModal(): JSX.Element {
   const { cardId } = useParams();
@@ -186,13 +186,7 @@ export default function CardModal(): JSX.Element {
   const onClickCopingHandler = (): void => onClickCopingHandlerFunk(isShow, isCopying, setIsCopying, setIsShow);
 
   if (isWarning) {
-    Swal.fire({
-      icon: 'error',
-      iconColor: '#da4c4c',
-      showConfirmButton: false,
-      showCloseButton: true,
-      text: 'Error: Prohibited symbols!',
-    });
+    useSweetAlert('Prohibited symbols');
     setWarning(false);
   }
 

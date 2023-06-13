@@ -4,10 +4,7 @@ import { useDispatch } from 'react-redux';
 import { createBoard } from '../../../../store/modules/boards/actions';
 import Error from '../Error/Error';
 import { inputValidation } from '../../../../common/functions/inputValidation';
-
-interface ModalIsOpen {
-  openCloseModal: () => void;
-}
+import { ModalIsOpen } from '../../../../common/types/types';
 
 function Modal({ openCloseModal }: ModalIsOpen): JSX.Element {
   const [value, setValue] = useState('');

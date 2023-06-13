@@ -99,3 +99,15 @@ export type BoardsProps = {
     boards: IBoard[];
   };
 };
+export type AuthorizationData = {
+  refreshToken: string;
+  result: string;
+  token: string;
+};
+export type GetUsersType = {
+  id: number;
+  username: string;
+};
+export type ModalIsOpen = {
+  openCloseModal: () => void;
+};

@@ -1,7 +1,6 @@
 import React, { JSX, useEffect, useRef, useState } from 'react';
 import { BsThreeDots } from 'react-icons/bs';
 import { useDispatch, useSelector } from 'react-redux';
-import Swal from 'sweetalert2';
 import Card from '../Card/Card';
 import { renameList, deleteListFetch, addNewCard } from '../../../../store/modules/board/actions';
 import { inputValidation } from '../../../../common/functions/inputValidation';
@@ -9,6 +8,7 @@ import useOutsideAlerter from '../../../../common/Hooks/useOutsideAlerter';
 import { BoardProps, SlotsProps } from '../../../../common/types/types';
 import { setCurrentList } from '../../../../store/modules/slotData/actions';
 import { dropHandler } from '../../../../common/functions/dragAndDropFunctions';
+import { useSweetAlert } from '../../../../common/functions/sweetAlertHandler';
 
 export default function List({
   board_id,
@@ -142,13 +142,7 @@ export default function List({
     }
   }, [slotsData.isCardDragged]);
   if (isWarning) {
-    Swal.fire({
-      icon: 'error',
-      iconColor: '#da4c4c',
-      showConfirmButton: false,
-      showCloseButton: true,
-      text: 'Error: Prohibited symbols!',
-    });
+    useSweetAlert('Prohibited symbols');
     setWarning(false);
   }
   return (

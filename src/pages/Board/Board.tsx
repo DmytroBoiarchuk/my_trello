@@ -3,7 +3,6 @@ import './board.scss';
 import './components/List/list.scss';
 import { useDispatch, useSelector } from 'react-redux';
 import { Outlet, useParams } from 'react-router-dom';
-import Swal from 'sweetalert2';
 import List from './components/List/List';
 import { changeBoardName, getBoard, getBoardTitle, addList } from '../../store/modules/board/actions';
 import { IList } from '../../common/interfaces/IList';
@@ -13,6 +12,7 @@ import NavBar from '../Home/components/NavBar/NavBar';
 import { RootState } from '../../store/store';
 import Loading from './components/Loading/Loading';
 import { BoardProps } from '../../common/types/types';
+import { useSweetAlert } from '../../common/functions/sweetAlertHandler';
 
 export default function Board(): JSX.Element {
   const { board } = useSelector(
@@ -43,21 +43,6 @@ export default function Board(): JSX.Element {
       <List key={key.id} board_id={boardId || ''} list_id={key.id} title={key.title} />
     ));
   }
-  const renameBoardByEnter = (e: React.KeyboardEvent, value: string): void => {
-    if (e.key === 'Enter') {
-      if (!inputValidation(value)) {
-        setTitle(value);
-        setShowInput(false);
-        changeBoardName(dispatch, boardId || '', value).catch(() => {
-          dispatch({ type: 'ERROR_ACTION_TYPE' });
-        });
-        return;
-      }
-      setTitle(board.title);
-      setWarning(true);
-      setTimeout(() => setWarning(false), 1500);
-    }
-  };
   const renameBoard = (value: string): void => {
     if (!inputValidation(value)) {
       setTitle(value);
@@ -71,6 +56,11 @@ export default function Board(): JSX.Element {
     setTitle(board.title);
     setWarning(true);
     setTimeout(() => setWarning(false), 1500);
+  };
+  const renameBoardByEnter = (e: React.KeyboardEvent, value: string): void => {
+    if (e.key === 'Enter') {
+      renameBoard(value);
+    }
   };
   const onBlurFunctionList = (value: string): void => {
     setCashMemoryListInput(value);
@@ -96,15 +86,7 @@ export default function Board(): JSX.Element {
     }
   };
   if (isWarning) {
-    Swal.fire({
-      icon: 'error',
-      iconColor: '#da4c4c',
-      showConfirmButton: false,
-      showCloseButton: true,
-      text: 'Error: Prohibited symbols!',
-    }).catch(() => {
-      dispatch({ type: 'ERROR_ACTION_TYPE' });
-    });
+    useSweetAlert('Prohibited symbols');
     setWarning(false);
   }
   return (

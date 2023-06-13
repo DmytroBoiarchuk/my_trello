@@ -2,7 +2,6 @@ import React, { JSX, useEffect, useRef, useState } from 'react';
 import { FaPencilAlt } from 'react-icons/fa';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import Swal from 'sweetalert2';
 import { deleteCard, renameCard } from '../../../../store/modules/board/actions';
 import './card.scss';
 import { inputValidation } from '../../../../common/functions/inputValidation';
@@ -11,6 +10,7 @@ import { dragEnd, dragOver, dragStarted, dropHandler } from '../../../../common/
 import { isCardDragged, putSlotData, setSlotPos } from '../../../../store/modules/slotData/actions';
 import { BoardProps, SlotsProps } from '../../../../common/types/types';
 import { putCardData, setModalCardEditBig } from '../../../../store/modules/cardModal/actions';
+import { useSweetAlert } from '../../../../common/functions/sweetAlertHandler';
 
 function Card({
   position,
@@ -66,6 +66,9 @@ function Card({
       setFirstSlotShown(false);
     }
   }, [slotsData.currentList]);
+  useEffect(() => {
+    setFirstSlotShown(false);
+  }, [slotsData.isCardDragged]);
   const openEditCardWindow = (e: React.MouseEvent<SVGElement>): void => {
     e.stopPropagation();
     setIsShow(true);
@@ -122,13 +125,7 @@ function Card({
     navigate(`/board/${board_id}/card/${id}`);
   };
   if (isWarning) {
-    Swal.fire({
-      icon: 'error',
-      iconColor: '#da4c4c',
-      showConfirmButton: false,
-      showCloseButton: true,
-      text: 'Error: Prohibited symbols!',
-    });
+    useSweetAlert('Prohibited symbols');
     setWarning(false);
   }
   return (

@@ -1,0 +1,103 @@
+@import "../../Home/variables";
+.login-container{
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.login-window{
+  border: 2px solid black;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border-radius: $X-deep-border-radius;
+  width: 500px;
+  font-family: $login-font;
+  background-color: rgba(0, 56, 255, 0.54);
+  p{
+    text-align: start;
+    font-family: $login-font;
+    font-size: 25px;
+    margin: 20px 0 0 0;
+  }
+}
+.login-title{
+  text-shadow: 0 4px 4px rgba(0, 0, 0, 0.49);
+  color: white;
+  margin: 25px 0 0 3px;
+  font-size: 45px;
+  font-family: $login-font;
+}
+.login-input{
+  padding-left: 5px;
+  outline: none;
+  border: 1px solid #000000;
+  border-radius: $border-radius-for-small-obj;
+  background-color: #EBEBEB;
+  font-family: $login-font;
+  font-size: 28px;
+  width: 370px;
+  height: 50px;
+  margin: 35px 0 0 0;
+}
+.password-input{
+  padding-left: 5px;
+  outline: none;
+  font-family: $login-font;
+  border: 1px solid #000000;
+  border-radius: $border-radius-for-small-obj;
+  background-color: #EBEBEB;
+  font-size: 28px;
+  width: 370px;
+  height: 50px;
+  margin: 35px 0 0 0;
+ &:focus::selection {
+   background: none;
+   border-right: 2px solid red;
+ }
+}
+.Error-massage{
+  font-family: $login-font;
+}
+.sign-up-link{
+  font-size: 32px;
+  font-weight: 700;
+  cursor: pointer;
+  font-style: italic;
+  font-family: $login-font;
+  margin-bottom: 15px;
+  &:hover{
+    text-decoration: underline;
+    color: #1e6db0;
+    -moz-transition: color 0.4s 0.1s ease;
+    -o-transition: color 0.4s 0.1s ease;
+    -webkit-transition: color 0.4s 0.1s ease;
+}
+}
+.log-in-button{
+  cursor: pointer;
+  border-radius: 25px;
+  color: black;
+  font-size: 30px;
+  margin: 20px;
+  width: 170px;
+  height: 50px;
+  background-color: white;
+  box-shadow: 1px 2px 4px rgba(0, 0, 0, 0.25);
+  font-family: $login-font;
+  &:hover{
+    background-color: #b5b8d3;
+    -moz-transition: background-color 0.8s 0.1s ease;
+    -o-transition: background-color 0.8s 0.1s ease;
+    -webkit-transition: background-color 0.8s 0.1s ease;
+  }
+}
+.password-check-list{
+  margin:  10px 0 0 10px;
+  font-size: 25px;
+  text-align: start;
+  li{
+    display: flex;
+    align-items: center;
+  }
+}

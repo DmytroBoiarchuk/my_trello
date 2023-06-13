@@ -27,12 +27,16 @@ export const calcListPoses = (
   return selectorsPoses;
 };
 
-export const createListOptions = (board: { title?: string; lists: IList[] }): JSX.Element[] =>
-  board.lists.map((list: IList) => (
-    <option key={list.id} value={list.id}>
-      {list.title}
-    </option>
-  ));
+export const createListOptions = (board: { title?: string; lists: IList[] }): React.JSX.Element[] => {
+  if (board.lists.length !== 0) {
+    return board.lists.map((list: IList) => (
+      <option key={list.id} value={list.id}>
+        {list.title}
+      </option>
+    ));
+  }
+  return [<option key={1}>No Lists</option>];
+};
 
 export const resizeTextarea = (ref: React.RefObject<HTMLTextAreaElement>): void => {
   const textarea = ref.current;
