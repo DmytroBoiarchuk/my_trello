@@ -2,7 +2,7 @@ import React, { JSX } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import './navBar.scss';
 import { useDispatch } from 'react-redux';
-import { logOut } from '../../../../store/modules/user/actions';
+import { logOut, setIsAuthorized } from '../../../../store/modules/user/actions';
 import { clearEntireStore } from '../../../../store/modules/boards/actions';
 import instance from '../../../../api/request';
 
@@ -13,6 +13,7 @@ function NavBar(): JSX.Element {
     await logOut();
     instance.defaults.headers.Authorization = `Bearer ${null}`;
     dispatch(clearEntireStore());
+    setIsAuthorized(false);
     navigate('/login');
   };
   return (

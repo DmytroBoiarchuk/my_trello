@@ -166,7 +166,7 @@ export default function CardModal(): JSX.Element {
       });
     onBlurModalHandler();
   };
-  const onBlurDescriptionHandler = (e: React.FocusEvent<HTMLTextAreaElement>): void =>
+  const onBlurDescriptionHandler = (e: React.FocusEvent<HTMLTextAreaElement>): void => {
     onBlurDescriptionHandlerFunc(
       e,
       cardModalButton,
@@ -176,8 +176,10 @@ export default function CardModal(): JSX.Element {
       boardId,
       cardId,
       stateListId,
-      setTempDescr
+      setTempDescr,
+      board
     );
+  };
   const onClickChangeButtonHandler = (e: React.MouseEvent<HTMLButtonElement>): void => {
     e.currentTarget.classList.add('card-big-modal-button-disabled');
     setIsButtonDisabled(true);

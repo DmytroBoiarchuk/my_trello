@@ -32,18 +32,18 @@ const ifMovingToAnotherList = (
   draggedCardTitle: string,
   neededPos: number
 ): ICard[] => {
-  const updatedList: ICard[] = [];
   if (list.cards.length === 0) {
-    updatedList.push({ id: currentCard, position: 0, title: draggedCardTitle });
+    return [{ id: currentCard, position: 0, title: draggedCardTitle }];
   }
-  for (let i = 0; i < list.cards.length; i++) {
-    if (list.cards[i].position === neededPos) {
+  const updatedList: ICard[] = [];
+  list.cards.forEach((card) => {
+    if (card.position === neededPos) {
       updatedList.push({ id: currentCard, position: neededPos, title: draggedCardTitle });
     }
-    updatedList.push(list.cards[i]);
-    if (i + 1 === list.cards.length && neededPos === i + 1) {
-      updatedList.push({ id: currentCard, position: neededPos, title: draggedCardTitle });
-    }
+    updatedList.push(card);
+  });
+  if (list.cards.length === neededPos) {
+    updatedList.push({ id: currentCard, position: neededPos, title: draggedCardTitle });
   }
   return updatedList;
 };
@@ -55,20 +55,27 @@ const ifTargetList = (
   draggedCardTitle: string
 ): ICard[] => {
   const updatedList: ICard[] = [];
-  for (let i = 0; i < list.cards.length; i++) {
-    if (i !== neededPos && i !== draggedCardPos) {
-      updatedList.push(list.cards[i]);
-    } else if (i === neededPos) {
-      if (neededPos !== draggedCardPos) {
-        updatedList.push({ id: currentCard, position: neededPos, title: draggedCardTitle });
-      }
-      updatedList.push(list.cards[i]);
+  list.cards.forEach((card) => {
+    if (card.position !== draggedCardPos && card.position !== neededPos) {
+      updatedList.push(card);
+    } else if (card.position === neededPos) {
+      updatedList.push({ id: currentCard, position: neededPos, title: draggedCardTitle });
+      updatedList.push(card);
     }
-  }
+  });
   if (neededPos === list.cards.length) {
     updatedList.push({ id: currentCard, position: neededPos, title: draggedCardTitle });
   }
   return updatedList;
+};
+const getListPairForDrop = (
+  board: { title: string; lists: IList[] },
+  list_id: number,
+  draggedCardList: number
+): (IList | undefined)[] => {
+  const currentList = board.lists.find((list) => list.id === list_id);
+  const startList = board.lists.find((list) => list.id === draggedCardList);
+  return [currentList, startList];
 };
 export const dropHandler = (
   e: React.DragEvent<HTMLDivElement>,
@@ -82,33 +89,23 @@ export const dropHandler = (
   draggedCardTitle: string,
   neededPos: number
 ): void => {
-  const currentList = board.lists.find((list) => list.id === list_id);
-  const startList = board.lists.find((list) => list.id === draggedCardList);
-  const lists: { id: number; cards: ICard[] }[] = [];
-  board.lists.forEach((list) => {
-    if (list_id !== draggedCardList) {
-      if (list.id === list_id) {
-        const updatedList: ICard[] = ifMovingToAnotherList(list, currentCard, draggedCardTitle, neededPos);
-        lists.push({ id: list_id, cards: updatedList });
-      } else if (list.id === draggedCardList) {
-        const updatedList: ICard[] = [];
-        for (let i = 0; i < list.cards.length; i++) {
-          if (i !== draggedCardPos) {
-            updatedList.push(list.cards[i]);
-          }
-        }
-        lists.push({ id: draggedCardList, cards: updatedList });
-      } else {
-        lists.push(list);
-      }
-    } else if (list.id === list_id) {
-      const updatedList: ICard[] = ifTargetList(list, neededPos, draggedCardPos, currentCard, draggedCardTitle);
-      lists.push({ id: list_id, cards: updatedList });
-    } else {
-      lists.push(list);
+  const [currentList, startList] = getListPairForDrop(board, list_id, draggedCardList);
+  const lists = board.lists.map((list) => {
+    if (list.id === list_id) {
+      return {
+        ...list,
+        cards:
+          list_id !== draggedCardList
+            ? ifMovingToAnotherList(list, currentCard, draggedCardTitle, neededPos)
+            : ifTargetList(list, neededPos, draggedCardPos, currentCard, draggedCardTitle),
+      };
     }
+    if (list.id === draggedCardList) {
+      return { ...list, cards: list.cards.filter((card) => card.position !== draggedCardPos) };
+    }
+    return list;
   });
-  dispatch({ type: 'UPDATE_BOARD_DND', payload: lists });
+  dispatch({ type: 'UPDATE_BOARD_DRAG`N`DROP', payload: lists });
   replaceCard(
     board_id,
     neededPos,

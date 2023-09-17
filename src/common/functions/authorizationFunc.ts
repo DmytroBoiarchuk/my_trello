@@ -1,6 +1,6 @@
 import { Dispatch } from 'redux';
 import { NavigateFunction } from 'react-router-dom';
-import { authorisationFetch } from '../../store/modules/user/actions';
+import { toggleAuthorisation, setIsAuthorized } from '../../store/modules/user/actions';
 import instance from '../../api/request';
 import api from '../constants/api';
 
@@ -10,12 +10,13 @@ export const authorizeFunc = (
   dispatch: Dispatch,
   navigate: NavigateFunction
 ): void => {
-  authorisationFetch(email, password, dispatch).then((authorisationData) => {
+  toggleAuthorisation(email, password, dispatch).then((authorisationData) => {
     if (authorisationData) {
       localStorage.setItem('access_token', authorisationData.token);
       localStorage.setItem('refresh_token', authorisationData.refreshToken);
       instance.defaults.headers.Authorization = `Bearer ${authorisationData.token}`;
       if (authorisationData.result === 'Authorized') {
+        setIsAuthorized(true);
         navigate('/');
       }
     }

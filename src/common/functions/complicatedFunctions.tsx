@@ -5,13 +5,13 @@ import {
   addNewCard,
   deleteCard,
   getBoard,
-  relocatePosBeforeReplacing,
+  changePosBeforeReplacing,
   replaceCard,
 } from '../../store/modules/board/actions';
 import { setModalCardEditBig } from '../../store/modules/cardModal/actions';
 import { IList } from '../interfaces/IList';
 
-const MovingOrCopyingToAnotherBoard = (
+const MovingOrCopyingToAnotherBoard = async (
   isCopying: boolean,
   title: string,
   dispatch: Dispatch,
@@ -23,31 +23,23 @@ const MovingOrCopyingToAnotherBoard = (
   navigate: NavigateFunction,
   newPlaceBoard: string,
   newPlaceList: string,
-  newPlacePosition: string
-): void => {
-  relocatePosBeforeReplacing(newPlaceBoard, newPlaceList, +newPlacePosition)
-    .then(() => {
-      const inputElement = document.getElementById('title_for_copy') as HTMLInputElement;
-      const cardName = isCopying ? inputElement.value : title;
-      setTimeout(() => {
-        addNewCard(dispatch, +newPlacePosition, newPlaceBoard, cardName, +newPlaceList, false, description).catch(
-          () => {
-            dispatch({ type: 'ERROR_ACTION_TYPE' });
-          }
-        );
-      }, 100);
-    })
-    .then(() => {
-      setTimeout(() => {
-        if (!isCopying) {
-          deleteCard(dispatch, board_id, +card_id, board.lists, list_id).catch(() => {
-            dispatch({ type: 'ERROR_ACTION_TYPE' });
-          });
-        }
-        dispatch(setModalCardEditBig(false));
-        navigate(`/board/${board_id}`);
-      }, 150);
+  newPlacePosition: string,
+  titleForCopyInputRef: string | undefined
+): Promise<void> => {
+  await changePosBeforeReplacing(newPlaceBoard, newPlaceList, +newPlacePosition);
+  const cardName = isCopying ? titleForCopyInputRef : title;
+  await addNewCard(dispatch, +newPlacePosition, newPlaceBoard, cardName!, +newPlaceList, false, description).catch(
+    () => {
+      dispatch({ type: 'ERROR_ACTION_TYPE' });
+    }
+  );
+  if (!isCopying) {
+    await deleteCard(dispatch, board_id, +card_id, board.lists, list_id).catch(() => {
+      dispatch({ type: 'ERROR_ACTION_TYPE' });
     });
+  }
+  await dispatch(setModalCardEditBig(false));
+  navigate(`/board/${board_id}`);
 };
 const movingInCurrentBoard = (
   list_id: number,
@@ -103,7 +95,7 @@ const movingInCurrentBoard = (
   navigate(`/board/${board_id}`);
 };
 
-const movingInAnotherCases = (
+const movingInAnotherCases = async (
   dispatch: Dispatch,
   description: string,
   board_id: string,
@@ -112,30 +104,22 @@ const movingInAnotherCases = (
   newPlaceList: string,
   newPlacePosition: string,
   titleForCopyInputRef: string | undefined
-): void => {
-  relocatePosBeforeReplacing(newPlaceBoard, newPlaceList, +newPlacePosition)
-    .then(() => {
-      setTimeout(() => {
-        addNewCard(
-          dispatch,
-          +newPlacePosition,
-          newPlaceBoard,
-          titleForCopyInputRef!,
-          +newPlaceList,
-          true,
-          description,
-          false
-        ).catch(() => {
-          dispatch({ type: 'ERROR_ACTION_TYPE' });
-        });
-      }, 100);
-    })
-    .then(() => {
-      setTimeout(() => {
-        dispatch(setModalCardEditBig(false));
-        navigate(`/board/${board_id}`);
-      }, 150);
-    });
+): Promise<void> => {
+  await changePosBeforeReplacing(newPlaceBoard, newPlaceList, +newPlacePosition);
+  await addNewCard(
+    dispatch,
+    +newPlacePosition,
+    newPlaceBoard,
+    titleForCopyInputRef!,
+    +newPlaceList,
+    true,
+    description,
+    false
+  ).catch(() => {
+    dispatch({ type: 'ERROR_ACTION_TYPE' });
+  });
+  await dispatch(setModalCardEditBig(false));
+  navigate(`/board/${board_id}`);
 };
 export const movementHandler = (
   board_id: string,
@@ -169,7 +153,8 @@ export const movementHandler = (
       navigate,
       newPlaceBoard,
       newPlaceList,
-      newPlacePosition
+      newPlacePosition,
+      titleForCopyInputRef
     );
     return;
   }

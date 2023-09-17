@@ -2,7 +2,7 @@ import { AnyAction } from 'redux';
 
 const initialState: SlotDataType = {
   slotHeight: 0,
-  prevId: 0,
+  isOriginSlotShown: true,
   currentCard: 0,
   draggedCardList: 0,
   slotPos: -2,
@@ -13,7 +13,7 @@ const initialState: SlotDataType = {
 };
 type SlotDataType = {
   slotHeight: number;
-  prevId: number;
+  isOriginSlotShown: boolean;
   currentCard: number;
   draggedCardList: number;
   slotPos: number;
@@ -25,6 +25,11 @@ type SlotDataType = {
 
 export default function reducer(state = initialState, action: AnyAction): SlotDataType {
   switch (action.type) {
+    case 'ORIGIN_SLOT_SHOWN':
+      return {
+        ...state,
+        isOriginSlotShown: action.payload,
+      };
     case 'PUT_DRAGGED_CARD_DATA':
       return {
         ...state,
@@ -48,16 +53,6 @@ export default function reducer(state = initialState, action: AnyAction): SlotDa
       return {
         ...state,
         slotPos: action.payload,
-      };
-    case 'PREV_ID':
-      return {
-        ...state,
-        prevId: action.payload,
-      };
-    case 'DELETE_ID':
-      return {
-        ...state,
-        prevId: 0,
       };
     default: {
       return { ...state };

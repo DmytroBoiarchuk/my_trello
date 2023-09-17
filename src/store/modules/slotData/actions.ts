@@ -12,7 +12,10 @@ export const putSlotData = (
   payload: { height, currentCardId, draggedCardListId, draggedCardPos, title },
 });
 
-export const setPrevId = (id: number): PayloadAction<number> => ({ type: 'PREV_ID', payload: id });
+export const setIsOriginSlotShown = (isOriginSlotShown: boolean): PayloadAction<boolean> => ({
+  type: 'ORIGIN_SLOT_SHOWN',
+  payload: isOriginSlotShown,
+});
 export const setSlotPos = (pos: number): PayloadAction<number> => ({ type: 'SET_SLOT_POS', payload: pos });
 export const setCurrentList = (id: number): PayloadAction<number> => ({ type: 'SET_CURRENT_LIST', payload: id });
 export const isCardDragged = (isDragged: boolean): PayloadAction<boolean> => ({

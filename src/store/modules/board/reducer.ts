@@ -11,6 +11,12 @@ const initialState: IBoard = {
 
 export default function reducer(state = initialState, action: AnyAction): IBoard {
   switch (action.type) {
+    case 'UPDATE_DESCRIPTION': {
+      return {
+        ...state,
+        lists: action.payload,
+      };
+    }
     case 'QUICK_DELETE_CARD': {
       const { listData } = action.payload;
       return {
@@ -18,7 +24,7 @@ export default function reducer(state = initialState, action: AnyAction): IBoard
         lists: listData,
       };
     }
-    case 'PUT_RENAMED_TO_STORE': {
+    case 'QUICK_RENAME_CARD': {
       const { cardTitle, listId, cardId } = action.payload;
       const newLists = state.lists.map((list: IList) => {
         if (list.id === listId) {
@@ -26,7 +32,7 @@ export default function reducer(state = initialState, action: AnyAction): IBoard
             ...list,
             cards: list.cards.map((card: ICard) => {
               if (card.id === cardId) {
-                return { id: 0, title: cardTitle, description: '', position: 0 };
+                return { id: card.id, title: cardTitle, description: card.description, position: card.position };
               }
               return card;
             }),
@@ -39,13 +45,13 @@ export default function reducer(state = initialState, action: AnyAction): IBoard
         lists: newLists,
       };
     }
-    case 'ADD_NEW_CARD_TO_STORE': {
+    case 'QUICK_ADD_NEW_CARD': {
       const { title, ListId } = action.payload;
       const lists = state.lists.map((list: IList) => {
         if (list.id === ListId) {
           return {
             ...list,
-            cards: [...list.cards, { id: 0, title, description: '', position: 999999 }],
+            cards: [...list.cards, { id: 0, title, description: '', position: 0 }],
           };
         }
         return list;
@@ -58,9 +64,9 @@ export default function reducer(state = initialState, action: AnyAction): IBoard
     case 'ADD_EMPTY_LIST':
       return {
         ...state,
-        lists: [...state.lists, { id: 9999999999999, title: action.payload, position: 1, cards: [] }],
+        lists: [...state.lists, { id: 0, title: action.payload, position: 1, cards: [] }],
       };
-    case 'UPDATE_BOARD_DND':
+    case 'UPDATE_BOARD_DRAG`N`DROP':
       return {
         ...state,
         lists: action.payload,

@@ -24,12 +24,27 @@ export default function PasswordValidation({ myPassword }: { myPassword: string 
       }
     }
     if (
-      passwordStrength >= 0 &&
+      password.length === 0 &&
       firstBarRef.current &&
       secondBarRef.current &&
       thirdBarRef.current &&
       fourthBarRef.current &&
       validationMassageRef.current
+    ) {
+      firstBarRef.current.style.backgroundColor = '#eae4e4';
+      secondBarRef.current.style.backgroundColor = '#eae4e4';
+      thirdBarRef.current.style.backgroundColor = '#eae4e4';
+      fourthBarRef.current.style.backgroundColor = '#eae4e4';
+      validationMassageRef.current.innerText = '';
+    }
+    if (
+      passwordStrength >= 0 &&
+      firstBarRef.current &&
+      secondBarRef.current &&
+      thirdBarRef.current &&
+      fourthBarRef.current &&
+      validationMassageRef.current &&
+      password.length !== 0
     ) {
       firstBarRef.current.style.backgroundColor = '#FF0000';
       secondBarRef.current.style.backgroundColor = '#eae4e4';
@@ -43,7 +58,8 @@ export default function PasswordValidation({ myPassword }: { myPassword: string 
       secondBarRef.current &&
       thirdBarRef.current &&
       fourthBarRef.current &&
-      validationMassageRef.current
+      validationMassageRef.current &&
+      password.length !== 0
     ) {
       firstBarRef.current.style.backgroundColor = '#ffbc07';
       secondBarRef.current.style.backgroundColor = '#ffbc07';
@@ -57,7 +73,8 @@ export default function PasswordValidation({ myPassword }: { myPassword: string 
       secondBarRef.current &&
       thirdBarRef.current &&
       fourthBarRef.current &&
-      validationMassageRef.current
+      validationMassageRef.current &&
+      password.length !== 0
     ) {
       firstBarRef.current.style.backgroundColor = '#00e500';
       secondBarRef.current.style.backgroundColor = '#00e500';
@@ -71,7 +88,8 @@ export default function PasswordValidation({ myPassword }: { myPassword: string 
       secondBarRef.current &&
       thirdBarRef.current &&
       fourthBarRef.current &&
-      validationMassageRef.current
+      validationMassageRef.current &&
+      password.length !== 0
     ) {
       firstBarRef.current.style.backgroundColor = '#00e2ff';
       secondBarRef.current.style.backgroundColor = '#00e2ff';

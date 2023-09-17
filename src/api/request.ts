@@ -12,14 +12,17 @@ const instance = axios.create({
     Authorization: `Bearer ${localStorage.getItem('access_token')}`,
   },
 });
+
 instance.interceptors.request.use((config) => {
   store.dispatch(setLoading(true));
   return config;
 });
+
 instance.interceptors.response.use((res) => {
   store.dispatch(setLoading(false));
   return res.data;
 });
+
 const refreshToken = async (): Promise<void> => {
   const response: AuthorizationData = await instance.post('/refresh', {
     refreshToken: localStorage.getItem('refresh_token'),
@@ -28,6 +31,7 @@ const refreshToken = async (): Promise<void> => {
   localStorage.setItem('refresh_token', response.refreshToken);
   instance.defaults.headers.Authorization = `Bearer ${response.token}`;
 };
+
 instance.interceptors.response.use(undefined, (error) => {
   if (!(error.response.data.error === 'Unauthorized')) {
     useSweetAlert(error.response.data.error);

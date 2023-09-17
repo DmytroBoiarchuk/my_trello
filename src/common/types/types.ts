@@ -18,7 +18,7 @@ export type BoardResp = {
 export type SlotsProps = {
   slotsData: {
     slotHeight: number;
-    prevId: number;
+    isOriginSlotShown: boolean;
     currentCard: number;
     draggedCardList: number;
     slotPos: number;

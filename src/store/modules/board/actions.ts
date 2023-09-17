@@ -5,13 +5,38 @@ import instance from '../../../api/request';
 import { BoardResp, CardTypeForPutRequest, ResponseBoard } from '../../../common/types/types';
 import { IList } from '../../../common/interfaces/IList';
 import { ICard } from '../../../common/interfaces/ICard';
-// eslint-disable-next-line import/no-cycle
 import {
   deleteCardHandler,
   quickCardDeletingHandler,
   relocatePosBeforeReplacingHandler,
   replaceCardHandler,
 } from '../../../common/functions/functionsForActions';
+
+export const quickSetDescription = (
+  board: { title: string; lists: IList[] },
+  description: string,
+  listId: number,
+  cardId: number,
+  dispatch: Dispatch
+): void => {
+  const updatedBoard = board.lists.map((list) => {
+    if (list.id === listId) {
+      return {
+        ...list,
+        cards: [
+          ...list.cards.map((card) => {
+            if (card.id === cardId) {
+              return { ...card, description };
+            }
+            return card;
+          }),
+        ],
+      };
+    }
+    return list;
+  });
+  dispatch({ type: 'UPDATE_DESCRIPTION', payload: updatedBoard });
+};
 
 export const getBoard = async (dispatch: Dispatch, id: string): Promise<void> => {
   try {
@@ -35,7 +60,7 @@ export const changeCardDescription = async (
     dispatch({ type: 'ERROR_ACTION_TYPE' });
   }
 };
-export const relocatePosBeforeReplacing = async (board_id: string, list_id: string, newPos: number): Promise<void> => {
+export const changePosBeforeReplacing = async (board_id: string, list_id: string, newPos: number): Promise<void> => {
   const board: ResponseBoard = await instance.get(`${api.baseURL}/board/${board_id}`);
   await instance.put(`/board/${board_id}/card`, relocatePosBeforeReplacingHandler(board, board_id, list_id, newPos));
 };
@@ -100,7 +125,7 @@ export const renameCard = async (
   title: string
 ): Promise<void> => {
   try {
-    dispatch({ type: 'PUT_RENAMED_TO_STORE', payload: { cardTitle: title, listId: list_id, cardId: card_id } });
+    dispatch({ type: 'QUICK_RENAME_CARD', payload: { cardTitle: title, listId: list_id, cardId: card_id } });
     await instance.put(`/board/${board_id}/card/${card_id}`, {
       title,
       list_id,
@@ -121,7 +146,7 @@ export const addNewCard = async (
   isCopying?: boolean
 ): Promise<void> => {
   try {
-    if (isCopying === undefined) dispatch({ type: 'ADD_NEW_CARD_TO_STORE', payload: { title, ListId: list_id } });
+    if (isCopying === undefined) dispatch({ type: 'QUICK_ADD_NEW_CARD', payload: { title, ListId: list_id } });
     await instance.post(`/board/${board_id}/card`, {
       title,
       list_id,

@@ -1,0 +1,29 @@
+@import "../../variables";
+
+.page-not-found-container{
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+}
+.OOPS-image{
+  background: url("../../../../../pictures/pageNotFound.png") no-repeat;
+  width: 500px;
+  height: 150px;
+  margin: 0;
+  mix-blend-mode: color-burn;
+}
+.return-button{
+  border-radius: $medium-border-radius;
+  width: 150px;
+  height: 50px;
+  cursor: pointer;
+  color: black;
+  background-color: #ff9a00;
+  transition: background-color 0.3s ease, color 0.3s ease;
+  &:hover{
+    background-color: #fdd40d;
+    color: rgba(128, 113, 113, 0.9);
+  }
+}

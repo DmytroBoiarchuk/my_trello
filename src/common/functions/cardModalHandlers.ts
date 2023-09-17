@@ -1,7 +1,12 @@
 import React, { JSX } from 'react';
 import { Dispatch } from 'redux';
 import { inputValidation } from './inputValidation';
-import { changeCardDescription, getBoardForModal, renameCard } from '../../store/modules/board/actions';
+import {
+  changeCardDescription,
+  getBoardForModal,
+  quickSetDescription,
+  renameCard,
+} from '../../store/modules/board/actions';
 import { IList } from '../interfaces/IList';
 import { calcListPoses, createListOptions } from './simpleFunctions';
 import { IBoard } from '../interfaces/IBoard';
@@ -146,7 +151,7 @@ export const selectListHandlerFunc = (
   });
 };
 
-export const onBlurDescriptionHandlerFunc = (
+export const onBlurDescriptionHandlerFunc = async (
   e: React.FocusEvent<HTMLTextAreaElement>,
   cardModalButton: React.RefObject<HTMLButtonElement>,
   setIsButtonDisabled: React.Dispatch<React.SetStateAction<boolean>>,
@@ -155,15 +160,16 @@ export const onBlurDescriptionHandlerFunc = (
   boardId: string | undefined,
   cardId: string | undefined,
   stateListId: number,
-  setTempDescr: React.Dispatch<React.SetStateAction<string>>
-): void => {
+  setTempDescr: React.Dispatch<React.SetStateAction<string>>,
+  board: { title: string; lists: IList[] }
+): Promise<void> => {
   const { value } = e.currentTarget;
   cardModalButton.current?.classList.remove('card-big-modal-button-disabled');
   setIsButtonDisabled(false);
   if (!ignoreBlurRef.current) {
-    changeCardDescription(dispatch, value, boardId!, cardId!, stateListId).then((): void => {
-      setTempDescr(value);
-    });
+    quickSetDescription(board, e.target.value, stateListId, +cardId!, dispatch);
+    await changeCardDescription(dispatch, value, boardId!, cardId!, stateListId);
+    setTempDescr(value);
   }
 };
 

@@ -7,7 +7,12 @@ import './card.scss';
 import { inputValidation } from '../../../../common/functions/inputValidation';
 import useOutsideAlerter from '../../../../common/Hooks/useOutsideAlerter';
 import { dragEnd, dragOver, dragStarted, dropHandler } from '../../../../common/functions/dragAndDropFunctions';
-import { isCardDragged, putSlotData, setSlotPos } from '../../../../store/modules/slotData/actions';
+import {
+  isCardDragged,
+  putSlotData,
+  setIsOriginSlotShown,
+  setSlotPos,
+} from '../../../../store/modules/slotData/actions';
 import { BoardProps, SlotsProps } from '../../../../common/types/types';
 import { putCardData, setModalCardEditBig } from '../../../../store/modules/cardModal/actions';
 import { useSweetAlert } from '../../../../common/functions/sweetAlertHandler';
@@ -51,7 +56,8 @@ function Card({
     slotsData.isCardDragged &&
     slotsData.currentCard === id &&
     slotsData.slotPos === -2 &&
-    slotsData.currentList === list_id;
+    slotsData.currentList === list_id &&
+    slotsData.isOriginSlotShown;
   useEffect(() => {
     if (cardId) {
       dispatch(putCardData({ id: +cardId }));
@@ -65,6 +71,7 @@ function Card({
     if (slotsData.currentList !== list_id) {
       setFirstSlotShown(false);
     }
+    dispatch(setIsOriginSlotShown(slotsData.currentList === slotsData.currentCard));
   }, [slotsData.currentList]);
   useEffect(() => {
     setFirstSlotShown(false);
@@ -105,6 +112,7 @@ function Card({
       slotsData.draggedCardTitle,
       e.clientY < midlOfCard ? position : position + 1
     );
+    dispatch(setIsOriginSlotShown(true));
   };
   const dragStartHandler = (e: React.DragEvent<HTMLDivElement>): void => {
     dispatch(putSlotData(e.currentTarget.scrollHeight, +e.currentTarget.id, list_id, position, title));
@@ -114,6 +122,7 @@ function Card({
   const dragEndHandler = (e: React.DragEvent<HTMLDivElement>): void => {
     dragEnd(e, e.currentTarget.id, cardRef);
     dispatch(isCardDragged(false));
+    dispatch(setIsOriginSlotShown(true));
   };
   const dragOverHandler = (e: React.DragEvent<HTMLDivElement>): void => {
     e.preventDefault();
