@@ -53,6 +53,7 @@
   text-overflow: ellipsis;
 }
 .create-button {
+  user-select: none;
   min-width: 240px;
   height: 59px;
   border: 2px solid #000000;
@@ -136,6 +137,7 @@
   }
 }
 .add-card-button{
+  user-select: none;
   font-size: 17px;
   width: 95%;
   height: 35px;
@@ -156,19 +158,24 @@
   cursor: pointer;
 }
 .list-menu{
-  top: -23px;
-  right: -85px;
+  display: flex;
+  background-color: white;
+  border-radius: $medium-border-radius;
+  top: 30px;
+  right: 6px;
   position: absolute;
   z-index: 10000000;
 }
 .delete-list-button{
+  user-select: none;
+  padding: 5px 10px 5px 10px;
   cursor: pointer;
-  background-color: #f1efef;
+  background-color: rgba(255, 0, 0, 0.54);
   font-weight: 400;
   font-size: 18px;
   border: 2px solid #443838;
-  border-radius: 3px;
+  border-radius: $medium-border-radius;
   &:hover{
-    background-color: #d7cdcd;
+    background-color: rgba(255, 0, 0, 0.71);
   }
 }

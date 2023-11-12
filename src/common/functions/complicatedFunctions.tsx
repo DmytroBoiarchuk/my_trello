@@ -26,7 +26,7 @@ const MovingOrCopyingToAnotherBoard = async (
   newPlacePosition: string,
   titleForCopyInputRef: string | undefined
 ): Promise<void> => {
-  await changePosBeforeReplacing(newPlaceBoard, newPlaceList, +newPlacePosition);
+  await changePosBeforeReplacing(newPlaceBoard, +newPlaceList, +newPlacePosition);
   const cardName = isCopying ? titleForCopyInputRef : title;
   await addNewCard(dispatch, +newPlacePosition, newPlaceBoard, cardName!, +newPlaceList, false, description).catch(
     () => {
@@ -63,7 +63,7 @@ const movingInCurrentBoard = (
     replaceCard(
       board_id,
       neededPos,
-      newPlaceList,
+      +newPlaceList,
       +card_id,
       dispatch,
       startList,
@@ -81,7 +81,7 @@ const movingInCurrentBoard = (
     replaceCard(
       board_id,
       +newPlacePosition,
-      newPlaceList,
+      +newPlaceList,
       +card_id,
       dispatch,
       currentList,
@@ -105,7 +105,7 @@ const movingInAnotherCases = async (
   newPlacePosition: string,
   titleForCopyInputRef: string | undefined
 ): Promise<void> => {
-  await changePosBeforeReplacing(newPlaceBoard, newPlaceList, +newPlacePosition);
+  await changePosBeforeReplacing(newPlaceBoard, +newPlaceList, +newPlacePosition);
   await addNewCard(
     dispatch,
     +newPlacePosition,

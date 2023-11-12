@@ -46,12 +46,12 @@ export type CardData = {
   id: number;
   title?: string;
   position: number;
-  list_id?: string;
+  list_id?: number;
 };
 export type CardTypeForPutRequest = {
   id: number;
   position: number;
-  list_id: string | undefined;
+  list_id: number | undefined;
 };
 export type CardModalType = {
   card: {

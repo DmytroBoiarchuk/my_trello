@@ -6,12 +6,12 @@ import { ICard } from '../interfaces/ICard';
 export const relocatePosBeforeReplacingHandler = (
   board: ResponseBoard,
   board_id: string,
-  list_id: string,
+  list_id: number,
   newPos: number
 ): CardData[] => {
   const update: CardData[] = [];
   board.lists.forEach((list) => {
-    if (list.id.toString() === list_id) {
+    if (list.id === list_id) {
       for (let i = 0; i < list.cards.length; i++) {
         if (i < newPos) {
           update.push({ id: list.cards[i].id, position: i, list_id });
@@ -27,7 +27,7 @@ const ifMovingCardToAnotherList = (
   updatedList: CardTypeForPutRequest[],
   pos: number | undefined,
   currentList: IList,
-  listId: undefined | string,
+  listId: undefined | number,
   currentCard: number,
   draggedCardListArr: ICard[] | undefined,
   draggedCardPos: number,
@@ -54,7 +54,7 @@ const ifMovingCardToAnotherList = (
   if (draggedCardListArr !== undefined) {
     draggedCardListArr.forEach((cards) => {
       if (cards.position > draggedCardPos) {
-        updatedList.push({ id: cards.id, position: cards.position - 1, list_id: draggedCardList.toString() });
+        updatedList.push({ id: cards.id, position: cards.position - 1, list_id: draggedCardList });
       }
     });
   }
@@ -65,7 +65,7 @@ const ifMovingCardInSameList = (
   pos: number | undefined,
   draggedCardPos: number,
   currentList: IList,
-  listId: string,
+  listId: number,
   currentCard: number
 ): CardTypeForPutRequest[] => {
   if (pos !== undefined && pos < draggedCardPos) {
@@ -106,7 +106,7 @@ const ifMovingCardInSameList = (
 export const replaceCardHandler = (
   boardId: string,
   pos: number | undefined,
-  listId: string | undefined,
+  listId: number | undefined,
   currentCard: number,
   dispatch: Dispatch,
   currentList: IList | undefined,
@@ -116,7 +116,7 @@ export const replaceCardHandler = (
 ): CardTypeForPutRequest[] => {
   let updatedList: CardTypeForPutRequest[] = [];
   if (currentList !== undefined) {
-    if (listId !== undefined && draggedCardList.toString() === listId) {
+    if (listId !== undefined && draggedCardList === listId) {
       updatedList = ifMovingCardInSameList(updatedList, pos, draggedCardPos, currentList, listId, currentCard);
     } else {
       updatedList = ifMovingCardToAnotherList(
@@ -149,10 +149,10 @@ export const changePosAfterDeleting = (
   });
   iList.cards.forEach((card) => {
     if (card.position < deletedCardPos) {
-      listData.push({ id: card.id, position: card.position, list_id: list_id.toString() });
+      listData.push({ id: card.id, position: card.position, list_id });
     }
     if (card.position > deletedCardPos) {
-      listData.push({ id: card.id, position: card.position - 1, list_id: list_id.toString() });
+      listData.push({ id: card.id, position: card.position - 1, list_id });
     }
   });
   return listData;

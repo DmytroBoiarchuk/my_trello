@@ -24,7 +24,9 @@
   h1{
     font-family: $secondary-font;
     margin: 20px 0 0 15px;
-    width: 190px;
+    width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
     height: 45px;
     font-size: 40px;
     text-align: start;
@@ -35,14 +37,13 @@
   color: black;
 }
 .board-input-boardName{
-  min-width: 755px;
+  max-width: 100%;
   border: 0;
   padding: 0;
   height: 45px;
   margin: 20px 0 0 15px;
   font-size: 40px;
   font-weight: 700;
-  justify-content: flex-start;
 }
 .new-list-input{
   margin: 0 auto;
@@ -53,6 +54,7 @@
   border-radius: $deep-border-radius;
 }
 .submit-list-button{
+  user-select: none;
   margin: 5px;
   width: 120px;
   height: 30px;

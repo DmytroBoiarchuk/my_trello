@@ -60,7 +60,7 @@ export const changeCardDescription = async (
     dispatch({ type: 'ERROR_ACTION_TYPE' });
   }
 };
-export const changePosBeforeReplacing = async (board_id: string, list_id: string, newPos: number): Promise<void> => {
+export const changePosBeforeReplacing = async (board_id: string, list_id: number, newPos: number): Promise<void> => {
   const board: ResponseBoard = await instance.get(`${api.baseURL}/board/${board_id}`);
   await instance.put(`/board/${board_id}/card`, relocatePosBeforeReplacingHandler(board, board_id, list_id, newPos));
 };
@@ -68,7 +68,7 @@ export const changePosBeforeReplacing = async (board_id: string, list_id: string
 export const replaceCard = async (
   boardId: string,
   pos: number | undefined,
-  listId: string | undefined,
+  listId: number | undefined,
   currentCard: number,
   dispatch: Dispatch,
   currentList: IList | undefined,

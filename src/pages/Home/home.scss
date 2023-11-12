@@ -7,10 +7,12 @@
   flex-direction: row;
 }
 .main-title{
+  user-select: none;
   color: black;
   font-family: $main-font;
 }
 .add-board-button{
+  user-select: none;
   font-family: $main-font;
   background: #FFF5E0;
   width: 197px;

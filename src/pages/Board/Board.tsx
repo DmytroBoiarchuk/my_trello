@@ -1,4 +1,4 @@
-import React, { JSX, useEffect, useState } from 'react';
+import React, { ChangeEvent, JSX, useEffect, useRef, useState } from 'react';
 import './board.scss';
 import './components/List/list.scss';
 import { useDispatch, useSelector } from 'react-redux';
@@ -29,6 +29,7 @@ export default function Board(): JSX.Element {
   const [cashMemoryListInput, setCashMemoryListInput] = useState('');
   const [listTitle, setListTitle] = useState('');
   const dispatch = useDispatch();
+  const inputRef = useRef<HTMLInputElement | null>(null);
   let listArr = null;
   useEffect(() => {
     getBoardTitle(dispatch, boardId || '').then((resp) => {
@@ -38,6 +39,11 @@ export default function Board(): JSX.Element {
       dispatch({ type: 'ERROR_ACTION_TYPE' });
     });
   }, []);
+  useEffect(() => {
+    if (inputRef.current) {
+      inputRef.current.style.width = `${inputRef.current.scrollWidth}px`;
+    }
+  }, [showInput]);
   if (board.lists) {
     listArr = board.lists.map((key: IList) => (
       <List key={key.id} board_id={boardId || ''} list_id={key.id} title={key.title} />
@@ -89,20 +95,27 @@ export default function Board(): JSX.Element {
     useSweetAlert('Prohibited symbols');
     setWarning(false);
   }
+
+  const handleChange = (event: ChangeEvent<HTMLInputElement>): void => {
+    if (inputRef.current) {
+      inputRef.current.style.width = `${inputRef.current.scrollWidth}px`;
+    }
+    setTitle(event.target.value);
+  };
   return (
     <>
       <NavBar />
       <div className="board-name-container">
         {showInput && (
           <input
+            ref={inputRef}
             type="text"
-            maxLength={20}
             autoFocus
             className="board-input-boardName"
-            defaultValue={boardTitle}
+            value={boardTitle}
             onKeyDown={(e): void => renameBoardByEnter(e, e.currentTarget.value)}
             onBlur={(e): void => renameBoard(e.currentTarget.value)}
-            onChange={(event): void => setTitle(event.target.value)}
+            onChange={(event): void => handleChange(event)}
           />
         )}
         {!showInput && (

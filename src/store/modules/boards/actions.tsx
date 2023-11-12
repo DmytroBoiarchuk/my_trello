@@ -1,5 +1,6 @@
 import { Dispatch } from 'redux';
 import { PayloadAction } from '@reduxjs/toolkit';
+import { AxiosRequestConfig } from 'axios';
 import api from '../../../common/constants/api';
 import instance from '../../../api/request';
 import { Response } from '../../../common/types/types';
@@ -7,7 +8,12 @@ import { Response } from '../../../common/types/types';
 export const clearEntireStore = (): PayloadAction<string> => ({ type: 'DELETE_STORE', payload: '' });
 export const getBoards = async (dispatch: Dispatch): Promise<void> => {
   try {
-    const { boards }: Response = await instance.get(`${api.baseURL}/board`);
+    const config: AxiosRequestConfig = {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('access_token')}`,
+      },
+    };
+    const { boards }: Response = await instance.get(`${api.baseURL}/board`, config);
     dispatch({ type: 'UPDATE_BOARDS', payload: boards });
   } catch (e) {
     dispatch({ type: 'ERROR_ACTION_TYPE' });

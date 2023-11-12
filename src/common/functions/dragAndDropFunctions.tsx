@@ -109,7 +109,7 @@ export const dropHandler = (
   replaceCard(
     board_id,
     neededPos,
-    list_id.toString(),
+    list_id,
     currentCard,
     dispatch,
     currentList,
