@@ -59,6 +59,11 @@ function Card({
     slotsData.currentList === list_id &&
     slotsData.isOriginSlotShown;
   useEffect(() => {
+    window.addEventListener('dragstart', (e) => {
+      if (!(e.target instanceof HTMLParagraphElement)) {
+        e.preventDefault();
+      }
+    });
     if (cardId) {
       dispatch(putCardData({ id: +cardId }));
       dispatch(setModalCardEditBig(true));

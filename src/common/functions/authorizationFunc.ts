@@ -23,7 +23,6 @@ export const authorizeFunc = (
   });
 };
 
-// this function not in action because it leads to "ESLint: Dependency cycle detected.(import/no-cycle)"
 export const userRegistration = async (
   email: string,
   password: string,
@@ -31,7 +30,15 @@ export const userRegistration = async (
   navigate: NavigateFunction
 ): Promise<void> => {
   try {
-    await instance.post(`${api.baseURL}/user`, { email, password });
+    await instance.post(
+      `${api.baseURL}/user`,
+      { email, password },
+      {
+        headers: {
+          Authorization: undefined,
+        },
+      }
+    );
     await authorizeFunc(email, password, dispatch, navigate);
   } catch (e) {
     dispatch({ type: 'ERROR_ACTION_TYPE' });

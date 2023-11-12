@@ -18,7 +18,7 @@ function NavBar(): JSX.Element {
   };
   return (
     <div className="nav-bar">
-      <Link className="link-bar" to={{ pathname: '/' }}>
+      <Link draggable={false} className="link-bar" to={{ pathname: '/' }}>
         Home
       </Link>
       <button onClick={handleLogOut} className="log-out">

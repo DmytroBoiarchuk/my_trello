@@ -11,7 +11,15 @@ export const toggleAuthorisation = async (
 ): Promise<AuthorizationData | undefined> => {
   try {
     dispatch({ type: 'IS_AUTHORIZED', payload: true });
-    return await instance.post(`${api.baseURL}/login`, { email, password });
+    return await instance.post(
+      `${api.baseURL}/login`,
+      { email, password },
+      {
+        headers: {
+          Authorization: undefined,
+        },
+      }
+    );
   } catch (e) {
     dispatch({ type: 'ERROR_ACTION_TYPE' });
     return undefined;
