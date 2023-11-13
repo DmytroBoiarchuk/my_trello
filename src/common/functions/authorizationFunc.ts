@@ -1,7 +1,7 @@
 import { Dispatch } from 'redux';
 import { NavigateFunction } from 'react-router-dom';
 import { toggleAuthorisation, setIsAuthorized } from '../../store/modules/user/actions';
-import instance from '../../api/request';
+import axiosConfig from '../../api/request';
 import api from '../constants/api';
 
 export const authorizeFunc = (
@@ -14,7 +14,7 @@ export const authorizeFunc = (
     if (authorisationData) {
       localStorage.setItem('access_token', authorisationData.token);
       localStorage.setItem('refresh_token', authorisationData.refreshToken);
-      instance.defaults.headers.Authorization = `Bearer ${authorisationData.token}`;
+      axiosConfig.defaults.headers.Authorization = `Bearer ${authorisationData.token}`;
       if (authorisationData.result === 'Authorized') {
         setIsAuthorized(true);
         navigate('/');
@@ -30,7 +30,7 @@ export const userRegistration = async (
   navigate: NavigateFunction
 ): Promise<void> => {
   try {
-    await instance.post(
+    await axiosConfig.post(
       `${api.baseURL}/user`,
       { email, password },
       {

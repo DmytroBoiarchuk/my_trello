@@ -4,14 +4,14 @@ import './navBar.scss';
 import { useDispatch } from 'react-redux';
 import { logOut, setIsAuthorized } from '../../../../store/modules/user/actions';
 import { clearEntireStore } from '../../../../store/modules/boards/actions';
-import instance from '../../../../api/request';
+import axiosConfig from '../../../../api/request';
 
 function NavBar(): JSX.Element {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const handleLogOut = async (): Promise<void> => {
     await logOut();
-    instance.defaults.headers.Authorization = `Bearer ${null}`;
+    axiosConfig.defaults.headers.Authorization = `Bearer ${null}`;
     dispatch(clearEntireStore());
     setIsAuthorized(false);
     navigate('/login');

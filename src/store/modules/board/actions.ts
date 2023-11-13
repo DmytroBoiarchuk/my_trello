@@ -1,7 +1,7 @@
 import { PayloadAction } from '@reduxjs/toolkit';
 import { Dispatch } from 'redux';
 import api from '../../../common/constants/api';
-import instance from '../../../api/request';
+import axiosConfig from '../../../api/request';
 import { BoardResp, CardTypeForPutRequest, ResponseBoard } from '../../../common/types/types';
 import { IList } from '../../../common/interfaces/IList';
 import { ICard } from '../../../common/interfaces/ICard';
@@ -40,7 +40,7 @@ export const quickSetDescription = (
 
 export const getBoard = async (dispatch: Dispatch, id: string): Promise<void> => {
   try {
-    const board: ResponseBoard = await instance.get(`${api.baseURL}/board/${id}`);
+    const board: ResponseBoard = await axiosConfig.get(`${api.baseURL}/board/${id}`);
     dispatch({ type: 'UPDATE_BOARD', payload: board });
   } catch (e) {
     dispatch({ type: 'ERROR_ACTION_TYPE' });
@@ -54,15 +54,15 @@ export const changeCardDescription = async (
   list_id: number
 ): Promise<void> => {
   try {
-    await instance.put(`${api.baseURL}/board/${board_id}/card/${card_id}`, { description, list_id });
+    await axiosConfig.put(`${api.baseURL}/board/${board_id}/card/${card_id}`, { description, list_id });
     await getBoard(dispatch, board_id);
   } catch (e) {
     dispatch({ type: 'ERROR_ACTION_TYPE' });
   }
 };
 export const changePosBeforeReplacing = async (board_id: string, list_id: number, newPos: number): Promise<void> => {
-  const board: ResponseBoard = await instance.get(`${api.baseURL}/board/${board_id}`);
-  await instance.put(`/board/${board_id}/card`, relocatePosBeforeReplacingHandler(board, board_id, list_id, newPos));
+  const board: ResponseBoard = await axiosConfig.get(`${api.baseURL}/board/${board_id}`);
+  await axiosConfig.put(`/board/${board_id}/card`, relocatePosBeforeReplacingHandler(board, board_id, list_id, newPos));
 };
 
 export const replaceCard = async (
@@ -88,7 +88,7 @@ export const replaceCard = async (
       draggedCardList,
       draggedCardListArr
     );
-    await instance.put(`/board/${boardId}/card`, updatedList);
+    await axiosConfig.put(`/board/${boardId}/card`, updatedList);
     await getBoard(dispatch, boardId);
   } catch (e) {
     dispatch({ type: 'ERROR_ACTION_TYPE' });
@@ -109,8 +109,8 @@ export const deleteCard = async (
       payload: { listData: quickCardDeletingHandler(lists, list_id, card_id) },
     });
     const listData: CardTypeForPutRequest[] = deleteCardHandler(dispatch, board_id, card_id, lists, list_id);
-    await instance.put(`/board/${board_id}/card`, listData).then(() => {
-      instance.delete(`/board/${board_id}/card/${card_id}`).then(() => getBoard(dispatch, board_id));
+    await axiosConfig.put(`/board/${board_id}/card`, listData).then(() => {
+      axiosConfig.delete(`/board/${board_id}/card/${card_id}`).then(() => getBoard(dispatch, board_id));
     });
   } catch (e) {
     dispatch({ type: 'ERROR_ACTION_TYPE' });
@@ -126,7 +126,7 @@ export const renameCard = async (
 ): Promise<void> => {
   try {
     dispatch({ type: 'QUICK_RENAME_CARD', payload: { cardTitle: title, listId: list_id, cardId: card_id } });
-    await instance.put(`/board/${board_id}/card/${card_id}`, {
+    await axiosConfig.put(`/board/${board_id}/card/${card_id}`, {
       title,
       list_id,
     });
@@ -147,7 +147,7 @@ export const addNewCard = async (
 ): Promise<void> => {
   try {
     if (isCopying === undefined) dispatch({ type: 'QUICK_ADD_NEW_CARD', payload: { title, ListId: list_id } });
-    await instance.post(`/board/${board_id}/card`, {
+    await axiosConfig.post(`/board/${board_id}/card`, {
       title,
       list_id,
       position,
@@ -161,7 +161,7 @@ export const addNewCard = async (
 };
 export const getBoardTitle = async (dispatch: Dispatch, id: string): Promise<string> => {
   try {
-    const response: BoardResp = await instance.get(`/board/${id}`);
+    const response: BoardResp = await axiosConfig.get(`/board/${id}`);
     return response.title;
   } catch (e) {
     dispatch({ type: 'ERROR_ACTION_TYPE' });
@@ -173,7 +173,7 @@ export const getBoardForModal = async (
   id: string
 ): Promise<{ title?: string | undefined; lists: IList[] }> => {
   try {
-    return await instance.get(`${api.baseURL}/board/${id}`);
+    return await axiosConfig.get(`${api.baseURL}/board/${id}`);
   } catch (e) {
     dispatch({ type: 'ERROR_ACTION_TYPE' });
     return { title: '', lists: [] };
@@ -182,7 +182,7 @@ export const getBoardForModal = async (
 
 export const deleteListFetch = async (dispatch: Dispatch, board_id: string, list_id: number): Promise<void> => {
   try {
-    await instance.delete(`${api.baseURL}/board/${board_id}/list/${list_id}`);
+    await axiosConfig.delete(`${api.baseURL}/board/${board_id}/list/${list_id}`);
     await getBoard(dispatch, board_id);
   } catch (e) {
     dispatch({ type: 'ERROR_ACTION_TYPE' });
@@ -195,7 +195,7 @@ export const addList = async (
 ): Promise<void> => {
   try {
     dispatch({ type: 'ADD_EMPTY_LIST', payload: title.title });
-    await instance.post(`${api.baseURL}/board/${id}/list`, title);
+    await axiosConfig.post(`${api.baseURL}/board/${id}/list`, title);
     await getBoard(dispatch, id);
   } catch (e) {
     dispatch({ type: 'ERROR_ACTION_TYPE' });
@@ -203,7 +203,7 @@ export const addList = async (
 };
 export const changeBoardName = async (dispatch: Dispatch, id: string, NewTitle: string): Promise<void> => {
   try {
-    await instance.put(`${api.baseURL}/board/${id}`, { title: NewTitle });
+    await axiosConfig.put(`${api.baseURL}/board/${id}`, { title: NewTitle });
     await getBoard(dispatch, id);
   } catch (e) {
     dispatch({ type: 'ERROR_ACTION_TYPE' });
@@ -216,7 +216,7 @@ export const renameList = async (
   NewTitle: string
 ): Promise<void> => {
   try {
-    await instance.put(`${api.baseURL}/board/${board_id}/list/${List_id}`, { title: NewTitle });
+    await axiosConfig.put(`${api.baseURL}/board/${board_id}/list/${List_id}`, { title: NewTitle });
     await getBoard(dispatch, board_id);
   } catch (e) {
     dispatch({ type: 'ERROR_ACTION_TYPE' });

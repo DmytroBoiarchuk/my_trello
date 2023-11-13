@@ -1,6 +1,6 @@
 import { Dispatch } from 'redux';
 import { PayloadAction } from '@reduxjs/toolkit';
-import instance from '../../../api/request';
+import axiosConfig from '../../../api/request';
 import api from '../../../common/constants/api';
 import { AuthorizationData } from '../../../common/types/types';
 
@@ -11,7 +11,7 @@ export const toggleAuthorisation = async (
 ): Promise<AuthorizationData | undefined> => {
   try {
     dispatch({ type: 'IS_AUTHORIZED', payload: true });
-    return await instance.post(
+    return await axiosConfig.post(
       `${api.baseURL}/login`,
       { email, password },
       {
@@ -26,7 +26,7 @@ export const toggleAuthorisation = async (
   }
 };
 export const logOut = async (): Promise<void> => {
-  await instance.post('/refresh', { refreshToken: localStorage.getItem('refresh_token') });
+  await axiosConfig.post('/refresh', { refreshToken: localStorage.getItem('refresh_token') });
   await localStorage.removeItem('access_token');
 };
 export const setIsAuthorized = (isAuthorized: boolean): PayloadAction<boolean> => ({
