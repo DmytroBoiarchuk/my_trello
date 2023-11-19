@@ -11,6 +11,12 @@ const initialState: IBoard = {
 
 export default function reducer(state = initialState, action: AnyAction): IBoard {
   switch (action.type) {
+    case 'DRAG_LIST': {
+      return {
+        ...state,
+        lists: action.payload,
+      };
+    }
     case 'UPDATE_DESCRIPTION': {
       return {
         ...state,

@@ -4,7 +4,6 @@ function ModalListCreating({
   listTitle,
   buttonOnClick,
   defaultValue,
-  modalTitle,
   onChange,
   onKeyDown,
   onBlur,
@@ -12,7 +11,6 @@ function ModalListCreating({
   listTitle: string;
   buttonOnClick: (e: React.FormEvent, value: string) => void;
   defaultValue: string;
-  modalTitle: string;
   onChange: React.Dispatch<React.SetStateAction<string>>;
   onKeyDown: (e: React.KeyboardEvent, value: string) => void;
   onBlur: (value: string) => void;
@@ -34,7 +32,7 @@ function ModalListCreating({
           onBlur={(e): void => onBlur(e.target.value)}
         />
         <button type="button" onClick={(e): void => buttonOnClick(e, listTitle)} className="submit-list-button">
-          {modalTitle}
+          Add List
         </button>
       </form>
     </div>

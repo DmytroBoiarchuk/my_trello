@@ -60,7 +60,7 @@ function Card({
     slotsData.isOriginSlotShown;
   useEffect(() => {
     window.addEventListener('dragstart', (e) => {
-      if (!(e.target instanceof HTMLParagraphElement)) {
+      if (!(e.target instanceof HTMLParagraphElement) && !(e.target instanceof HTMLDivElement)) {
         e.preventDefault();
       }
     });

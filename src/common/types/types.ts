@@ -26,6 +26,7 @@ export type SlotsProps = {
     draggedCardPos: number;
     draggedCardTitle: string;
     isCardDragged: boolean;
+    draggedListId: number;
   };
 };
 

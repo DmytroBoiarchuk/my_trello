@@ -2,22 +2,32 @@ import React, { JSX, useEffect, useRef, useState } from 'react';
 import { BsThreeDots } from 'react-icons/bs';
 import { useDispatch, useSelector } from 'react-redux';
 import Card from '../Card/Card';
-import { renameList, deleteListFetch, addNewCard } from '../../../../store/modules/board/actions';
+import {
+  renameList,
+  deleteListFetch,
+  addNewCard,
+  setNewListOfLists,
+  fetchNewListOfLists,
+  getBoard,
+} from '../../../../store/modules/board/actions';
 import { inputValidation } from '../../../../common/functions/inputValidation';
 import useOutsideAlerter from '../../../../common/Hooks/useOutsideAlerter';
 import { BoardProps, SlotsProps } from '../../../../common/types/types';
-import { setCurrentList } from '../../../../store/modules/slotData/actions';
+import { setCurrentList, setDraggedListId } from '../../../../store/modules/slotData/actions';
 import { dropHandler } from '../../../../common/functions/dragAndDropFunctions';
 import { useSweetAlert } from '../../../../common/functions/sweetAlertHandler';
+import { IList } from '../../../../common/interfaces/IList';
 
 export default function List({
   board_id,
   list_id,
   title,
+  position,
 }: {
   board_id: string;
   list_id: number;
   title: string;
+  position: number;
 }): JSX.Element {
   const { slotsData } = useSelector(
     (state: SlotsProps): SlotsProps => ({
@@ -83,9 +93,17 @@ export default function List({
       validationHandler(value);
     }
   };
+  const getNewListsPoses = (): { id: number; position: number }[] => {
+    const newListsPoses: { id: number; position: number }[] = [];
+    board.lists.forEach((list) => {
+      const newPosition = list.position < position ? list.position : list.position - 1;
+      newListsPoses.push({ id: list.id, position: newPosition });
+    });
+    return newListsPoses;
+  };
   const deleteList = (): void => {
     if (listContainerRef.current !== null) listContainerRef.current.style.display = 'none';
-    deleteListFetch(dispatch, board_id, list_id).catch(() => {
+    deleteListFetch(dispatch, board_id, list_id, getNewListsPoses()).catch(() => {
       dispatch({ type: 'ERROR_ACTION_TYPE' });
     });
     setListMenu(false);
@@ -145,8 +163,65 @@ export default function List({
     useSweetAlert('Prohibited symbols');
     setWarning(false);
   }
+  //
+  const listDragStartHandler = (e: React.DragEvent<HTMLDivElement>): void => {
+    dispatch(setDraggedListId(parseInt(e.currentTarget.id.slice(15), 10)));
+    setTimeout((): void => {
+      if (listContainerRef.current) listContainerRef.current.style.visibility = 'hidden';
+    }, 1);
+  };
+  const listDragOverHandler = (e: React.DragEvent<HTMLDivElement>): void => {
+    const midlOfList = e.currentTarget.scrollWidth / 2 + e.currentTarget.getBoundingClientRect().x;
+    const overListId = parseInt(e.currentTarget.id.slice(15), 10);
+    const newListOfLists: IList[] = [];
+    let draggedList: IList;
+    board.lists.forEach((list) => {
+      if (list.id === slotsData.draggedListId) {
+        draggedList = list;
+      }
+    });
+    board.lists.forEach((list) => {
+      if (list.id !== slotsData.draggedListId && list.id !== overListId) {
+        newListOfLists.push(list);
+      }
+      if (list.id === overListId && draggedList && e.clientX < midlOfList) {
+        newListOfLists.push(draggedList);
+        newListOfLists.push(list);
+      }
+      if (list.id === overListId && draggedList && e.clientX >= midlOfList) {
+        newListOfLists.push(list);
+        newListOfLists.push(draggedList);
+      }
+    });
+    dispatch(setNewListOfLists(newListOfLists));
+  };
+  const compareNewAndOldLists = (newListOfList: { id: number; position: number }[]): boolean => {
+    for (let i = 0; i < board.lists.length; i++) {
+      if (board.lists[i].position !== newListOfList[i].position) return true;
+    }
+    return false;
+  };
+  const listDragEndHandler = (): void => {
+    if (listContainerRef.current) listContainerRef.current.style.visibility = 'visible';
+    const newListOfList: { id: number; position: number }[] = [];
+    let positionCounter = 0;
+    board.lists.forEach((list) => {
+      newListOfList.push({ id: list.id, position: positionCounter });
+      positionCounter++;
+    });
+    if (compareNewAndOldLists(newListOfList)) {
+      fetchNewListOfLists(dispatch, board_id, newListOfList).then(() => {
+        getBoard(dispatch, board_id);
+      });
+    }
+  };
+  //
   return (
     <div
+      draggable
+      onDragOver={(e): void => listDragOverHandler(e)}
+      onDragStart={(e): void => listDragStartHandler(e)}
+      onDragEnd={(): void => listDragEndHandler()}
       onDragEnter={(): void => {
         dispatch(setCurrentList(list_id));
       }}

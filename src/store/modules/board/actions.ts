@@ -180,9 +180,15 @@ export const getBoardForModal = async (
   }
 };
 
-export const deleteListFetch = async (dispatch: Dispatch, board_id: string, list_id: number): Promise<void> => {
+export const deleteListFetch = async (
+  dispatch: Dispatch,
+  board_id: string,
+  list_id: number,
+  newListPoses: { id: number; position: number }[]
+): Promise<void> => {
   try {
     await axiosConfig.delete(`${api.baseURL}/board/${board_id}/list/${list_id}`);
+    await axiosConfig.put(`${api.baseURL}/board/${board_id}/list`, newListPoses);
     await getBoard(dispatch, board_id);
   } catch (e) {
     dispatch({ type: 'ERROR_ACTION_TYPE' });
@@ -219,6 +225,22 @@ export const renameList = async (
     await axiosConfig.put(`${api.baseURL}/board/${board_id}/list/${List_id}`, { title: NewTitle });
     await getBoard(dispatch, board_id);
   } catch (e) {
+    dispatch({ type: 'ERROR_ACTION_TYPE' });
+  }
+};
+
+export const setNewListOfLists = (newListOfLists: IList[]): PayloadAction<IList[]> => ({
+  type: 'DRAG_LIST',
+  payload: newListOfLists,
+});
+export const fetchNewListOfLists = async (
+  dispatch: Dispatch,
+  board_id: string,
+  newListOfLists: { id: number; position: number }[]
+): Promise<void> => {
+  try {
+    await axiosConfig.put(`${api.baseURL}/board/${board_id}/list`, newListOfLists);
+  } catch (err) {
     dispatch({ type: 'ERROR_ACTION_TYPE' });
   }
 };

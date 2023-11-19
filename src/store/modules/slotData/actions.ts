@@ -22,3 +22,7 @@ export const isCardDragged = (isDragged: boolean): PayloadAction<boolean> => ({
   type: 'IS_CARD_DRAGGED',
   payload: isDragged,
 });
+export const setDraggedListId = (listId: number): PayloadAction<number> => ({
+  type: 'DRAGGED_LIST_ID',
+  payload: listId,
+});

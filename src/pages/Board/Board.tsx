@@ -46,7 +46,7 @@ export default function Board(): JSX.Element {
   }, [showInput]);
   if (board.lists) {
     listArr = board.lists.map((key: IList) => (
-      <List key={key.id} board_id={boardId || ''} list_id={key.id} title={key.title} />
+      <List key={key.id} board_id={boardId || ''} list_id={key.id} title={key.title} position={key.position} />
     ));
   }
   const renameBoard = (value: string): void => {
@@ -74,7 +74,7 @@ export default function Board(): JSX.Element {
   };
   const createList = (e: React.FormEvent, value: string): void => {
     if (!inputValidation(value)) {
-      addList(dispatch, boardId || '', { title: value, position: 0 }).catch(() => {
+      addList(dispatch, boardId || '', { title: value, position: listArr.length }).catch(() => {
         dispatch({ type: 'ERROR_ACTION_TYPE' });
       });
       setCashMemoryListInput('');
@@ -140,7 +140,6 @@ export default function Board(): JSX.Element {
             listTitle={listTitle}
             buttonOnClick={createList}
             defaultValue={cashMemoryListInput}
-            modalTitle="Add list"
             onChange={setListTitle}
             onKeyDown={createListByEnter}
             onBlur={onBlurFunctionList}
