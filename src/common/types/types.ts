@@ -15,6 +15,19 @@ export type TypeForSlotData = {
 export type BoardResp = {
   title: string;
 };
+export type SlotDataType = {
+  slotHeight: number;
+  isOriginSlotShown: boolean;
+  currentCard: number;
+  draggedCardList: number;
+  slotPos: number;
+  currentList: number;
+  draggedCardPos: number;
+  draggedCardTitle: string;
+  isCardDragged: boolean;
+  draggedListId: number;
+  isItCArdDragged: boolean;
+};
 export type SlotsProps = {
   slotsData: {
     slotHeight: number;
@@ -27,6 +40,7 @@ export type SlotsProps = {
     draggedCardTitle: string;
     isCardDragged: boolean;
     draggedListId: number;
+    isItCArdDragged: boolean;
   };
 };
 

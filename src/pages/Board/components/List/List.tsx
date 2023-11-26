@@ -2,21 +2,18 @@ import React, { JSX, useEffect, useRef, useState } from 'react';
 import { BsThreeDots } from 'react-icons/bs';
 import { useDispatch, useSelector } from 'react-redux';
 import Card from '../Card/Card';
-import {
-  renameList,
-  deleteListFetch,
-  addNewCard,
-  setNewListOfLists,
-  fetchNewListOfLists,
-  getBoard,
-} from '../../../../store/modules/board/actions';
+import { renameList, deleteListFetch, addNewCard } from '../../../../store/modules/board/actions';
 import { inputValidation } from '../../../../common/functions/inputValidation';
 import useOutsideAlerter from '../../../../common/Hooks/useOutsideAlerter';
 import { BoardProps, SlotsProps } from '../../../../common/types/types';
-import { setCurrentList, setDraggedListId } from '../../../../store/modules/slotData/actions';
-import { dropHandler } from '../../../../common/functions/dragAndDropFunctions';
+import { setCurrentList, setDraggedItem } from '../../../../store/modules/slotData/actions';
+import {
+  dragStartList,
+  dropHandler,
+  listDragEnd,
+  listDragOver,
+} from '../../../../common/functions/dragAndDropFunctions';
 import { useSweetAlert } from '../../../../common/functions/sweetAlertHandler';
-import { IList } from '../../../../common/interfaces/IList';
 
 export default function List({
   board_id,
@@ -41,6 +38,7 @@ export default function List({
   );
   const [CardList, setCardList] = useState<JSX.Element[]>([]);
   useEffect(() => {
+    console.log('111');
     board.lists.forEach((list) => {
       if (list.id === list_id) {
         setCardList(
@@ -57,7 +55,7 @@ export default function List({
         );
       }
     });
-  }, [board.lists]);
+  }, [board.lists]); /// ??????????????
   const referenceForCartInput = useRef<HTMLTextAreaElement>(null);
   const { ref, isShow, setIsShow } = useOutsideAlerter(false);
   const [showInputListName, setShowInputListName] = useState(false);
@@ -163,56 +161,38 @@ export default function List({
     useSweetAlert('Prohibited symbols');
     setWarning(false);
   }
-  //
+  // list drag`n`drop implementation
+  const [dragOverListExecuted, setDragOverListExecuted] = useState(false);
+  const [clientX, setClientX] = useState('right');
+  useEffect(() => {
+    setDragOverListExecuted(!dragOverListExecuted);
+  }, [clientX]);
+  useEffect(() => {
+    if (slotsData.currentList !== list_id) {
+      setDragOverListExecuted(false);
+    }
+  }, [slotsData.currentList]);
   const listDragStartHandler = (e: React.DragEvent<HTMLDivElement>): void => {
-    dispatch(setDraggedListId(parseInt(e.currentTarget.id.slice(15), 10)));
-    setTimeout((): void => {
-      if (listContainerRef.current) listContainerRef.current.style.visibility = 'hidden';
-    }, 1);
+    dragStartList(e, dispatch, listContainerRef);
   };
   const listDragOverHandler = (e: React.DragEvent<HTMLDivElement>): void => {
     const midlOfList = e.currentTarget.scrollWidth / 2 + e.currentTarget.getBoundingClientRect().x;
-    const overListId = parseInt(e.currentTarget.id.slice(15), 10);
-    const newListOfLists: IList[] = [];
-    let draggedList: IList;
-    board.lists.forEach((list) => {
-      if (list.id === slotsData.draggedListId) {
-        draggedList = list;
-      }
-    });
-    board.lists.forEach((list) => {
-      if (list.id !== slotsData.draggedListId && list.id !== overListId) {
-        newListOfLists.push(list);
-      }
-      if (list.id === overListId && draggedList && e.clientX < midlOfList) {
-        newListOfLists.push(draggedList);
-        newListOfLists.push(list);
-      }
-      if (list.id === overListId && draggedList && e.clientX >= midlOfList) {
-        newListOfLists.push(list);
-        newListOfLists.push(draggedList);
-      }
-    });
-    dispatch(setNewListOfLists(newListOfLists));
-  };
-  const compareNewAndOldLists = (newListOfList: { id: number; position: number }[]): boolean => {
-    for (let i = 0; i < board.lists.length; i++) {
-      if (board.lists[i].position !== newListOfList[i].position) return true;
+    if (e.clientX >= midlOfList && clientX !== 'right') {
+      setClientX('right');
     }
-    return false;
+    if (e.clientX < midlOfList && clientX !== 'left') {
+      setClientX('left');
+    }
+    if (!dragOverListExecuted && !slotsData.isItCArdDragged) {
+      listDragOver(e, slotsData, board, dispatch);
+      setDragOverListExecuted(true);
+    }
   };
   const listDragEndHandler = (): void => {
-    if (listContainerRef.current) listContainerRef.current.style.visibility = 'visible';
-    const newListOfList: { id: number; position: number }[] = [];
-    let positionCounter = 0;
-    board.lists.forEach((list) => {
-      newListOfList.push({ id: list.id, position: positionCounter });
-      positionCounter++;
-    });
-    if (compareNewAndOldLists(newListOfList)) {
-      fetchNewListOfLists(dispatch, board_id, newListOfList).then(() => {
-        getBoard(dispatch, board_id);
-      });
+    if (!slotsData.isItCArdDragged) {
+      dispatch(setDraggedItem(true));
+      if (listContainerRef.current) listContainerRef.current.style.visibility = 'visible';
+      listDragEnd(board, dispatch, board_id);
     }
   };
   //
@@ -245,7 +225,7 @@ export default function List({
       )}
       <div className="cards" id={list_id.toString()}>
         {CardList}
-        {CardList.length === 0 && isSlotVisible && slotsData.currentList === list_id && (
+        {slotsData.isItCArdDragged && CardList.length === 0 && isSlotVisible && slotsData.currentList === list_id && (
           <div
             draggable
             onDragOver={(e): void => {

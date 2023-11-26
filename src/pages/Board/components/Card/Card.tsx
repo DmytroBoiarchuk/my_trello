@@ -76,7 +76,7 @@ function Card({
     if (slotsData.currentList !== list_id) {
       setFirstSlotShown(false);
     }
-    dispatch(setIsOriginSlotShown(slotsData.currentList === slotsData.currentCard));
+    dispatch(setIsOriginSlotShown(slotsData.currentList === slotsData.draggedCardList));
   }, [slotsData.currentList]);
   useEffect(() => {
     setFirstSlotShown(false);
@@ -104,20 +104,22 @@ function Card({
     setIsShow(false);
   };
   const onCardDropHandler = (e: React.DragEvent<HTMLParagraphElement>): void => {
-    const midlOfCard = e.currentTarget.scrollHeight / 2 + e.currentTarget.getBoundingClientRect().y;
-    dropHandler(
-      e,
-      slotsData.currentList,
-      slotsData.currentCard,
-      board,
-      board_id,
-      dispatch,
-      slotsData.draggedCardList,
-      slotsData.draggedCardPos,
-      slotsData.draggedCardTitle,
-      e.clientY < midlOfCard ? position : position + 1
-    );
-    dispatch(setIsOriginSlotShown(true));
+    if (slotsData.isItCArdDragged) {
+      const midlOfCard = e.currentTarget.scrollHeight / 2 + e.currentTarget.getBoundingClientRect().y;
+      dropHandler(
+        e,
+        slotsData.currentList,
+        slotsData.currentCard,
+        board,
+        board_id,
+        dispatch,
+        slotsData.draggedCardList,
+        slotsData.draggedCardPos,
+        slotsData.draggedCardTitle,
+        e.clientY < midlOfCard ? position : position + 1
+      );
+      dispatch(setIsOriginSlotShown(true));
+    }
   };
   const dragStartHandler = (e: React.DragEvent<HTMLDivElement>): void => {
     dispatch(putSlotData(e.currentTarget.scrollHeight, +e.currentTarget.id, list_id, position, title));
@@ -146,31 +148,34 @@ function Card({
     <div className="card-box" id={`card_box_${id}`} ref={cardBoxRef}>
       {!isShow ? (
         <>
-          {slotsData.isCardDragged && firstSlotShown && list_id === slotsData.currentList && (
-            <div
-              onDragOver={(e): void => {
-                e.preventDefault();
-              }}
-              onDrop={(e): void => {
-                setFirstSlotShown(false);
-                dropHandler(
-                  e,
-                  slotsData.currentList,
-                  slotsData.currentCard,
-                  board,
-                  board_id,
-                  dispatch,
-                  slotsData.draggedCardList,
-                  slotsData.draggedCardPos,
-                  slotsData.draggedCardTitle,
-                  0
-                );
-              }}
-              style={{ height: `${slotsData.slotHeight}px` }}
-              className="slot-style"
-              ref={firstSlotRef}
-            />
-          )}
+          {slotsData.isItCArdDragged &&
+            slotsData.isCardDragged &&
+            firstSlotShown &&
+            list_id === slotsData.currentList && (
+              <div
+                onDragOver={(e): void => {
+                  e.preventDefault();
+                }}
+                onDrop={(e): void => {
+                  setFirstSlotShown(false);
+                  dropHandler(
+                    e,
+                    slotsData.currentList,
+                    slotsData.currentCard,
+                    board,
+                    board_id,
+                    dispatch,
+                    slotsData.draggedCardList,
+                    slotsData.draggedCardPos,
+                    slotsData.draggedCardTitle,
+                    0
+                  );
+                }}
+                style={{ height: `${slotsData.slotHeight}px` }}
+                className="slot-style"
+                ref={firstSlotRef}
+              />
+            )}
           <p
             ref={cardRef}
             id={id.toString()}
@@ -194,7 +199,9 @@ function Card({
             />
           </p>
           {(isOriginSlot() ||
-            (position === slotsData.slotPos &&
+            (slotsData.isCardDragged &&
+              slotsData.isItCArdDragged &&
+              position === slotsData.slotPos &&
               list_id === slotsData.currentList &&
               !firstSlotShown &&
               bottomSlotShown)) && (

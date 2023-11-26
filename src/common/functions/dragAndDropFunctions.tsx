@@ -1,10 +1,11 @@
 import React from 'react';
 import { Dispatch } from 'redux';
-import { isCardDragged, setSlotPos } from '../../store/modules/slotData/actions';
+import { isCardDragged, setDraggedItem, setDraggedListId, setSlotPos } from '../../store/modules/slotData/actions';
 import { IList } from '../interfaces/IList';
-import { replaceCard } from '../../store/modules/board/actions';
+import { fetchNewListOfLists, getBoard, replaceCard, setNewListOfLists } from '../../store/modules/board/actions';
 import { ICard } from '../interfaces/ICard';
 import store from '../../store/store';
+import { SlotDataType } from '../types/types';
 
 export const dragStarted = (
   e: React.DragEvent<HTMLDivElement>,
@@ -140,5 +141,80 @@ export const dragOver = (
     dispatch(setSlotPos(position));
     setFirstSlotShown(false);
     setBottomSlotShown(true);
+  }
+};
+
+export const dragStartList = (
+  e: React.DragEvent<HTMLDivElement>,
+  dispatch: Dispatch,
+  listContainerRef: React.RefObject<HTMLDivElement>
+): void => {
+  if (!(e.target instanceof HTMLParagraphElement)) {
+    dispatch(setDraggedItem(false));
+    dispatch(setDraggedListId(parseInt(e.currentTarget.id.slice(15), 10)));
+    setTimeout((): void => {
+      if (listContainerRef.current) listContainerRef.current.style.visibility = 'hidden';
+    }, 1);
+  }
+};
+
+export const listDragOver = (
+  e: React.DragEvent<HTMLDivElement>,
+  slotsData: SlotDataType,
+  board: { title: string; lists: IList[] },
+  dispatch: Dispatch
+): void => {
+  if (!slotsData.isItCArdDragged) {
+    const midlOfList = e.currentTarget.scrollWidth / 2 + e.currentTarget.getBoundingClientRect().x;
+    const overListId = parseInt(e.currentTarget.id.slice(15), 10);
+    const newListOfLists: IList[] = [];
+    let draggedList: IList;
+    board.lists.forEach((list) => {
+      if (list.id === slotsData.draggedListId) {
+        draggedList = list;
+      }
+    });
+    board.lists.forEach((list) => {
+      if (list.id !== slotsData.draggedListId && list.id !== overListId) {
+        newListOfLists.push(list);
+      }
+      if (list.id === overListId && draggedList && e.clientX < midlOfList) {
+        newListOfLists.push(draggedList);
+        newListOfLists.push(list);
+      }
+      if (list.id === overListId && draggedList && e.clientX >= midlOfList) {
+        newListOfLists.push(list);
+        newListOfLists.push(draggedList);
+      }
+    });
+    dispatch(setNewListOfLists(newListOfLists));
+  }
+};
+
+const compareNewAndOldLists = (
+  board: { title: string; lists: IList[] },
+  newListOfList: { id: number; position: number }[]
+): boolean => {
+  for (let i = 0; i < board.lists.length; i++) {
+    if (board.lists[i].position !== newListOfList[i].position) return true;
+  }
+  return false;
+};
+
+export const listDragEnd = (
+  board: { title: string; lists: IList[] },
+  dispatch: Dispatch,
+  board_id: string
+): void => {
+  const newListOfList: { id: number; position: number }[] = [];
+  let positionCounter = 0;
+  board.lists.forEach((list) => {
+    newListOfList.push({ id: list.id, position: positionCounter });
+    positionCounter++;
+  });
+  if (compareNewAndOldLists(board, newListOfList)) {
+    fetchNewListOfLists(dispatch, board_id, newListOfList).then(() => {
+      getBoard(dispatch, board_id);
+    });
   }
 };

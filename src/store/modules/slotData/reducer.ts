@@ -11,6 +11,7 @@ const initialState: SlotDataType = {
   draggedCardTitle: '',
   isCardDragged: false,
   draggedListId: 0,
+  isItCArdDragged: true,
 };
 type SlotDataType = {
   slotHeight: number;
@@ -23,10 +24,16 @@ type SlotDataType = {
   draggedCardTitle: string;
   isCardDragged: boolean;
   draggedListId: number;
+  isItCArdDragged: boolean;
 };
 
 export default function reducer(state = initialState, action: AnyAction): SlotDataType {
   switch (action.type) {
+    case 'IS_IT_CARD_DRAGGED':
+      return {
+        ...state,
+        isItCArdDragged: action.payload,
+      };
     case 'DRAGGED_LIST_ID':
       return {
         ...state,
