@@ -127,13 +127,15 @@ function Card({
     dragStarted(e, id, cardRef);
   };
   const dragEndHandler = (e: React.DragEvent<HTMLDivElement>): void => {
-    dragEnd(e, e.currentTarget.id, cardRef);
-    dispatch(isCardDragged(false));
-    dispatch(setIsOriginSlotShown(true));
+    if (slotsData.isItCArdDragged) {
+      dragEnd(e, e.currentTarget.id, cardRef);
+      dispatch(isCardDragged(false));
+      dispatch(setIsOriginSlotShown(true));
+    }
   };
   const dragOverHandler = (e: React.DragEvent<HTMLDivElement>): void => {
     e.preventDefault();
-    dragOver(e, position, setFirstSlotShown, setBottomSlotShown, dispatch);
+    if (slotsData.isItCArdDragged) dragOver(e, position, setFirstSlotShown, setBottomSlotShown, dispatch);
   };
   const onclickHandler = (): void => {
     dispatch(putCardData({ id }));

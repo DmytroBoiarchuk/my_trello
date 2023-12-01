@@ -38,7 +38,6 @@ export default function List({
   );
   const [CardList, setCardList] = useState<JSX.Element[]>([]);
   useEffect(() => {
-    console.log('111');
     board.lists.forEach((list) => {
       if (list.id === list_id) {
         setCardList(
@@ -55,7 +54,7 @@ export default function List({
         );
       }
     });
-  }, [board.lists]); /// ??????????????
+  }, [board.lists]);
   const referenceForCartInput = useRef<HTMLTextAreaElement>(null);
   const { ref, isShow, setIsShow } = useOutsideAlerter(false);
   const [showInputListName, setShowInputListName] = useState(false);
@@ -203,7 +202,7 @@ export default function List({
       onDragStart={(e): void => listDragStartHandler(e)}
       onDragEnd={(): void => listDragEndHandler()}
       onDragEnter={(): void => {
-        dispatch(setCurrentList(list_id));
+        if (slotsData.isItCArdDragged) dispatch(setCurrentList(list_id));
       }}
       ref={listContainerRef}
       id={`list_container_${list_id}`}
