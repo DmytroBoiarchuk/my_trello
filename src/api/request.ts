@@ -37,7 +37,7 @@ axiosConfig.interceptors.response.use(undefined, (error) => {
     useSweetAlert(error.response.data.error);
     setTimeout(() => {
       window.location.href = '/';
-    }, 3000000);
+    }, 3000);
   } else if (window.location.pathname === '/login') {
     useSweetAlert('Wrong login or password');
   } else if (localStorage.getItem('access_token') === null) {
