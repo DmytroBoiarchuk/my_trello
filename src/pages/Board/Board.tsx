@@ -46,7 +46,7 @@ export default function Board(): JSX.Element {
   }, [showInput]);
   if (board.lists) {
     listArr = board.lists.map((key: IList) => (
-      <List key={key.id} board_id={boardId || ''} list_id={key.id} title={key.title} position={key.position} /> 
+      <List key={key.id} board_id={boardId || ''} list_id={key.id} title={key.title} position={key.position} />
     ));
   }
   const renameBoard = (value: string): void => {

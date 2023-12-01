@@ -201,11 +201,7 @@ const compareNewAndOldLists = (
   return false;
 };
 
-export const listDragEnd = (
-  board: { title: string; lists: IList[] },
-  dispatch: Dispatch,
-  board_id: string
-): void => {
+export const listDragEnd = (board: { title: string; lists: IList[] }, dispatch: Dispatch, board_id: string): void => {
   const newListOfList: { id: number; position: number }[] = [];
   let positionCounter = 0;
   board.lists.forEach((list) => {
